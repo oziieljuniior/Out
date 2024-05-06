@@ -3,15 +3,42 @@
 i = 1
 lista_entradas = []
 
-while i != 0:
-    i = float(input("Insira a entrada determinada: "))
-    print("A entrada determinada foi: ", i)
+apostar = 0
+win = 0
+level = 1
 
+while i != 0:
+    
+    print(24*'*-')
+             
+    i = float(input("Insira a última entrada determinada: "))
+
+    if apostar == 1 and i > 1.5:
+        print(24*'$')
+        bet = 1
+        apostar = 0
+        win += 1
+        if win == 15:
+            level += 1
+            win = 0
+        print(f"Houve acerto! \nA ultima entrada determinada foi: {lista_entradas[-1]} \nA condição de vitoria está em {win} \nLevel: {level} \n{24*'*-'}")
+    if apostar == 1 and i <= 1.5:
+        print(24*'$')
+        bet = 0
+        win = win - 2
+        if win <= -10:
+            level = 1
+            win = 0 
+            print(f"Houve erro! \nA ultima entrada determinada foi: {lista_entradas[-1]} \nA condição de vitoria está em {win}, dessa maneira GAME OVER. \n{24*'*-'}")
+        else:
+            print(f"Houve erro! \nA ultima entrada determinada foi: {lista_entradas[-1]} \nA condição de vitoria está em {win} \nLevel: {level} \n{24*'*-'}")
+    
     if i == 0:
         break
     lista_entradas.append(i)
 
     if len(lista_entradas) >= 5:
+
         ultimas5 = lista_entradas[-5:]
         ultimas10 = [0] 
         ultimas20 = [0]
@@ -46,5 +73,12 @@ while i != 0:
         media640 = sum(ultimas640) / 640
         
         print(f"Rodada: {len(lista_entradas)} \nMedia 5:  {media5} \nMedia 10: {media10} \nMedia 20: {media20} \nMedia 40: {media40} \nMedia 80: {media80} \nMedia 160: {media160} \nMedia 320: {media320} \nMedia 640: {media640}" )
+        
+        if (media5 <= 2.5 and media5 != 0) or (media10 <= 3.5 and media10 != 0) or (media20 <= 4.5 and media20 != 0) or (media40 <= 4.8 and media40 != 0) or (media80 <= 5.44 and media80 != 0) or (media160 <= 5.47 and media160 != 0) or (media320 <= 5.718 and media320 != 0) or (media640 <= 5.889 and media640 != 0):
+            apostar = 1
+            print("APOSTAR NA PROXIMA RODADA")
+        else:
+            apostar = 0
+
 
 print(lista_entradas)
