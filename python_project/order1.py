@@ -1,18 +1,24 @@
+#Import de bibliotecas
+import pandas as pd
+import numpy as np
 
-
+#Entrada i_k, consta como 1 pois ela controla nossas entradas. Ele deve ser um interio determinado do intervalo 0 ~ 'A verificar'
 i = 1
+#Lista de entradas realiza o controla das entradas. Toda vez que uma nova entrada i_k é gerada, o i_k é salvo na lista de entrada junto com seu histórico de entradas anteriores.
 lista_entradas = []
 
+#Controladores do jogo.
 apostar = 0
 win = 0
 level = 1
 
+#Começamos o jogo aqui, com a primeira entrada gerada.
 while i != 0:
     
     print(24*'*-')
              
     i = float(input("Insira a última entrada determinada: "))
-
+#Ajustar o i_k de acordo com nossas entradas, ele deve obedecer o nosso intervalo pré-determinado.
     if apostar == 1 and i > 1.5:
         print(24*'$')
         bet = 1
@@ -37,6 +43,7 @@ while i != 0:
         break
     lista_entradas.append(i)
 
+#A partir da quinta entrada, essa parte do código começa a fazer o acompanhamento das médias.
     if len(lista_entradas) >= 5:
 
         ultimas5 = lista_entradas[-5:]
@@ -73,7 +80,7 @@ while i != 0:
         media640 = sum(ultimas640) / 640
         
         print(f"Rodada: {len(lista_entradas)} \nMedia 5:  {media5} \nMedia 10: {media10} \nMedia 20: {media20} \nMedia 40: {media40} \nMedia 80: {media80} \nMedia 160: {media160} \nMedia 320: {media320} \nMedia 640: {media640}" )
-        
+#Esses intervalos de médias são pré-determidos. Podendo mudar de acordo com nossos estudos.
         if (media5 <= 2.5 and media5 != 0) or (media10 <= 3.5 and media10 != 0) or (media20 <= 4.5 and media20 != 0) or (media40 <= 4.8 and media40 != 0) or (media80 <= 5.44 and media80 != 0) or (media160 <= 5.47 and media160 != 0) or (media320 <= 5.718 and media320 != 0) or (media640 <= 5.889 and media640 != 0):
             apostar = 1
             print("APOSTAR NA PROXIMA RODADA")
