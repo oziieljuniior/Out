@@ -1,5 +1,7 @@
-# Out
- Aqui está uma descrição detalhada do que o código faz:
+Sobre o Jogo:
+Sim, eu consigo entender esse código. Ele parece ser um jogo que envolve a geração de entradas e a tomada de decisões com base nessas entradas e em suas médias.
+
+Aqui está uma descrição detalhada do que o código faz:
 
 O código começa importando as bibliotecas necessárias: pandas e numpy.
 Em seguida, ele inicializa algumas variáveis. A variável i é usada para controlar as entradas do jogo. A variável lista_entradas é usada para armazenar todas as entradas geradas. As variáveis apostar, contagem e level são usadas para controlar o estado do jogo.
