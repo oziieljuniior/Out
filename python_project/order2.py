@@ -1,7 +1,10 @@
-## Criar planilha de jogos ~ fase 1
+## Criar planilha de jogos ~ fase 2
 #Import de bibliotecas
 import pandas as pd
 import numpy as np
+
+data_inicial = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k.csv')
+print(data_inicial)
 
 #Entrada i_k, consta como 1 pois ela controla nossas entradas. Ele deve ser um interio determinado do intervalo 0 ~ 'A verificar'
 i = 1
@@ -26,8 +29,8 @@ entrada_inicial = {
                     'media40': [0], 'media80': [0], 'media160': [0], 
                     'media320': [0], 'media640': [0]
                     }
-data = pd.DataFrame(entrada_inicial)
-print(data)
+data_final = pd.DataFrame(entrada_inicial)
+print(data_final)
 
 #Começamos o jogo aqui, com a primeira entrada gerada.
 while i != 0:
@@ -61,9 +64,9 @@ while i != 0:
     lista_entradas.append(i)
 
     if len(lista_entradas) < 6:
-        data.loc[len(data.index)] = [len(lista_entradas), level, apostar, acerto, contagem, i, 0, 0, 0, 0, 0, 0, 0, 0]
+        data_final.loc[len(data_final.index)] = [len(lista_entradas), level, apostar, acerto, contagem, i, 0, 0, 0, 0, 0, 0, 0, 0]
     else:
-        data.loc[len(data.index)] = [len(lista_entradas), level, apostar, acerto, contagem, i, media5, media10, media20, media40, media80, media160, media320, media640]
+        data_final.loc[len(data_final.index)] = [len(lista_entradas), level, apostar, acerto, contagem, i, media5, media10, media20, media40, media80, media160, media320, media640]
         apostar = 0
 
 #A partir da quinta entrada, essa parte do código começa a fazer o acompanhamento das médias.
@@ -113,6 +116,6 @@ while i != 0:
 
 
 print(lista_entradas)
-print(data)
+print(data_final)
 
-data.to_csv('/home/darkcover/Documentos/Out/dados/data_final.csv')
+data_final.to_csv('/home/darkcover/Documentos/Out/dados/data_final.csv')
