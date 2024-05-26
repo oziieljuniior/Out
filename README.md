@@ -1,13 +1,15 @@
 # Out
- Aqui está uma descrição detalhada do que o código faz:
+## Como o código funciona
+### Em essencia, sem rede neural e aprendizado por reforço implementado
 
-O código começa importando as bibliotecas necessárias: pandas e numpy.
-Em seguida, ele inicializa algumas variáveis. A variável i é usada para controlar as entradas do jogo. A variável lista_entradas é usada para armazenar todas as entradas geradas. As variáveis apostar, contagem e level são usadas para controlar o estado do jogo.
-O código então cria um DataFrame pandas chamado data com algumas informações iniciais.
-O jogo começa com um loop while que continua até que i seja igual a zero. Dentro deste loop, o código solicita ao usuário para inserir a última entrada gerada.
-O código então verifica se a condição de aposta é verdadeira e se a entrada é maior que 1.5. Se for verdade, o código incrementa a contagem e verifica se a contagem chegou a 15. Se a contagem chegar a 15, o nível do jogador aumenta e a contagem é redefinida para zero.
-Se a condição de aposta for verdadeira e a entrada for menor ou igual a 1.5, o código decrementa a contagem em 2. Se a contagem for menor ou igual a -10, o nível do jogador é redefinido para 1 e a contagem é redefinida para zero.
-O código então adiciona a entrada à lista_entradas e atualiza o DataFrame data com as informações atuais do jogo.
-Se o número de entradas for maior ou igual a 5, o código começa a calcular as médias das últimas 5, 10, 20, 40, 80, 160, 320 e 640 entradas. Ele então verifica se qualquer uma dessas médias está abaixo de um certo limite. Se estiver, a condição de aposta é definida como verdadeira.
-Finalmente, o código imprime a lista_entradas e o DataFrame data, e salva o DataFrame em um arquivo CSV.
+* O código começa importando as bibliotecas necessárias: pandas e numpy.
+* Em seguida, ele inicializa algumas variáveis. A variável i é usada para controlar as entradas do jogo. A variável lista_entradas é usada para armazenar todas as entradas geradas. As variáveis apostar, contagem e level são usadas para controlar o estado do jogo.
+* O código então cria um DataFrame pandas chamado data com algumas informações iniciais.
+* O jogo começa com um loop while que continua até que i seja igual a zero. Dentro deste loop, o código solicita ao usuário para inserir a última entrada gerada.
+* O código então verifica se a condição de aposta é verdadeira e se a entrada é maior que 1.5. Se for verdade, o código incrementa a contagem e verifica se a contagem chegou a 15. Se a contagem chegar a 15, o nível do jogador aumenta e a contagem é redefinida para zero.
+* Se a condição de aposta for verdadeira e a entrada for menor ou igual a 1.5, o código decrementa a contagem em 2. Se a contagem for menor ou igual a -10, o nível do jogador é redefinido para 1 e a contagem é redefinida para zero.
+* O código então adiciona a entrada à lista_entradas e atualiza o DataFrame data com as informações atuais do jogo.
+* Se o número de entradas for maior ou igual a 5, o código começa a calcular as médias das últimas 5, 10, 20, 40, 80, 160, 320 e 640 entradas. Ele então verifica se qualquer uma dessas médias está abaixo de um certo limite. Se estiver, a condição de aposta é definida como verdadeira.
+* Finalmente, o código imprime a lista_entradas e o DataFrame data, e salva o DataFrame em um arquivo CSV.
+
 Espero que isso ajude a entender o que o código está fazendo! Se você tiver mais perguntas, fique à vontade para perguntar.
