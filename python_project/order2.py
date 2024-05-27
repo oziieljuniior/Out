@@ -4,10 +4,10 @@ import pandas as pd
 import numpy as np
 
 data_inicial = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k.csv')
-print(data_inicial)
+data_inicial = data_inicial.drop(columns=['Unnamed: 0'])
+data_inicial = data_inicial.rename(columns={'Odd_Categoria': 'odd_saida'})
+print("Data Carregada ...")
 
-#Entrada i_k, consta como 1 pois ela controla nossas entradas. Ele deve ser um interio determinado do intervalo 0 ~ 'A verificar'
-i = 1
 #Lista de entradas realiza o controla das entradas. Toda vez que uma nova entrada i_k é gerada, o i_k é salvo na lista de entrada junto com seu histórico de entradas anteriores.
 lista_entradas = []
 
@@ -24,8 +24,8 @@ level = 1
 #media5, media10, media20, media40, media80, media160, media320, media640 ~ medias das ultimas entradas. 
 entrada_inicial = {
                     'Rodada': [0], 'level': [1], 'apostar': [0], 
-                    'acerto': [0], 'contagem': [0], 'i': [0], 
-                    'media5': [0], 'media10': [0], 'media20': [0], 
+                    'acerto': [0], 'contagem': [0], 'odd':[0], 'odd_entrada': [0],
+                    'odd_saida': [0], 'media5': [0], 'media10': [0], 'media20': [0], 
                     'media40': [0], 'media80': [0], 'media160': [0], 
                     'media320': [0], 'media640': [0]
                     }
@@ -33,14 +33,15 @@ data_final = pd.DataFrame(entrada_inicial)
 print(data_final)
 
 #Começamos o jogo aqui, com a primeira entrada gerada.
-while i != 0:
+for (odd, odd_saida, odd_entrada) in zip(data_inicial['Odd'], data_inicial['odd_saida'], data_inicial['odd_entrada']):
+    print("Entrada carregada ...")
     
     print(24*'*-')
              
-    i = float(input("Insira a última entrada determinada: "))
+    i = odd_saida
     acerto = 0
 #Ajustar o i_k de acordo com nossas entradas, ele deve obedecer o nosso intervalo pré-determinado.
-    if apostar == 1 and i > 1.5:
+    if apostar == 1 and odd_saida >= 4:
         print(24*'$')
         acerto = 1
         contagem += 1
@@ -48,7 +49,7 @@ while i != 0:
             level += 1
             contagem = 0
         print(f"Houve acerto! \nA ultima entrada determinada foi: {lista_entradas[-1]} \nA condição de vitoria está em {contagem} \nLevel: {level} \n{24*'*-'}")
-    if apostar == 1 and i <= 1.5:
+    if apostar == 1 and odd_saida < 4:
         print(24*'$')
         acerto = 2
         contagem = contagem - 2
@@ -59,14 +60,12 @@ while i != 0:
         else:
             print(f"Houve erro! \nA ultima entrada determinada foi: {lista_entradas[-1]} \nA condição de vitoria está em {contagem} \nLevel: {level} \n{24*'*-'}")
     
-    if i == 0:
-        break
     lista_entradas.append(i)
 
     if len(lista_entradas) < 6:
-        data_final.loc[len(data_final.index)] = [len(lista_entradas), level, apostar, acerto, contagem, i, 0, 0, 0, 0, 0, 0, 0, 0]
+        data_final.loc[len(data_final.index)] = [len(lista_entradas), level, apostar, acerto, contagem, odd, odd_entrada,odd_saida, 0, 0, 0, 0, 0, 0, 0, 0]
     else:
-        data_final.loc[len(data_final.index)] = [len(lista_entradas), level, apostar, acerto, contagem, i, media5, media10, media20, media40, media80, media160, media320, media640]
+        data_final.loc[len(data_final.index)] = [len(lista_entradas), level, apostar, acerto, contagem, odd, odd_entrada,odd_saida, media5, media10, media20, media40, media80, media160, media320, media640]
         apostar = 0
 
 #A partir da quinta entrada, essa parte do código começa a fazer o acompanhamento das médias.

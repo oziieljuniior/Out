@@ -1,7 +1,7 @@
 # Out
 ## Como o código funciona
-### Em essencia, sem rede neural e aprendizado por reforço implementado
 
+### Fase 1
 * O código começa importando as bibliotecas necessárias: pandas e numpy.
 * Em seguida, ele inicializa algumas variáveis. A variável i é usada para controlar as entradas do jogo. A variável lista_entradas é usada para armazenar todas as entradas geradas. As variáveis apostar, contagem e level são usadas para controlar o estado do jogo.
 * O código então cria um DataFrame pandas chamado data com algumas informações iniciais.
@@ -13,3 +13,15 @@
 * Finalmente, o código imprime a lista_entradas e o DataFrame data, e salva o DataFrame em um arquivo CSV.
 
 Espero que isso ajude a entender o que o código está fazendo! Se você tiver mais perguntas, fique à vontade para perguntar.
+
+### Fase 2
+* Importação de bibliotecas: As bibliotecas pandas e numpy são importadas. Elas são usadas para manipulação de dados e operações matemáticas, respectivamente.
+* Carregamento de dados: O script carrega um arquivo CSV chamado ‘odds_200k.csv’ em um DataFrame do pandas. Em seguida, ele remove uma coluna chamada ‘Unnamed: 0’ e renomeia a coluna ‘Odd_Categoria’ para ‘odd_saida’.
+* Inicialização de variáveis: Várias variáveis são inicializadas, incluindo uma lista vazia chamada lista_entradas e várias variáveis de controle do jogo (apostar, contagem, level). Além disso, um DataFrame chamado data_final é criado com uma única linha de dados iniciais.
+* Loop principal: O script então entra em um loop for que itera sobre cada linha do DataFrame data_inicial. Para cada linha, ele realiza várias operações, incluindo:
+* Atualiza a variável i com o valor da coluna ‘odd_saida’ da linha atual.
+* Verifica se a condição de aposta foi atendida e, em caso afirmativo, atualiza as variáveis de controle do jogo (acerto, contagem, level) de acordo.
+* Adiciona o valor de i à lista_entradas.
+* Se o tamanho da lista_entradas for maior ou igual a 6, ele adiciona uma nova linha ao DataFrame data_final com os valores atuais das variáveis de controle do jogo e as médias das últimas entradas.
+* Se o tamanho da lista_entradas for maior ou igual a 5, ele calcula várias médias móveis das últimas entradas e verifica se alguma delas atende a determinadas condições. Se sim, ele define a variável apostar para 1; caso contrário, ele a define para 0.
+* Salvando os resultados: Finalmente, o script imprime a lista_entradas e o DataFrame data_final, e salva o data_final em um arquivo CSV.
