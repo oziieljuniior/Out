@@ -27,4 +27,4 @@ Espero que isso ajude a entender o que o código está fazendo! Se você tiver m
 * Salvando os resultados: Finalmente, o script imprime a lista_entradas e o DataFrame data_final, e salva o data_final em um arquivo CSV.
 #### Primeira análise nos dados
 
-[Acesso]<https://github.com/oziieljuniior/Out/blob/main/notes/Analise1.pdf>
+[Acesso](https://github.com/oziieljuniior/Out/blob/main/notes/Analise1.pdf)
