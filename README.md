@@ -1,6 +1,7 @@
 # Out
 ## Como o código funciona
-
+Informações como o jogo funciona, acesse:
+[Leia sobre o jogo](https://github.com/oziieljuniior/Out/blob/main/notes/sobre_jogo.md)
 ### Fase 1
 * O código começa importando as bibliotecas necessárias: pandas e numpy.
 * Em seguida, ele inicializa algumas variáveis. A variável i é usada para controlar as entradas do jogo. A variável lista_entradas é usada para armazenar todas as entradas geradas. As variáveis apostar, contagem e level são usadas para controlar o estado do jogo.
