@@ -1,5 +1,3 @@
-Claro! Vamos relembrar a proposta do jogo e como o agente DQN está sendo treinado para ele:
-
 ### Proposta do Jogo
 O jogo envolve uma série de apostas com base em odds (probabilidades) de eventos. O jogador (ou agente) deve decidir em cada rodada se deve apostar ou não, baseado nas odds de entrada e várias médias de odds das últimas entradas. A aposta é considerada um acerto se a odd de saída for maior ou igual a 4, e um erro caso contrário.
 
