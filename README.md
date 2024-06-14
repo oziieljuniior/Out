@@ -1,5 +1,8 @@
 # Out
 ## Como o código funciona
+Informações como o jogo funciona, acesse:
+
+[Leia sobre o jogo](https://github.com/oziieljuniior/Out/blob/main/notes/sobre_jogo.md)
 
 ### Fase 1
 * O código começa importando as bibliotecas necessárias: pandas e numpy.
@@ -28,3 +31,51 @@ Espero que isso ajude a entender o que o código está fazendo! Se você tiver m
 #### Primeira análise nos dados
 
 [Acesso](https://github.com/oziieljuniior/Out/blob/main/notes/Analise1.pdf)
+
+### Fase 3
+
+O código apresentado é um exemplo de um agente de aprendizado por reforço profundo (Deep Q-Learning Agent - DQN) implementado para tomar decisões baseadas em dados históricos. A estrutura geral do código pode ser dividida em várias partes principais, cada uma com uma funcionalidade específica:
+
+1. **Importação de bibliotecas**:
+   - `numpy` e `pandas`: Manipulação de dados.
+   - `sklearn.model_selection`: Divisão de dados em conjuntos de treino e teste.
+   - `sklearn.preprocessing`: Normalização dos dados.
+   - `tensorflow`: Criação e treinamento da rede neural.
+   - `collections.deque` e `random`: Manipulação de memória e amostragem aleatória.
+   - `matplotlib.pyplot`: Visualização dos resultados.
+
+2. **Definição da classe `DQNAgent`**:
+   - **Inicialização (`__init__`)**: Configura os parâmetros do agente, como estados, ações, taxa de aprendizado, fator de desconto (`gamma`), epsilon (para exploração), memória de experiência e construção do modelo de rede neural.
+   - **Construção do modelo (`build_model`)**: Cria uma rede neural com camadas densas (fully connected) e dropout para regularização.
+   - **Escolha da ação (`get_action`)**: Decide a ação a ser tomada com base nas Q-valores preditos pelo modelo ou escolhe aleatoriamente (exploração).
+   - **Memorizar experiência (`remember`)**: Armazena experiências (estado, ação, recompensa, próximo estado, terminal) na memória.
+   - **Rejogar experiências (`replay`)**: Treina a rede neural com um minibatch de experiências armazenadas.
+   - **Atualização do epsilon (`update_epsilon`)**: Decresce o valor de epsilon para reduzir a exploração ao longo do tempo.
+
+3. **Função de cálculo de recompensa (`calculate_reward`)**:
+   - Define a recompensa com base na ação tomada e se a previsão foi correta ou incorreta.
+
+4. **Normalização dos dados (`normalize_data`)**:
+   - Normaliza os dados de entrada utilizando `StandardScaler`.
+
+5. **Função principal (`main`)**:
+   - **Carregamento e preparação dos dados**: Carrega os dados de um arquivo CSV, seleciona features e variável de saída, e divide os dados em conjuntos de treino e teste.
+   - **Configuração de parâmetros**: Define parâmetros de treinamento como número de épocas e tamanho do lote.
+   - **Criação do agente DQN**: Inicializa o agente com os parâmetros definidos.
+   - **Treinamento do agente**: Loop de treinamento para várias épocas, onde o agente interage com o ambiente, armazena experiências e treina a rede neural.
+   - **Avaliação do desempenho**: Calcula e armazena métricas de desempenho para cada época (precisão, acurácia direcional e acurácia direcional ponderada).
+   - **Visualização dos resultados**: Plota gráficos das métricas de desempenho ao longo das épocas.
+
+### Objetivo do Código
+O objetivo deste código é treinar um agente de aprendizado por reforço que aprende a tomar decisões (apostar ou não apostar) com base em dados históricos de apostas. O agente usa uma rede neural profunda para estimar os Q-valores das ações e toma decisões baseadas nestas estimativas. O treinamento é realizado através da técnica de rejogar experiências armazenadas na memória, o que permite ao agente aprender de suas experiências passadas.
+
+### Pontos Importantes
+- **Exploração vs Exploração**: O agente balanceia a exploração de novas ações com a exploração de ações conhecidas utilizando uma estratégia epsilon-greedy.
+- **Memória de Experiência**: Utiliza uma memória de experiência para armazenar e amostrar experiências, o que melhora a eficiência do aprendizado.
+- **Rede Neural Profunda**: A rede neural utilizada tem duas camadas densas com dropout para evitar overfitting.
+- **Normalização dos Dados**: Os dados de entrada são normalizados para melhorar a eficiência do treinamento do modelo.
+
+### Possíveis Melhorias
+- **Hiperparâmetros**: A escolha dos hiperparâmetros (taxa de aprendizado, gamma, epsilon) pode ser ajustada usando técnicas como otimização bayesiana.
+- **Aprimoramento do Modelo**: Testar arquiteturas de rede neural mais complexas ou outras técnicas de aprendizado por reforço, como Dueling DQN, Double DQN, ou Prioritized Experience Replay.
+- **Avaliação Detalhada**: Implementar métricas adicionais de avaliação e realizar uma análise mais detalhada do desempenho do agente.
