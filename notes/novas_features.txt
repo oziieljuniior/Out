@@ -1,4 +1,5 @@
-Novas Features e Estatísticas
+## **Novas Features e Estatísticas**
+
 Além das médias móveis, você pode considerar as seguintes estatísticas que podem capturar diferentes aspectos das tendências e padrões nos dados:
 
 - Desvio Padrão Móvel (Moving Standard Deviation): Isso pode ajudar a capturar a volatilidade nos dados.

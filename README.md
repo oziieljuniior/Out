@@ -76,7 +76,7 @@ O objetivo deste código é treinar um agente de aprendizado por reforço que ap
 - **Normalização dos Dados**: Os dados de entrada são normalizados para melhorar a eficiência do treinamento do modelo.
 
 ### Possíveis Melhorias
-- **Novas Features**: Esssssss
+- **Novas Features**: [Novas Features para estudo](https://github.com/oziieljuniior/Out/blob/main/notes/novas_features.md)
 - **Hiperparâmetros**: A escolha dos hiperparâmetros (taxa de aprendizado, gamma, epsilon) pode ser ajustada usando técnicas como otimização bayesiana.
 - **Aprimoramento do Modelo**: Testar arquiteturas de rede neural mais complexas ou outras técnicas de aprendizado por reforço, como Dueling DQN, Double DQN, ou Prioritized Experience Replay.
 - **Avaliação Detalhada**: Implementar métricas adicionais de avaliação e realizar uma análise mais detalhada do desempenho do agente.
