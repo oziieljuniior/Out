@@ -18,7 +18,7 @@ level = 1
 
 #Informação inicial que deve ser salva em uma planilha, considera-se como:
 #Rodada ~ Em que entrada o jogo está; level ~ Em qual level o jogador está; apostar ~ condição para apostar(0 - Não apostar, 1 - apostar)
-#Acerto ~ Houve acerto ao apostar (0 ~ não houve aposta, 1 ~ houve aposta e acerto, 2 - houve aposta e erro)
+#Acerto ~ Houve acerto ao apostar (0 ~ não houve acerto, 1 ~ acerto)
 #contagem ~ contagem de level, se a contagem chegar a 15 o jogador sobe de level, caso a contagem chegue a -10 o jogo é perdido e level reiniciado
 #i ~ entradas
 #media5, media10, media20, media40, media80, media160, media320, media640 ~ medias das ultimas entradas. 
@@ -51,7 +51,7 @@ for (odd, odd_saida, odd_entrada) in zip(data_inicial['Odd'], data_inicial['odd_
         print(f"Houve acerto! \nA ultima entrada determinada foi: {lista_entradas[-1]} \nA condição de vitoria está em {contagem} \nLevel: {level} \n{24*'*-'}")
     if apostar == 1 and odd_saida < 4:
         print(24*'$')
-        acerto = 2
+        acerto = 0
         contagem = contagem - 2
         if contagem <= -10:
             level = 1
@@ -60,6 +60,11 @@ for (odd, odd_saida, odd_entrada) in zip(data_inicial['Odd'], data_inicial['odd_
         else:
             print(f"Houve erro! \nA ultima entrada determinada foi: {lista_entradas[-1]} \nA condição de vitoria está em {contagem} \nLevel: {level} \n{24*'*-'}")
     
+    if apostar == 0 and odd_saida >= 4:
+        acerto = 1
+    if apostar == 0 and odd_saida < 4:
+        acerto = 0
+
     lista_entradas.append(i)
 
     if len(lista_entradas) < 6:

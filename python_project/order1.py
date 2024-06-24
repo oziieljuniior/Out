@@ -24,7 +24,7 @@ entrada_inicial = {
                     'acerto': [0], 'contagem': [0], 'i': [0], 
                     'media5': [0], 'media10': [0], 'media20': [0], 
                     'media40': [0], 'media80': [0], 'media160': [0], 
-                    'media320': [0], 'media640': [0]
+                    'media320': [0], 'media640': [0], 'variancia5': [0]
                     }
 data = pd.DataFrame(entrada_inicial)
 print(data)
@@ -61,9 +61,9 @@ while i != 0:
     lista_entradas.append(i)
 
     if len(lista_entradas) < 6:
-        data.loc[len(data.index)] = [len(lista_entradas), level, apostar, acerto, contagem, i, 0, 0, 0, 0, 0, 0, 0, 0]
+        data.loc[len(data.index)] = [len(lista_entradas), level, apostar, acerto, contagem, i, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     else:
-        data.loc[len(data.index)] = [len(lista_entradas), level, apostar, acerto, contagem, i, media5, media10, media20, media40, media80, media160, media320, media640]
+        data.loc[len(data.index)] = [len(lista_entradas), level, apostar, acerto, contagem, i, media5, media10, media20, media40, media80, media160, media320, media640, variancia5]
         apostar = 0
 
 #A partir da quinta entrada, essa parte do código começa a fazer o acompanhamento das médias.
@@ -101,8 +101,18 @@ while i != 0:
         media160 = sum(ultimas160) / 160
         media320 = sum(ultimas320) / 320
         media640 = sum(ultimas640) / 640
+
+        #variancia
+        variance_roll5 = []
+        for name in ultimas5:
+            var1 = (name - media5)**2
+            variance_roll5.append(var1)
         
-        print(f"Rodada: {len(lista_entradas)} \nMedia 5:  {media5} \nMedia 10: {media10} \nMedia 20: {media20} \nMedia 40: {media40} \nMedia 80: {media80} \nMedia 160: {media160} \nMedia 320: {media320} \nMedia 640: {media640}" )
+        
+        variancia5 = sum(variance_roll5) / 5
+        
+        
+        print(f"Rodada: {len(lista_entradas)} \nMedia 5:  {media5} \nMedia 10: {media10} \nMedia 20: {media20} \nMedia 40: {media40} \nMedia 80: {media80} \nMedia 160: {media160} \nMedia 320: {media320} \nMedia 640: {media640} \nVariancia 5: {variancia5}")
 #Esses intervalos de médias são pré-determidos. Podendo mudar de acordo com nossos estudos.
         if (media5 <= 2.5 and media5 != 0) or (media10 <= 3.5 and media10 != 0) or (media20 <= 4.5 and media20 != 0) or (media40 <= 4.8 and media40 != 0) or (media80 <= 5.44 and media80 != 0) or (media160 <= 5.47 and media160 != 0) or (media320 <= 5.718 and media320 != 0) or (media640 <= 5.889 and media640 != 0):
             apostar = 1
