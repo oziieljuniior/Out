@@ -1,9 +1,11 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-data = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final1.csv')
+data = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final2.csv')
 
-data = data.drop(columns=['Unnamed: 0'])
+#data = data.drop(columns=['Unnamed: 0'])
 data = data.rename(columns={'Odd_Categoria': 'odd_saida'})
 
 data = data.drop(0).reset_index(drop=True)
@@ -24,7 +26,7 @@ for (apostar, acerto) in zip(data['apostar'], data['acerto']):
     elif apostar == 1 and acerto == 1:
         k += 1
     #Apostar e errar
-    elif apostar == 1 and acerto == 2:
+    elif apostar == 1 and acerto == 0:
         l += 1
 
 
@@ -35,11 +37,20 @@ matriz_confusa = np.array([
 ])
 
 matriz_confusa_ponderada = np.array([
-    [i/200000, j/200000],
-    [k/200000, l/200000],
+    [i/199999, j/199999],
+    [k/199999, l/199999],
 ])
 soma = i + j + k + l
 apostas = k + l
 acertos = k / apostas
 erros = l / apostas
 print(f'Matriz de Confusão: \n {matriz_confusa}\nMatriz de confusão ponderada: \n {matriz_confusa_ponderada} \nPonderada em relação as apostas:\n {acertos, erros} \nQuantidade de entradas totais: {soma}')
+
+# Calculando a matriz de correlação
+corr_matrix = data.corr()
+
+# Criando o heatmap
+plt.figure(figsize=(20, 20))
+sns.heatmap(corr_matrix, annot=False, cmap="coolwarm", linewidths=.5)
+plt.title('Correlation heatmap')
+plt.show()

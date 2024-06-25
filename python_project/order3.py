@@ -18,7 +18,7 @@ level = 1
 
 #Informação inicial que deve ser salva em uma planilha, considera-se como:
 #Rodada ~ Em que entrada o jogo está; level ~ Em qual level o jogador está; apostar ~ condição para apostar(0 - Não apostar, 1 - apostar)
-#Acerto ~ Houve acerto ao apostar (0 ~ erro, 1 ~ acerto)
+#Acerto ~ Houve acerto ao apostar (0 ~ não houve acerto, 1 ~ acerto)
 #contagem ~ contagem de level, se a contagem chegar a 15 o jogador sobe de level, caso a contagem chegue a -10 o jogo é perdido e level reiniciado
 #i ~ entradas
 #media5, media10, media20, media40, media80, media160, media320, media640 ~ medias das ultimas entradas. 
@@ -122,4 +122,4 @@ for (odd, odd_saida, odd_entrada) in zip(data_inicial['Odd'], data_inicial['odd_
 print(lista_entradas)
 print(data_final)
 
-data_final.to_csv('/home/darkcover/Documentos/Out/dados/data_final1.csv')
+data_final.to_csv('/home/darkcover/Documentos/Out/dados/data_final.csv')

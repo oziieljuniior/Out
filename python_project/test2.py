@@ -64,7 +64,7 @@ def calculate_reward(action, acerto):
     reward = 0
     if action == 1:  # Apostou
         if acerto == 1:
-            reward = 1  # Recompensa por apostar corretamente
+            reward = 2  # Recompensa por apostar corretamente
         elif acerto == 0:
             reward = -1  # Penalidade por apostar incorretamente
     return reward
@@ -80,7 +80,7 @@ def main():
     # Selecionar as features e a variável de saída
     features = data[['odd_entrada', 'media5', 'media10', 'media20', 'media40', 'media80', 'media160', 'media320', 'media640']].values
     actions = data['apostar'].values  # Variável de saída: se deve apostar ou não
-    acertos = data[['acerto', 'level', 'contagem']].values  # Variável de saída para calcular a recompensa
+    acertos = data['acerto'].values  # Variável de saída para calcular a recompensa
 
     features = normalize_data(features)
 
@@ -208,7 +208,7 @@ def main():
     data_save.to_csv('/home/darkcover/Documentos/Out/dados/metricas_aposta.csv', index=False)
 
     # Teste o agente
-    data2 = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k_1.csv')
+    data2 = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final2.csv')
     # Selecionar as features e a variável de saída
     features1 = data2[['odd_entrada', 'media5', 'media10', 'media20', 'media40', 'media80', 'media160', 'media320', 'media640']].values
     actions1 = data2['apostar'].values  # Variável de saída: se deve apostar ou não
@@ -234,7 +234,7 @@ def main():
         action = dqn_agent.get_action(state)
         true_action = y_test1[i]
         print(i)
-        predicted_actions.append(action)
+        predicted_actions1.append(action)
 
         if action == true_action:
             correct_predictions1 += 1
