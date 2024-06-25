@@ -6,6 +6,7 @@ import seaborn as sns
 data = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final2.csv')
 
 #data = data.drop(columns=['Unnamed: 0'])
+
 data = data.rename(columns={'Odd_Categoria': 'odd_saida'})
 
 data = data.drop(0).reset_index(drop=True)
