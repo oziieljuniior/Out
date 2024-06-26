@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-data = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final2.csv')
+data = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final1.csv')
 
 #data = data.drop(columns=['Unnamed: 0'])
 

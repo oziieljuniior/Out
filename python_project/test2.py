@@ -64,9 +64,9 @@ def calculate_reward(action, acerto):
     reward = 0
     if action == 1:  # Apostou
         if acerto == 1:
-            reward = 2  # Recompensa por apostar corretamente
+            reward = 1  # Recompensa por apostar corretamente
         elif acerto == 0:
-            reward = -1  # Penalidade por apostar incorretamente
+            reward = -2  # Penalidade por apostar incorretamente
     return reward
 
 def normalize_data(features):
@@ -78,7 +78,7 @@ def main():
     data = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final2.csv')
 
     # Selecionar as features e a variável de saída
-    features = data[['odd_entrada', 'media5', 'media10', 'media20', 'media40', 'media80', 'media160', 'media320', 'media640', 'level', 'contagem']].values
+    features = data[['odd_entrada', 'media5', 'media10', 'media20', 'media40', 'media80', 'media160', 'media320', 'media640']].values
     actions = data['apostar'].values  # Variável de saída: se deve apostar ou não
     acertos = data['acerto'].values  # Variável de saída para calcular a recompensa
 
@@ -128,16 +128,14 @@ def main():
                 weighted_overestimations += 1  # Peso menor para erros
 
         epoch_accuracy = correct_predictions / len(X_train)
-        epoch_directional_accuracy = (correct_predictions + overestimations) / len(X_train)
-        epoch_weighted_directional_accuracy = (weighted_correct_predictions + weighted_overestimations) / len(X_train)
+        epoch_directional_accuracy = ((correct_predictions + overestimations) / len(X_train)) - 0.5
+        epoch_weighted_directional_accuracy = ((weighted_correct_predictions + weighted_overestimations) / len(X_train)) - 1
 
         epoch_accuracies.append(epoch_accuracy)
         epoch_directional_accuracies.append(epoch_directional_accuracy)
         epoch_weighted_directional_accuracies.append(epoch_weighted_directional_accuracy)
 
         print(f'Época {epoch + 1}/{n_epochs} - Precisão: {epoch_accuracy:.4f}, Acurácia Direcional: {epoch_directional_accuracy:.4f}, Acurácia Direcional Ponderada: {epoch_weighted_directional_accuracy:.4f}')
-
-        print(f'Época {epoch + 1}/{n_epochs} completa')
 
     # Teste o agente
     correct_predictions = 0
@@ -162,8 +160,8 @@ def main():
             weighted_overestimations += 1
 
     accuracy = correct_predictions / len(X_test)
-    directional_accuracy = (correct_predictions + overestimations) / len(X_test)
-    weighted_directional_accuracy = (weighted_correct_predictions + weighted_overestimations) / len(X_test)
+    directional_accuracy = ((correct_predictions + overestimations) / len(X_test)) - 0.5
+    weighted_directional_accuracy = ((weighted_correct_predictions + weighted_overestimations) / len(X_test)) - 1
 
     print("Precisão:", accuracy)
     print("Acurácia Direcional:", directional_accuracy)
@@ -171,6 +169,10 @@ def main():
 
     # Teste o agente
     data2 = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final.csv')
+    data2 = data2.drop(columns=['Unnamed: 0'])
+    # Excluir a linha com índice 0
+    data2 = data2.drop(0).reset_index(drop=True)
+
     # Selecionar as features e a variável de saída
     features1 = data2[['odd_entrada', 'media5', 'media10', 'media20', 'media40', 'media80', 'media160', 'media320', 'media640']].values
     actions1 = data2['apostar'].values  # Variável de saída: se deve apostar ou não
@@ -189,6 +191,7 @@ def main():
     predicted_actions1 = []
 
     for i in range(len(X_test1)):
+        print(i)
         state = X_test1[i, :]
         action = dqn_agent.get_action(state)
         true_action = y_test1[i]
