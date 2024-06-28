@@ -75,10 +75,10 @@ def normalize_data(features):
 
 def main():
     # Carregar os dados
-    data = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final2.csv')
+    data = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final.csv')
 
     # Selecionar as features e a variável de saída
-    features = data[['odd_entrada', 'media5', 'media10', 'media20', 'media40', 'media80', 'media160', 'media320', 'media640']].values
+    features = data[['odd_entrada', 'media5', 'percentil5', 'percentil5geral', 'media10', 'percentil10', 'percentil10geral', 'media20', 'percentil20', 'percentil20geral', 'media40', 'percentil40' , 'percentil40geral', 'media80', 'percentil80', 'percentil80geral', 'media160', 'percentil160', 'percentil160geral', 'media320', 'percentil320', 'percentil320geral', 'media640', 'percentil640', 'percentil640geral']].values
     actions = data['apostar'].values  # Variável de saída: se deve apostar ou não
     acertos = data['acerto'].values  # Variável de saída para calcular a recompensa
 
@@ -88,7 +88,7 @@ def main():
     X_train, X_test, y_train, y_test, acerto_train, acerto_test = train_test_split(features, actions, acertos, test_size=0.2, random_state=42)
 
     # Parâmetros de treinamento
-    n_epochs = 10
+    n_epochs = 5
     batch_size = 128
 
     # Crie o agente DQN
@@ -168,13 +168,13 @@ def main():
     print("Acurácia Direcional Ponderada:", weighted_directional_accuracy)
 
     # Teste o agente
-    data2 = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final.csv')
+    data2 = pd.read_csv('/home/darkcover/Documentos/Out/dados/data_final1.csv')
     data2 = data2.drop(columns=['Unnamed: 0'])
     # Excluir a linha com índice 0
     data2 = data2.drop(0).reset_index(drop=True)
 
     # Selecionar as features e a variável de saída
-    features1 = data2[['odd_entrada', 'media5', 'media10', 'media20', 'media40', 'media80', 'media160', 'media320', 'media640']].values
+    features1 = data2[['odd_entrada', 'media5', 'percentil5', 'percentil5geral', 'media10', 'percentil10', 'percentil10geral', 'media20', 'percentil20', 'percentil20geral', 'media40', 'percentil40', 'percentil40geral', 'media80', 'percentil80', 'percentil80geral', 'media160', 'percentil160', 'percentil160geral', 'media320', 'percentil320', 'percentil320geral', 'media640', 'percentil640', 'percentil640geral']].values
     actions1 = data2['apostar'].values  # Variável de saída: se deve apostar ou não
     acertos1 = data2['acerto'].values  # Variável de saída para calcular a recompensa
 
