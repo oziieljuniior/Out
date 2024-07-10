@@ -13,16 +13,10 @@ data1 = data1.rename(columns={'Odd_Categoria': 'odd_saida'})
 print("Data Carregada ...")
 
 # Inicialização das variáveis
-array_count, array_geral = [], []
+array_count, array_geral, media_array, rodada_aposta, apostar_matrix = [], [], [], [], []
 matrix_count = np.zeros((48, 10))
 apostar_count, media_array1, x  = [0], [0], [0]
-media_array = []
-rodada_aposta = []
-apostar_matrix = []
-sense, media_apostas, order = 0, 0, 321
-register1, register2 = 0, 0
-bag = 50
-i = 1
+sense, media_apostas, order, register1, register2, i, p_value = 0, 0, 321, 0, 0, 1, 0.12
 
 # Função para calcular a média das últimas jogadas
 def calcular_media(array, interval):
@@ -64,8 +58,6 @@ for i in range(len(data1)):
         array_count.append(0)
     
     array_geral.append(odd_saida)
-    sucessos, n = sum(array_count)/(i+1), len(array_count)
-    z_stat, p_value = calcular_pz(n, sucessos)
     # Verifica se array_count tem pelo menos 640 elementos
     if len(array_count) >= 640:
         for row in range(48):
@@ -73,7 +65,7 @@ for i in range(len(data1)):
             for col in range(10):
                 interval = start + col
                 matrix_count[row, col] = calcular_media(array_count, interval)
-                if matrix_count[row, col] >= 0.685 or p_value <= 0.11:
+                if matrix_count[row, col] >= 0.67:
                     sense = 1
                     register1, register2 = row, col
 
@@ -102,7 +94,7 @@ for i in range(len(data1)):
                     x = [0]
                     order = 0
                     sense = 0
-                if len(apostar_count) >= 320 and media_apostas <= 0.69:
+                if len(apostar_count) >= 480 and media_apostas <= 0.69:
                     apostar_matrix.append(apostar_count)
                     apostar_count = [0]
                     media_array1 = [0]
@@ -112,10 +104,9 @@ for i in range(len(data1)):
 
                 rodada_aposta.append(i)
                 plotar_grafico(x, media_array1, media_apostas)
-                
-                sucessos, n = sum(array_count)/(i+1), len(array_count)
+                sucessos, n = media_apostas, len(apostar_count)
                 z_stat, p_value = calcular_pz(n, sucessos)
-
+                
                 print(f'Quantidade de Apostas: {len(apostar_count)} \nMedia Apostas: {media_apostas:.5f} \nÚltima entrada: {array_count[-1]} \nEstatística Z:{z_stat} \nValor p: {p_value}')
                 order += 1
 
