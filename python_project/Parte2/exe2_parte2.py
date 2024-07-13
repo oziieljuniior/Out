@@ -10,7 +10,7 @@ plt.switch_backend('TkAgg')
 array_count, array_geral, media_array, rodada_aposta, apostar_matrix = [], [], [], [], []
 matrix_count = np.zeros((48, 10))
 apostar_count, media_array1, x  = [0], [0], [0]
-sense, media_apostas, order, register1, register2, i = 0, 0, 321, 0, 0, 1
+sense, media_apostas, order, register1, register2, i, p_value = 0, 0, 81, 0, 0, 1, 0.12
 
 # Função para calcular a média das últimas jogadas
 def calcular_media(array, interval):
@@ -99,7 +99,7 @@ while i != 0:
             for col in range(10):
                 interval = start + col
                 matrix_count[row, col] = calcular_media(array_count, interval)
-                if matrix_count[row, col] >= 0.685 or p_value <= 0.11:
+                if matrix_count[row, col] >= 0.67:
                     sense = 1
                     register1, register2 = row, col
 
