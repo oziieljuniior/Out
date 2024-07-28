@@ -6,4 +6,6 @@ Informações como o jogo funciona, acesse:
 
 [Coisas Passadas](https://github.com/oziieljuniior/Out/blob/main/notes/CoisasP.md)
 
+[Últimas Atualizações](https://github.com/oziieljuniior/Out/blob/main/notes/update_27_07.md)
+
 
