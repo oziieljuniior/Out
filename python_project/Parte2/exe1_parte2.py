@@ -65,7 +65,7 @@ for i in range(len(data1)):
             for col in range(10):
                 interval = start + col
                 matrix_count[row, col] = calcular_media(array_count, interval)
-                if matrix_count[row, col] >= 0.67:
+                if matrix_count[row, col] >= 0.68:
                     sense = 1
                     register1, register2 = row, col
 

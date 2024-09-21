@@ -9,7 +9,7 @@ Informações como o jogo funciona, acesse:
 [Últimas Atualizações](https://github.com/oziieljuniior/Out/blob/main/notes/update_27_07.md)
 
 ## Resumo da Opera:
--> No final, tudo se resume em como você lida com a média móvel. Isto é possível apenas por causa de duas caracteristicas.
+No final, tudo se resume em como você lida com a média móvel. Isto é possível apenas por causa de duas caracteristicas.
 A primeira, se passa pela geração de número pseudo aleatórios(NPA).
 
 Quando estamos trabalhando com NPA visualizamos as caracteríticas intrisicas das médias móveis. Pois as médias vão ter uma convergência uniforme a partir de uma certa quantidade de entradas.

@@ -117,8 +117,6 @@ for (odd, odd_saida, odd_entrada) in zip(data_inicial['Odd'], data_inicial['odd_
         else:
             apostar = 0
 
-
-
 print(lista_entradas)
 print(data_final)
 
