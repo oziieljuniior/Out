@@ -46,6 +46,8 @@ plt.show()
 Essa abordagem gera oscilações pseudo-aleatórias com amplitude controlada entre 0,30 e 0,60 e um erro de ±0,05.
 
 ### 2. **Algoritmo Evolutivo (Genético)**
+
+[Leitura sobre o algoritmo Evolutivo](https://github.com/oziieljuniior/Out/blob/main/notes/Algoritmo_Genetico.md)
 Outra abordagem seria usar algoritmos evolutivos, que podem ajustar o comportamento pseudo-aleatório para aprender com as oscilações e padrões. Um algoritmo genético pode iterativamente encontrar um conjunto de parâmetros que melhor se ajusta à oscilação observada.
 
 #### Estratégia:
