@@ -1,37 +1,40 @@
 import numpy as np
 
-# Função para gerar oscilação com ruído
-def gerar_oscillacao(amplitude, frequencia, offset, ruido, tamanho):
+# Função para gerar oscilação limitada a uma variação máxima de ±0,02
+def gerar_oscillacao(amplitude, frequencia, offset, ruido, tamanho, media_inicial=0.5):
     x_data = np.linspace(0, 1000, tamanho)
     osc = amplitude * np.sin(frequencia * x_data) + offset
-    # Garante que o ruído seja positivo
     osc_ruido = osc + np.random.normal(0, abs(ruido), len(x_data))
-    return osc_ruido
+    
+    # Iniciando com a média inicial
+    osc_final = [media_inicial]
+    
+    # Limitando variações a no máximo ±0,02 em relação ao valor anterior
+    for i in range(1, len(osc_ruido)):
+        proximo_valor = osc_final[-1] + np.clip(osc_ruido[i] - osc_final[-1], -0.02, 0.02)
+        osc_final.append(proximo_valor)
+
+    return np.array(osc_final)
 
 # Função de fitness (erro médio absoluto)
 def fitness_function(individuo, dados_reais):
     amplitude, frequencia, offset, ruido = individuo
-    previsoes = gerar_oscillacao(amplitude, frequencia, offset, ruido, len(dados_reais))
+    previsoes = gerar_oscillacao(amplitude, frequencia, offset, ruido, len(dados_reais), media_inicial=dados_reais[-1])
     erro = np.mean(np.abs(previsoes - dados_reais))
-    # Penalização para previsões com variações abruptas no ruído
-    penalidade = np.mean(np.abs(np.diff(previsoes))) * 0.1  # Penaliza grandes mudanças
-    return -erro - penalidade  # Fitness negativo porque queremos minimizar o erro
+    return -erro  # Fitness negativo porque queremos minimizar o erro
 
 # Função de crossover
 def crossover(pai1, pai2):
     return [(gene1 + gene2) / 2 for gene1, gene2 in zip(pai1, pai2)]
 
+# Função de mutação
 def mutacao(individuo, taxa_mutacao=0.01):
-    # Aplica mutação em cada gene com uma pequena chance
-    for i in range(len(individuo)):
-        if np.random.rand() < taxa_mutacao:
-            individuo[i] += np.random.normal(0, 0.1)  # Mutação mais agressiva
-    return individuo
+    return [gene + np.random.normal(0, taxa_mutacao) if np.random.rand() < 0.1 else gene for gene in individuo]
 
 # Função para rodar o modelo genético
 def modelo(data_teste):
     # Parâmetros do algoritmo genético
-    populacao_tamanho = 200
+    populacao_tamanho = 100
     geracoes = 1000
     taxa_mutacao = 0.0015
     dados_reais = data_teste  # Dados pseudo-aleatórios iniciais
@@ -39,11 +42,8 @@ def modelo(data_teste):
     # Inicializa uma população de indivíduos
     populacao = [np.random.uniform(0, 1, 4) for _ in range(populacao_tamanho)]  # Amplitude, freq, offset, ruído
 
-    fitness_history = []
-
     for geracao in range(geracoes):
         fitness_scores = [fitness_function(individuo, dados_reais) for individuo in populacao]
-        fitness_history.append(np.max(fitness_scores))  # Armazena o melhor fitness da geração
         sorted_population = [populacao[i] for i in np.argsort(fitness_scores)]
         populacao = sorted_population[-populacao_tamanho//2:]  # Elitismo
         nova_populacao = []
@@ -54,12 +54,13 @@ def modelo(data_teste):
             filho = mutacao(filho, taxa_mutacao)
             nova_populacao.append(filho)
         populacao += nova_populacao
-    
+
     # Melhor solução encontrada
     melhor_individuo = populacao[np.argmax(fitness_scores)]
     amplitude, frequencia, offset, ruido = melhor_individuo
     print("Melhor solução:", melhor_individuo)
     return melhor_individuo
+
 
 # Coleta de 120 entradas iniciais
 i, j, by_sinal = 0, 0, 0
@@ -84,13 +85,15 @@ while i <= 1280:
         array2 = []
 
     if i % 60 == 0 and i >= 120:
-        print('Executando o modelo após 120 entradas coletadas inicialmente:')
+        print(f'Executando o modelo após {i} entradas coletadas inicialmente:')
         # Executa o modelo com os 120 dados coletados inicialmente
         melhor_individuo = modelo(data_teste)
         amplitude, frequencia, offset, ruido = melhor_individuo
         print("Melhor solução:", melhor_individuo)
-        # Gerando novas entradas a partir das últimas entradas
-        novas_entradas = gerar_oscillacao(amplitude, frequencia, offset, abs(ruido), 60)
+        
+        print("Gerando novas entradas, a partir das últimas entradas:")
+        # Gera as próximas 60 previsões com oscilação controlada
+        novas_entradas = gerar_oscillacao(amplitude, frequencia, offset, abs(ruido), 60, media_inicial=media)
         print(f'Entradas criadas: {len(novas_entradas)}')
         j = 0
 

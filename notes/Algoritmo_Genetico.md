@@ -113,3 +113,14 @@ print("Melhor solução:", melhor_individuo)
 Os algoritmos genéticos fornecem uma maneira flexível de ajustar os padrões oscilatórios nos seus dados, mesmo que os dados sejam pseudo-aleatórios e a modelagem tradicional falhe. Eles iteram sobre várias gerações para encontrar o conjunto de parâmetros que melhor representa o comportamento observado, sendo ideal para o seu caso.
 
 Gostaria de avançar para a implementação ou explorar mais algum aspecto desse método?
+
+1) **Melhor solução: [0.0956795788731983, 0.41146099606375847, 0.5298001732932583, 0.019504466237991215]**
+
+   Este resultado refere-se aos parâmetros do melhor indivíduo encontrado pelo algoritmo genético. Cada valor corresponde a um dos parâmetros ajustados para a geração das oscilações. Especificamente:
+
+   - **0.0956795788731983 (amplitude)**: Esse valor indica o tamanho das oscilações geradas. Uma amplitude baixa, como neste caso, significa que as oscilações previstas são pequenas.
+   - **0.41146099606375847 (frequência)**: Refere-se à rapidez com que as oscilações ocorrem. Um valor intermediário sugere oscilações de ritmo moderado.
+   - **0.5298001732932583 (offset)**: Esse valor desloca as oscilações para cima ou para baixo. Aqui, ele centraliza as oscilações em torno de 0,53.
+   - **0.019504466237991215 (ruído)**: Esse parâmetro adiciona um elemento aleatório (ruído) às oscilações. Um valor muito baixo indica que há pouco ruído, ou seja, as previsões são mais suaves e menos perturbadas por flutuações aleatórias.
+
+   Em resumo, esses números representam a melhor combinação de parâmetros que o algoritmo genético encontrou para aproximar as oscilações dos dados reais. Se o resultado final está previsível, você pode experimentar aumentar a amplitude ou o ruído, ou até ajustar a função de fitness para penalizar previsões que não capturam as oscilações de forma suficiente.

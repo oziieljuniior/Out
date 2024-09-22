@@ -1,28 +1,5 @@
 import numpy as np
 
-# Coleta de 120 entradas iniciais
-i = 0
-data_teste, array1 =  [], []
-
-while i <= 120:
-    print(24*'*-')
-    print(f'Rodada: {i}')
-    odd = input("Insira o número da odd: ").replace(",",".")
-        
-    if float(odd) >= 2:
-        array1.append(1)
-    else:
-        array1.append(0)
-
-    if i >= 60:
-        array2 = array1[i - 60: i]
-        print(len(array2))
-        media = sum(array2)/60
-        data_teste.append(media)
-        print(f'Media60: {media}')
-        array2 = []
-    i += 1
-
 # Função para gerar oscilação com ruído
 def gerar_oscillacao(amplitude, frequencia, offset, ruido, tamanho):
     x_data = np.linspace(0, 1000, tamanho)
@@ -51,7 +28,7 @@ def modelo(data_teste):
     # Parâmetros do algoritmo genético
     populacao_tamanho = 100
     geracoes = 1000
-    taxa_mutacao = 0.001
+    taxa_mutacao = 0.0015
     dados_reais = data_teste  # Dados pseudo-aleatórios iniciais
 
     # Inicializa uma população de indivíduos
@@ -76,25 +53,52 @@ def modelo(data_teste):
     print("Melhor solução:", melhor_individuo)
     return melhor_individuo
 
-# Executa o modelo com os 120 dados coletados inicialmente
-melhor_individuo = modelo(data_teste)
-amplitude, frequencia, offset, ruido = melhor_individuo
 
-# Gera as próximas 60 previsões
-novas_entradas = gerar_oscillacao(amplitude, frequencia, offset, abs(ruido), 60)
+# Coleta de 120 entradas iniciais
+i, j, by_sinal = 0, 0, 0
+data_teste, array1 =  [], []
 
-# Gera os dados reais para comparação (pode ser real ou aleatório para teste)
-dados_reais_novos = np.random.uniform(0.30, 0.60, 60)
+while i <= 1280:
+    print(24*'*-')
+    print(f'Rodada: {i}')
+    odd = input("Insira o número da odd: ").replace(",",".")
+        
+    if float(odd) >= 2:
+        array1.append(1)
+    else:
+        array1.append(0)
 
-# Comparação entre previsões e dados reais
-comparacao = np.vstack((novas_entradas, dados_reais_novos)).T
-print("Comparação das previsões com os dados reais (60 novas entradas):")
-print("Previsões vs Reais")
-for i in range(len(novas_entradas)):
-    print(f"{novas_entradas[i]} vs {dados_reais_novos[i]}")
+    if i >= 60:
+        array2 = array1[i - 60: i]
+        print(len(array2))
+        media = sum(array2)/60
+        data_teste.append(media)
+        print(f'Media60: {media}')
+        array2 = []
 
-# Atualiza os dados reais para incluir as novas previsões
-dados_reais = np.append(data_teste, dados_reais_novos)
+    if i % 60 == 0 and i >= 120:
+        print(f'Executando o modelo após {i} entradas coletadas inicialmente:')
+        # Executa o modelo com os 120 dados coletados inicialmente
+        melhor_individuo = modelo(data_teste)
+        amplitude, frequencia, offset, ruido = melhor_individuo
+        print("Melhor solução:", melhor_individuo)
+##Observação, aqui devo treinar com duas opções. A primeira é trabalhar com as novas entradas sendo atualizada
+        print("Gerando novas entradas, a partir das últimas entradas:")
+        # Gera as próximas 60 previsões
+        novas_entradas = gerar_oscillacao(amplitude, frequencia, offset, abs(ruido), 60)
+        print(f'Entradas criadas: {len(novas_entradas)}')
+        j = 0
 
-# Agora pode continuar treinando com os novos dados atualizados
-melhor_individuo_atualizado = modelo(dados_reais)
+    if i >= 120 and j <= 58:
+        if j >= 2:
+            by_sinal = novas_entradas[j + 1] - novas_entradas[j]
+        if by_sinal >= 0 and j >= 1:
+            print("Gráfico deve subir")
+            print(novas_entradas[j + 1])
+        else:
+            print('Gráfico deve descer')
+            print(novas_entradas[j + 1])
+
+        j += 1
+    
+    i += 1
