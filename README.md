@@ -49,6 +49,9 @@ Essa abordagem gera oscilações pseudo-aleatórias com amplitude controlada ent
 
 [Leitura sobre o algoritmo Evolutivo](https://github.com/oziieljuniior/Out/blob/main/notes/Algoritmo_Genetico.md)
 
+[Código no projeto](https://github.com/oziieljuniior/Out/blob/main/python_project/Develop/tang.py)
+
+
 Outra abordagem seria usar algoritmos evolutivos, que podem ajustar o comportamento pseudo-aleatório para aprender com as oscilações e padrões. Um algoritmo genético pode iterativamente encontrar um conjunto de parâmetros que melhor se ajusta à oscilação observada.
 
 #### Estratégia:
