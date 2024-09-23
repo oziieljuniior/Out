@@ -1,12 +1,20 @@
 import numpy as np
 
-# Função para gerar oscilação com ruído
-def gerar_oscillacao(amplitude, frequencia, offset, ruido, tamanho):
+# Função para gerar oscilação limitada a uma variação máxima de ±0,02
+def gerar_oscillacao(amplitude, frequencia, offset, ruido, tamanho, media_inicial=0.5):
     x_data = np.linspace(0, 1000, tamanho)
     osc = amplitude * np.sin(frequencia * x_data) + offset
-    # Garante que o ruído seja positivo
     osc_ruido = osc + np.random.normal(0, abs(ruido), len(x_data))
-    return osc_ruido
+    
+    # Iniciando com a média inicial
+    osc_final = [media_inicial]
+    
+    # Limitando variações a no máximo ±0,02 em relação ao valor anterior
+    for i in range(1, len(osc_ruido)):
+        proximo_valor = osc_final[-1] + np.clip(osc_ruido[i] - osc_final[-1], -0.02, 0.02)
+        osc_final.append(proximo_valor)
+
+    return np.array(osc_final)
 
 # Função de fitness (erro médio absoluto)
 def fitness_function(individuo, dados_reais):

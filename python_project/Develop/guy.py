@@ -1,17 +1,33 @@
 import numpy as np
+import pandas as pd
 
-# Função para gerar oscilação limitada a uma variação máxima de ±0,02
-def gerar_oscillacao(amplitude, frequencia, offset, ruido, tamanho, media_inicial=0.5):
-    x_data = np.linspace(0, 1000, tamanho)
-    osc = amplitude * np.sin(frequencia * x_data) + offset
-    osc_ruido = osc + np.random.normal(0, abs(ruido), len(x_data))
+data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/DOUBLE - 17_09_s1.csv').replace(",",".", regex=True).astype(float)
+
+# Função para gerar oscilação controlada com valor fixo de incremento, decremento ou manutenção do valor
+def gerar_oscillacao(valor_inicial, incremento, tamanho, limite_inferior=0.28, limite_superior=0.63, media_inicial=None):
+    if media_inicial is not None:
+        osc_final = [media_inicial]
+    else:
+        osc_final = [valor_inicial]
     
-    # Iniciando com a média inicial
-    osc_final = [media_inicial]
-    
-    # Limitando variações a no máximo ±0,02 em relação ao valor anterior
-    for i in range(1, len(osc_ruido)):
-        proximo_valor = osc_final[-1] + np.clip(osc_ruido[i] - osc_final[-1], -0.02, 0.02)
+    tamanho = int(tamanho)
+
+    # Percorre a sequência ajustando o valor por incremento, decremento ou mantendo o valor
+    for i in range(1, tamanho):
+        probabilidade = np.random.rand()
+        
+        if probabilidade < 1/3:
+            # Subir a média
+            proximo_valor = osc_final[-1] + incremento
+        elif probabilidade < 2/3:
+            # Manter a média
+            proximo_valor = osc_final[-1]
+        else:
+            # Descer a média
+            proximo_valor = osc_final[-1] - incremento
+        
+        # Limitar o valor aos limites estabelecidos
+        proximo_valor = np.clip(proximo_valor, limite_inferior, limite_superior)
         osc_final.append(proximo_valor)
 
     return np.array(osc_final)
@@ -19,7 +35,7 @@ def gerar_oscillacao(amplitude, frequencia, offset, ruido, tamanho, media_inicia
 # Função de fitness (erro médio absoluto)
 def fitness_function(individuo, dados_reais):
     amplitude, frequencia, offset, ruido = individuo
-    previsoes = gerar_oscillacao(amplitude, frequencia, offset, ruido, len(dados_reais), media_inicial=dados_reais[-1])
+    previsoes = gerar_oscillacao(amplitude, frequencia, int(len(dados_reais)), 0.28, 0.63, media_inicial=dados_reais[-1])
     erro = np.mean(np.abs(previsoes - dados_reais))
     return -erro  # Fitness negativo porque queremos minimizar o erro
 
@@ -35,7 +51,7 @@ def mutacao(individuo, taxa_mutacao=0.01):
 def modelo(data_teste):
     # Parâmetros do algoritmo genético
     populacao_tamanho = 100
-    geracoes = 1000
+    geracoes = 500
     taxa_mutacao = 0.0015
     dados_reais = data_teste  # Dados pseudo-aleatórios iniciais
 
@@ -69,7 +85,11 @@ data_teste, array1 =  [], []
 while i <= 1280:
     print(24*'*-')
     print(f'Rodada: {i}')
-    odd = input("Insira o número da odd: ").replace(",",".")
+    if i < 119:
+        print(data1['Entrada'][i])
+        odd = data1['Entrada'][i]
+    else:
+        odd = input("Insira o número da odd: ").replace(",",".")
         
     if float(odd) >= 2:
         array1.append(1)
@@ -92,18 +112,25 @@ while i <= 1280:
         print("Melhor solução:", melhor_individuo)
         
         print("Gerando novas entradas, a partir das últimas entradas:")
-        # Gera as próximas 60 previsões com oscilação controlada
-        novas_entradas = gerar_oscillacao(amplitude, frequencia, offset, abs(ruido), 60, media_inicial=media)
-        print(f'Entradas criadas: {len(novas_entradas)}')
+        # Gerando as próximas 60 previsões
+        incremento_fixo = 0.016666666667  # Incremento fixo
+        novas_entradas = gerar_oscillacao(valor_inicial=media, incremento=incremento_fixo, tamanho=60, limite_inferior=0.28, limite_superior=0.63)
+        ##Adicionar um gráfico nessa parte
+        print(f'Entradas criadas: {len(novas_entradas)}')  # Deve imprimir 60
         j = 0
 
     if i >= 120 and j <= 58:
         if j >= 2:
             by_sinal = novas_entradas[j + 1] - novas_entradas[j]
-        if by_sinal >= 0 and j >= 1:
+        if by_sinal > 0 and j >= 1:
             print("Gráfico deve subir")
+            print(f'Segundo a previsão: \nA média atual: {novas_entradas[j]} \nA média prevista: {novas_entradas[j + 1]}')
+        elif by_sinal == 0 and j >= 1:
+            print("Gráfico deve se manter o mesmo...")
+            print(f'Segundo a previsão: \nA média atual: {novas_entradas[j]} \nA média prevista: {novas_entradas[j + 1]}')
         else:
             print('Gráfico deve descer')
+            print(f'Segundo a previsão: \nA média atual: {novas_entradas[j]} \nA média prevista: {novas_entradas[j + 1]}')
         j += 1
     
     i += 1
