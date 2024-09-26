@@ -1,19 +1,108 @@
 # Coisas a Fazer:
-## 1º Coisa:
+## 1º Coisa: (ok - 25/09)
 AJUSTAR COLUNAS CONFORME A IMAGEM [(OLHAR IMAGEM)](https://github.com/oziieljuniior/Out/blob/main/images/OTAMA_info_img1.png)
 
 - As colunas S, T, U, V e W devem ser a procuradas.
-## 2º Coisa:
+## 2º Coisa: (ok - 25/09)
 - Adicionar um gráfico se possível, no caso seria da coluna do desvio de pearson. O gráfico deve atualizar a cada rodada. 
 
 - Visualizar o gráfico, ele deve ser senoidal
+
 ## 3º Coisa:
 - Como o código deve gerar como variável de entrada, devemos colocar as entradas de pearson para determinar as predições. Ou seja, a coluna pearson deve ser a predição possível.
+
+- Avaliar uma correlação entre as duas variáveis e a variável de saída. (DISPOSIÇÃO DO ITEM A SEGUIR)
+
+Sim, existe uma análise de correlação que pode ser realizada entre variáveis de entrada e uma variável de saída, mas é importante entender que a correlação tradicionalmente mede a relação entre duas variáveis. Quando você fala de "duas variáveis de entrada e uma variável de saída", você está entrando em uma área de análise multivariada.
+
+Aqui estão algumas abordagens que podem te ajudar:
+
+### 1. **Correlação entre cada variável de entrada e a variável de saída:**
+   Se você quer ver o quanto cada uma das variáveis de entrada individualmente está correlacionada com a variável de saída, você pode calcular a **correlação de Pearson** ou a **correlação de Spearman** entre cada variável de entrada e a variável de saída.
+
+   Exemplo em Python:
+   ```python
+   import numpy as np
+   import pandas as pd
+
+   # Criando um DataFrame de exemplo com duas variáveis de entrada (x1 e x2) e uma de saída (y)
+   df = pd.DataFrame({
+       'x1': [1, 2, 3, 4, 5],
+       'x2': [2, 3, 4, 5, 6],
+       'y':  [10, 11, 12, 13, 14]
+   })
+
+   # Correlação entre x1 e y
+   corr_x1_y = df['x1'].corr(df['y'], method='pearson')
+   print("Correlação entre x1 e y:", corr_x1_y)
+
+   # Correlação entre x2 e y
+   corr_x2_y = df['x2'].corr(df['y'], method='pearson')
+   print("Correlação entre x2 e y:", corr_x2_y)
+   ```
+
+   Isso calculará a correlação de Pearson (ou Spearman, se você mudar o método) entre as variáveis `x1`, `x2` e a variável de saída `y`. Esse é o cálculo mais simples de correlação entre variáveis independentes e uma variável dependente.
+
+### 2. **Correlação parcial:**
+   Outra abordagem interessante é a **correlação parcial**, que mede a correlação entre uma variável de entrada e a variável de saída enquanto controla o efeito da outra variável de entrada. Ou seja, se você tem duas variáveis de entrada, você pode calcular a correlação de uma delas com a variável de saída, retirando a influência da outra variável.
+
+   Essa abordagem é útil quando você quer entender a contribuição de cada variável de entrada separadamente, enquanto remove a influência da outra.
+
+   Exemplo com a biblioteca `pingouin` em Python:
+   ```python
+   import pingouin as pg
+
+   # Correlação parcial entre x1 e y, controlando x2
+   corr_parcial_x1 = pg.partial_corr(data=df, x='x1', y='y', covar='x2')
+   print(corr_parcial_x1)
+
+   # Correlação parcial entre x2 e y, controlando x1
+   corr_parcial_x2 = pg.partial_corr(data=df, x='x2', y='y', covar='x1')
+   print(corr_parcial_x2)
+   ```
+
+### 3. **Análise de regressão múltipla:**
+   Quando você tem mais de uma variável de entrada e uma variável de saída, a **regressão múltipla** pode ser uma abordagem melhor do que a correlação simples. A regressão múltipla tenta modelar a relação entre múltiplas variáveis independentes (suas variáveis de entrada) e a variável dependente (variável de saída).
+
+   Você poderia rodar uma regressão múltipla para descobrir a contribuição relativa de cada variável de entrada no resultado da variável de saída.
+
+   Exemplo simples em Python com `statsmodels`:
+   ```python
+   import statsmodels.api as sm
+
+   # Definindo as variáveis independentes e a dependente
+   X = df[['x1', 'x2']]  # Variáveis de entrada
+   y = df['y']            # Variável de saída
+
+   # Adiciona uma constante (termo de bias/intercepto)
+   X = sm.add_constant(X)
+
+   # Ajusta o modelo de regressão
+   modelo = sm.OLS(y, X).fit()
+
+   # Exibe o resumo dos resultados da regressão
+   print(modelo.summary())
+   ```
+
+   A regressão múltipla fornecerá coeficientes para `x1` e `x2`, mostrando o impacto relativo de cada uma na variável de saída `y`.
+
+### 4. **Correlação canônica:**
+   Para uma análise mais avançada, você pode usar a **correlação canônica**, que mede a relação entre dois conjuntos de variáveis (neste caso, suas duas variáveis de entrada podem ser consideradas como um conjunto e sua variável de saída como outro conjunto). Esse método captura relações mais complexas entre variáveis multivariadas.
+
+### Resumo:
+- Se você quer entender a correlação entre cada variável de entrada individualmente com a variável de saída, use **correlação de Pearson ou Spearman**.
+- Se quiser controlar o efeito de uma das variáveis de entrada enquanto mede a correlação com a outra, utilize **correlação parcial**.
+- Para entender a contribuição relativa de ambas as variáveis de entrada juntas, considere uma **regressão múltipla**.
+- Para relações multivariadas complexas, a **correlação canônica** pode ser aplicada.
+
+Se precisar de mais detalhes sobre qualquer um desses métodos, estou à disposição!
+
+
 ## 4º Coisa:
 - Verificar como obter a predição a partir das entradas;
 
 ## Possíveis Melhorias:
-- Visualização Gráfica: O código menciona que um gráfico deve ser incluído, o que poderia ajudar a visualizar as oscilações e as previsões.
+- Visualização Gráfica: O código menciona que um gráfico deve ser incluído, o que poderia ajudar a visualizar as oscilações e as previsões. 
 
 - Paralelização: O algoritmo genético pode ser otimizado paralelizando as operações de fitness para melhorar o tempo de execução.
 
