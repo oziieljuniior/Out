@@ -4,15 +4,7 @@ import numpy as np
 def gerar_oscillacao(amplitude, frequencia, offset, ruido, tamanho, media_inicial=0.5):
     x_data = np.linspace(0, 1000, tamanho)
     osc = amplitude * np.sin(frequencia * x_data) + offset
-    osc_ruido = osc + np.random.normal(0, abs(ruido), len(x_data))
-    
-    # Iniciando com a média inicial
-    osc_final = [media_inicial]
-    
-    # Limitando variações a no máximo ±0,02 em relação ao valor anterior
-    for i in range(1, len(osc_ruido)):
-        proximo_valor = osc_final[-1] + np.clip(osc_ruido[i] - osc_final[-1], -0.02, 0.02)
-        osc_final.append(proximo_valor)
+    osc_final = osc + np.random.normal(0, abs(ruido), len(x_data))
 
     return np.array(osc_final)
 
