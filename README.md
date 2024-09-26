@@ -1,5 +1,5 @@
 # Out
-[PROJETO EM DESENVOLVIMENTO](https://github.com/oziieljuniior/Out/blob/main/python_project/Develop/guy.py)
+[PROJETO EM DESENVOLVIMENTO](https://github.com/oziieljuniior/Out/tree/main/python_project/OTAMA)
 ## Como o código funciona
 Informações como o jogo funciona, acesse:
 
