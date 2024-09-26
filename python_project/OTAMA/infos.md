@@ -1,6 +1,8 @@
 # Coisas a Fazer:
 ## 1º Coisa:
-AJUSTAR COLUNAS CONFORME A IMAGEM [OLHAR IMAGEM](https://github.com/oziieljuniior/Out/blob/main/images/OTAMA_info_img1.png)
+AJUSTAR COLUNAS CONFORME A IMAGEM [(OLHAR IMAGEM)](https://github.com/oziieljuniior/Out/blob/main/images/OTAMA_info_img1.png)
+
+- As colunas S, T, U, V e W devem ser a procuradas.
 ## 2º Coisa:
 - Adicionar um gráfico se possível, no caso seria da coluna do desvio de pearson. O gráfico deve atualizar a cada rodada. 
 
