@@ -42,7 +42,7 @@ def mutacao(individuo, taxa_mutacao=0.01):
 
 def modelo(data_teste):
     populacao_tamanho = 100
-    geracoes = 500
+    geracoes = 250
     taxa_mutacao = 0.0015
     dados_reais = data_teste
 
@@ -92,12 +92,12 @@ def prever_entradas(novas_entradas, tamanho_previsao=60, limite_inferior=0.28, l
 
 # Coleta de 120 entradas iniciais
 i, j, by_sinal = 0, 0, 0
-data_teste, array1, array3, array4, array5, array6, data_teste1, data_teste2, novas_entradas = [], [], [], [], [], [], [], [], []
+data_teste, array1, array3, array4, array5, array6, array7, array8, data_teste1, data_teste2, data_teste3, novas_entradas = [], [], [], [], [], [], [], [], [], [], [], []
 
 # Figuras para diferentes gráficos
 fig, (ax, ax_corr) = plt.subplots(2, 1, figsize=(10, 12))
 
-novas_entradas_fixas = None  # Para manter as novas entradas fixas no gráfico
+novas_entradas_fixas, correlacao_fixas = None, None  # Para manter as novas entradas fixas no gráfico
 
 while i <= 1800:
     print(24*'*-')
@@ -124,23 +124,6 @@ while i <= 1800:
 
         print(f'Media60: {media} \nDesvio Padrão60: {desvpad}')
 
-    if i >= 120:
-        array3 = data_teste[len(data_teste) - 60: len(data_teste)]
-        array4 = data_teste1[len(data_teste1) - 60: len(data_teste1)]
-
-        correlacao, p_valor = pearsonr(array3, array4)
-        data_teste2.append(correlacao)
-
-        print(f'Correlação de Pearson: {correlacao}')
-        print(f'Valor-p: {p_valor}')
-
-        # Atualizar gráfico de correlação
-        ax_corr.clear()
-        ax_corr.plot(data_teste2, label='Correlação (Histórica)', color='green')
-        ax_corr.set_title('Correlação ao longo do tempo')
-        ax_corr.legend()
-        plt.pause(0.01)
-
     if i % 60 == 0 and i >= 120:
         print(f'Executando o modelo após {i} entradas coletadas inicialmente:')
         melhor_individuo = modelo(data_teste)
@@ -165,28 +148,62 @@ while i <= 1800:
 
         print(len(kil1), len(kil2), len(array6))
 
-        #time.sleep(30)
+        data_teste3 = []
+        for l in range(120, 181):
+            array7 = kil1[l - 60: l]
+            array8 = array6[l - 60: l]
+            correlacao_teste, p_value_teste = pearsonr(array7, array8)
+            data_teste3.append(correlacao_teste)
+
+
+        #time.sleep(10)
 
         # Deslocar as novas entradas para a direita
         x_novas_entradas = np.arange(len(data_teste), len(data_teste) + len(novas_entradas))
+        xx_novas_entradas = np.arange(len(data_teste2), len(data_teste2) + len(data_teste3))
 
         if novas_entradas_fixas is None:
             novas_entradas_fixas = novas_entradas
             ax.plot(x_novas_entradas, novas_entradas_fixas, label='Novas Entradas (fixas)', color='blue', linestyle='--')
-        
+        if correlacao_fixas is None:
+            correlacao_fixas = data_teste3
+            ax_corr.plot(xx_novas_entradas, data_teste3, color = 'orange', linestyle = '--')
+
         plt.legend()
         plt.pause(0.01)
-    
-        j = 0
 
+        j = 0
+        
     # Gráfico das médias atualizado constantemente
     if i >= 60:
         ax.clear()
         if novas_entradas_fixas is not None:
             ax.plot(x_novas_entradas, novas_entradas_fixas, label='Novas Entradas (fixas)', color='blue', linestyle='--')
+
         ax.plot(data_teste, label='Médias (atualizadas)', color='red')
         
         plt.legend()
+        plt.pause(0.01)
+
+    if i >= 120:
+        array3 = data_teste[len(data_teste) - 60: len(data_teste)]
+        array4 = data_teste1[len(data_teste1) - 60: len(data_teste1)]
+
+        correlacao, p_valor = pearsonr(array3, array4)
+        data_teste2.append(correlacao)
+
+        print(f'Correlação de Pearson: {correlacao}')
+        print(f'Valor-p: {p_valor}')
+
+        ax_corr.clear()
+               
+        if correlacao_fixas is not None:
+            ax_corr.plot(xx_novas_entradas, data_teste3, label = 'Correlação (Predição)', color = 'orange', linestyle = '--')
+
+        # Atualizar gráfico de correlação
+        ax_corr.plot(data_teste2, label='Correlação (Histórica)', color='green')
+        ax_corr.set_title('Correlação ao longo do tempo')
+        ax_corr.legend()
         plt.pause(0.01)
 
     if i >= 121 and j <= 58:
@@ -199,7 +216,10 @@ while i <= 1800:
         else:
             print('Gráfico deve descer')
         j += 1
-    
+
+
+
+
     i += 1
 
 plt.show()
