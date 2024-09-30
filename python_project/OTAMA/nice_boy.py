@@ -29,7 +29,7 @@ def gerar_oscillacao(valor_inicial, incremento, tamanho, limite_inferior=0.28, l
 
 def fitness_function(individuo, dados_reais):
     amplitude, frequencia, offset, ruido = individuo
-    previsoes = gerar_oscillacao(valor_inicial=dados_reais[-1], incremento=frequencia, tamanho=int(len(dados_reais)), limite_inferior=0.28, limite_superior=0.63)
+    previsoes = gerar_oscillacao(valor_inicial=dados_reais[-1], incremento=frequencia, tamanho=int(len(dados_reais)), limite_inferior=0.28, limite_superior=0.65)
     erro = np.mean(np.abs(previsoes - dados_reais))
     return -erro  # Fitness negativo porque queremos minimizar o erro
 
@@ -41,9 +41,9 @@ def mutacao(individuo, taxa_mutacao=0.01):
     return [gene + np.random.normal(0, taxa_mutacao) if np.random.rand() < 0.1 else gene for gene in individuo]
 
 def modelo(data_teste):
-    populacao_tamanho = 100
-    geracoes = 250
-    taxa_mutacao = 0.0015
+    populacao_tamanho = 240
+    geracoes = 120
+    taxa_mutacao = 1/60
     dados_reais = data_teste
 
     populacao = [np.random.uniform(0, 1, 4) for _ in range(populacao_tamanho)]
