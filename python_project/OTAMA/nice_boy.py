@@ -153,9 +153,19 @@ while i <= 1800:
         
         proximas_entradas = prever_entradas(novas_entradas, tamanho_previsao=120)
 
-        print(f'Entradas criadas das medias criada: {len(novas_entradas)} \nEntradas 0 e 1 criada: {proximas_entradas}')
+        print(f'Entradas criadas das medias criada: {len(novas_entradas)} \nEntradas 0 e 1 criada: {len(proximas_entradas)}')
 
-        time.sleep(30)
+        kil1 = np.concatenate((data_teste[i - 120: i], novas_entradas))
+        kil2 = np.concatenate((array1, proximas_entradas))
+        array5, array6 = [], []
+        for j in range(len(array1) - 61, len(kil2)):
+            array5 = kil2[j-60:j]
+            desvpad_teste = np.std(array5, ddof=1)
+            array6.append(desvpad_teste)
+
+        print(len(kil1), len(kil2), len(array6))
+
+        #time.sleep(30)
 
         # Deslocar as novas entradas para a direita
         x_novas_entradas = np.arange(len(data_teste), len(data_teste) + len(novas_entradas))
