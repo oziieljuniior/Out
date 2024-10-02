@@ -84,7 +84,10 @@ def prever_entradas(novas_entradas, array, tamanho_previsao=120, limite_inferior
         
         tendencia = calcular_tendencia(novas_entradas)
 
-        variancia = np.var(array)  # Correção: removido o y da função
+        # Preparando os dados (entradas passadas e próximas entradas)
+        X = np.array(data_teste[i-60:i])
+
+        variancia = np.var(X)  # Correção: removido o y da função
 
         probabilidade_de_1 = valor_atual + tendencia * variancia  # Ajuste a influência da tendência
         probabilidade_de_1 = np.clip(probabilidade_de_1, limite_inferior, limite_superior)
@@ -94,12 +97,12 @@ def prever_entradas(novas_entradas, array, tamanho_previsao=120, limite_inferior
         
         novas_entradas = np.append(novas_entradas, probabilidade_de_1)
     
-    return previsoes, variancia
+    return previsoes
 
 #####DEVELOP
 # Coleta de 120 entradas iniciais
 i, j, l, by_sinal = 0, 0, 0, 0
-data_teste, array1, array3, array4, array5, array6, array7, array8, array9, array10, array11, array12, data_teste1, data_teste2, data_teste3, novas_entradas, saida1, saida2, saida3, saida4, saida5, saida6 = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
+data_teste, array1, array3, array4, array5, array6, array7, array8, array9, array10, array11, data_teste1, data_teste2, data_teste3, novas_entradas,saida1, saida2, saida3, saida4, saida5, saida6 = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
 
 # Figuras para diferentes gráficos
 fig, (ax, ax_corr) = plt.subplots(2, 1, figsize=(10, 12))
@@ -133,14 +136,14 @@ while i <= 1800:
 
     if i % 60 == 0 and i >= 120:
         if i > 120:
-            if i < 1500:
+            if i >= 1500:
                 pergunta = 0
                 print("Continuando a execução do loop...")  # Apenas continue normalmente
-            elif i >=  1500:    
+            elif i < 1500:    
                 pergunta = int(input("Você ainda quer continuar modelando? 0S ou 1N: "))
             elif pergunta == 0:
                 print("Continuando a execução do loop...")  # Apenas continue normalmente
-            elif pergunta == 1:
+            elif pergunta == 1 or i >= 1500:
                 print("Salvando os dados organizados ... ")
                 # Salvando os dados de saída e saindo do loop
                 data_saida = pd.DataFrame({
@@ -149,8 +152,7 @@ while i <= 1800:
                     'Acertos_Predicao_CTG': saida3,
                     'Acertos_Predicao_PCT': saida4,
                     'Acertos1_Predicao': saida5,
-                    'Acerto1_Predicao_PCT': saida6,
-                    'Variancia': array12
+                    'Acerto1_Predicao_PCT': saida6 
                 }).to_csv('/home/darkcover/Documentos/Out/dados/Saidas/Data_Saida.csv')
                 l = 1
                 break  # Sai do loop principal
@@ -164,7 +166,7 @@ while i <= 1800:
         incremento_fixo = 1/60
         novas_entradas = gerar_oscillacao(valor_inicial=data_teste[-1], incremento=incremento_fixo, tamanho=120, limite_inferior=0.28, limite_superior=0.63)
         
-        proximas_entradas, variancia = prever_entradas(novas_entradas, array=array1[i-120:i], tamanho_previsao=120)
+        proximas_entradas = prever_entradas(novas_entradas, array=array1[i-120:i], tamanho_previsao=120)
 
         print(f'Entradas criadas das medias criada: {len(novas_entradas)} \nEntradas 0 e 1 criada: {len(proximas_entradas)}')
         
@@ -186,13 +188,13 @@ while i <= 1800:
             else:
                 array11.append(0)
         print(24*'*-')
-        print(f'Qt. Real> {sum(array10)} | Porcentagem: {sum(array10) / len(array10)} \nQt. Variancia> {sum(array9)} | Porcentagem: {sum(array9) / len(array9)} \nQt. Acerto 1 Predicao> {sum(array11)} | Acerto 1 Predicao PCT: {sum(array11) / len(array11)} \nVariancia: {variancia}')
+        print(f'Qt. Real> {sum(array10)} | Porcentagem: {sum(array10) / len(array10)} \nQt. Variancia> {sum(array9)} | Porcentagem: {sum(array9) / len(array9)} \nQt. Acerto 1 Predicao> {sum(array11)} | Acerto 1 Predicao PCT: {sum(array11) / len(array11)}')
 
-        saida1.append(sum(array10)), saida2.append(sum(array10) / len(array10)), saida3.append(sum(array9)), saida4.append(sum(array9) / len(array9)), saida5.append(sum(array11)), saida6.append(sum(array11) / len(array11)), array12.append(variancia)
+        saida1.append(sum(array10)), saida2.append(sum(array10) / len(array10)), saida3.append(sum(array9)), saida4.append(sum(array9) / len(array9)), saida5.append(sum(array11)), saida6.append(sum(array11) / len(array11))
 
         array9, array10, array11 = [], [], []
 
-        #time.sleep(30)
+        time.sleep(30)
 
         kil1 = np.concatenate((data_teste[i - 120: i], novas_entradas))
         kil2 = np.concatenate((array1, proximas_entradas))
