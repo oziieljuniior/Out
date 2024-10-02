@@ -2,8 +2,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
-import time
+from sklearn.linear_model import LinearRegression
 
+import time
+import ModelosRegressao
+
+
+###FUNCOES
 data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k_1.csv')
 
 # Função para gerar oscilação controlada com valor fixo de incremento, decremento ou manutenção do valor
@@ -72,15 +77,20 @@ def calcular_tendencia(novas_entradas, janela=60):
     tendencia = np.mean(diffs)  # Tendência positiva se média está subindo, negativa se está descendo
     return tendencia
 
-# Função para prever se virá 0 ou 1 com base nas novas entradas e na tendência
-def prever_entradas(novas_entradas, tamanho_previsao=60, limite_inferior=0.28, limite_superior=0.63):
+def prever_entradas(novas_entradas, tamanho_previsao=120, limite_inferior=0.28, limite_superior=0.63):
     previsoes = []
     for i in range(tamanho_previsao):
         valor_atual = novas_entradas[-1] if len(novas_entradas) > 0 else 0.5
         
         tendencia = calcular_tendencia(novas_entradas)
-        
-        probabilidade_de_1 = valor_atual + tendencia * 0.1  # Ajuste a influência da tendência
+
+
+        # Preparando os dados (entradas passadas e próximas entradas)
+        X = np.array(data_teste[i-120:i])
+
+        variancia = np.var(X)  # Correção: removido o y da função
+
+        probabilidade_de_1 = valor_atual + tendencia * variancia  # Ajuste a influência da tendência
         probabilidade_de_1 = np.clip(probabilidade_de_1, limite_inferior, limite_superior)
         
         previsao = 1 if np.random.rand() < probabilidade_de_1 else 0
@@ -90,9 +100,10 @@ def prever_entradas(novas_entradas, tamanho_previsao=60, limite_inferior=0.28, l
     
     return previsoes
 
+#####DEVELOP
 # Coleta de 120 entradas iniciais
 i, j, by_sinal = 0, 0, 0
-data_teste, array1, array3, array4, array5, array6, array7, array8, data_teste1, data_teste2, data_teste3, novas_entradas = [], [], [], [], [], [], [], [], [], [], [], []
+data_teste, array1, array3, array4, array5, array6, array7, array8, array9, array10, data_teste1, data_teste2, data_teste3, novas_entradas,saida1, saida2, saida3, saida4 = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
 
 # Figuras para diferentes gráficos
 fig, (ax, ax_corr) = plt.subplots(2, 1, figsize=(10, 12))
@@ -125,6 +136,13 @@ while i <= 1800:
         print(f'Media60: {media} \nDesvio Padrão60: {desvpad}')
 
     if i % 60 == 0 and i >= 120:
+        if i > 120:
+            pergunta = int(input("Você ainda quer continuar modelando? 0S ou 1N: "))
+            if pergunta == 1:
+                pass
+            else:
+                data_saida = pd.DataFrame({'Acertos_Reais_CTG': saida1, 'Acertos_Reais_PCT': saida2, 'Acertos_Predicao_CTG': saida3, 'Acertos_Predicao_PCT': saida4, }).to_csv('/home/darkcover/Documentos/Out/dados/Saidas/Data_Saida.csv')
+                break
         print(f'Executando o modelo após {i} entradas coletadas inicialmente:')
         melhor_individuo = modelo(data_teste)
         amplitude, frequencia, offset, ruido = melhor_individuo
@@ -137,6 +155,28 @@ while i <= 1800:
         proximas_entradas = prever_entradas(novas_entradas, tamanho_previsao=120)
 
         print(f'Entradas criadas das medias criada: {len(novas_entradas)} \nEntradas 0 e 1 criada: {len(proximas_entradas)}')
+        
+        for i2 in range(i, i + 120):
+            if float(data1['Odd'][i2]) >= 2:
+                array10.append(1)
+            else:
+                array10.append(0)
+        
+
+        for i1 in range(0,len(proximas_entradas)):
+            if array10[i1] == proximas_entradas[i1]:
+                array9.append(1)
+            else:
+                array9.append(0)
+            
+        print(24*'*-')
+        print(f'Qt. Real> {sum(array10)} | Porcentagem: {sum(array10) / len(array10)} \nQt. Variancia> {sum(array9)} | Porcentagem: {sum(array9) / len(array9)}')
+
+        saida1.append(sum(array10)), saida2.append(sum(array10) / len(array10)), saida3.append(sum(array9)), saida4.append(sum(array9) / len(array9))
+
+        array9, array10 = [], []
+
+        time.sleep(30)
 
         kil1 = np.concatenate((data_teste[i - 120: i], novas_entradas))
         kil2 = np.concatenate((array1, proximas_entradas))

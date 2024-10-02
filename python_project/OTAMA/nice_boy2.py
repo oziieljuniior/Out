@@ -2,8 +2,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
-import time
+from sklearn.linear_model import LinearRegression
 
+import time
+import ModelosRegressao
+
+
+###FUNCOES
 data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k_1.csv')
 
 # Função para gerar oscilação controlada com valor fixo de incremento, decremento ou manutenção do valor
@@ -72,24 +77,34 @@ def calcular_tendencia(novas_entradas, janela=60):
     tendencia = np.mean(diffs)  # Tendência positiva se média está subindo, negativa se está descendo
     return tendencia
 
-# Função para prever se virá 0 ou 1 com base nas novas entradas e na tendência
-def prever_entradas(novas_entradas, tamanho_previsao=60, limite_inferior=0.28, limite_superior=0.63):
+def prever_entradas(novas_entradas, tamanho_previsao=120, limite_inferior=0.28, limite_superior=0.63):
     previsoes = []
     for i in range(tamanho_previsao):
         valor_atual = novas_entradas[-1] if len(novas_entradas) > 0 else 0.5
         
         tendencia = calcular_tendencia(novas_entradas)
-        
-        probabilidade_de_1 = valor_atual + tendencia * 0.1  # Ajuste a influência da tendência
+
+
+        # Preparando os dados (entradas passadas e próximas entradas)
+        X = data_teste[i-120:i]
+        y = data_teste[i: i + 120]
+
+        correlacao, p_valor = pearsonr(X, y)
+
+        print(f'Correlação de Pearson: {correlacao}')
+        print(f'Valor-p: {p_valor}')
+
+        probabilidade_de_1 = valor_atual + tendencia * correlacao  # Ajuste a influência da tendência
         probabilidade_de_1 = np.clip(probabilidade_de_1, limite_inferior, limite_superior)
         
         previsao = 1 if np.random.rand() < probabilidade_de_1 else 0
         previsoes.append(previsao)
         
         novas_entradas = np.append(novas_entradas, probabilidade_de_1)
-    
+
     return previsoes
 
+#####DEVELOP
 # Coleta de 120 entradas iniciais
 i, j, by_sinal = 0, 0, 0
 data_teste, array1, array3, array4, array5, array6, array7, array8, data_teste1, data_teste2, data_teste3, novas_entradas = [], [], [], [], [], [], [], [], [], [], [], []
