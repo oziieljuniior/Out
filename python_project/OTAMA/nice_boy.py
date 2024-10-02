@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import time
 
-data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k.csv')
+data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k_1.csv')
 
 # Função para gerar oscilação controlada com valor fixo de incremento, decremento ou manutenção do valor
 def gerar_oscillacao(valor_inicial, incremento, tamanho, limite_inferior=0.28, limite_superior=0.63):
