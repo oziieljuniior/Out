@@ -1,10 +1,12 @@
+#Guardar informações sobre os modelos treinados. Guarda-los como opção de teste. E guardar informações sobre acertos e guardar funções é opção possível.
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr, binomtest
-from sklearn.linear_model import LinearRegression
+import time
 
-#Pode ser uma data e atualizar conforme as entradas atualizarem
+data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/Saidas/FUNCOES/DOUBLE - 17_09_s1.csv')
 
 ###FUNCOES
 
@@ -93,10 +95,15 @@ def prever_entradas(novas_entradas, array, tamanho_previsao=120, limite_inferior
     
     return previsoes, variancia
 
+
 #####DEVELOP
 # Coleta de 120 entradas iniciais
-i, j, l, by_sinal = 0, 0, 0, 0
-data_teste, array1, array3, array4, array5, array6, array7, array8, array9, array10, array11, array12, data_teste1, data_teste2, data_teste3, novas_entradas, saida1, saida2, saida3, saida4, saida5, saida6 = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
+i, j, l, k, m, by_sinal = 0, 0, 0, 0, 0, 0
+data_teste, array1, array3, array4, array5, array6, array7, array8, array9, array10, array11, array12, data_teste1, data_teste2, data_teste3, novas_entradas, saida1, saida2, saida3, saida4, saida5, saida6, proximas_entradas = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
+
+order, order1 = np.zeros(181), np.zeros(181)
+
+acertos = []
 
 # Figuras para diferentes gráficos
 fig, (ax, ax_corr) = plt.subplots(2, 1, figsize=(10, 12))
@@ -107,11 +114,14 @@ while i <= 1800:
     print(24*'*-')
     print(f'Rodada: {i}')
     
-#    if i <= 5000:
-#        print(data1['Odd'][i])
-#        odd = float(data1['Odd'][i])
-#    else:
-    odd = input("Insira o número da odd: ").replace(",",".")
+    if i <= 240:
+        print(data1['Entrada'][i].replace(",", '.'))
+        odd = float(data1['Entrada'][i].replace(",", '.'))
+    else:
+        odd = input("Insira o número da odd: ").replace(",",".")
+    
+    if odd == 0:
+        break
         
     if float(odd) >= 2:
         array1.append(1)
@@ -127,14 +137,21 @@ while i <= 1800:
         data_teste1.append(desvpad)
 
         binomial_teste = binomtest((sum(array2)),len(array2),0.5,alternative='two-sided')
-        if len(proximas_entradas) != 0:
-            order = proximas_entradas
-            if k == 59:
-                k = k - 1
-        print(k)
-        print(f'Media60: {media} \nDesvio Padrão60: {desvpad} \nBinomial Estatistica: {binomial_teste} \nProximas entradas: {order[k+1]} | lenorder: {len(order)}')
+                
+        if k == 119:
+            k = k - 1
+        else:
+            k += 1
         
-        k += 1
+        print(k)
+        print(f'Media60: {media} \nDesvio Padrão60: {desvpad} \nBinomial Estatistica: {binomial_teste} \nProximas entradas: {order[k]} | lenorder: {len(order)}')
+        if len(order) != 181 and i > 180:
+            m += 1
+            if len(order1) >= m:
+                print(f'Proximas Entradas da Predição Anterior: {order1[m]} | lenorder1 >> {len(order1)}')
+            else:
+                print("Calculando novo array")
+           
 
     if i % 60 == 0 and i >= 120:
         
@@ -143,13 +160,24 @@ while i <= 1800:
         amplitude, frequencia, offset, ruido = melhor_individuo
         print("Melhor solução:", melhor_individuo)
         
+        time.sleep(10)
         print("Gerando novas entradas, a partir das últimas entradas:")
         incremento_fixo = 1/60
         novas_entradas = gerar_oscillacao(valor_inicial=data_teste[-1], incremento=incremento_fixo, tamanho=120, limite_inferior=0.28, limite_superior=0.63)
         
+        order1 = proximas_entradas[59:120]
+        print(len(order1))
+        m = 0
+        time.sleep(10)
+        
+        
         proximas_entradas, variancia = prever_entradas(novas_entradas, array=array1[i-120:i], tamanho_previsao=120)
+        
+        k = 0
+        
+        order = proximas_entradas
 
-        print(f'Entradas criadas das medias criada: {len(novas_entradas)} \nEntradas 0 e 1 criada: {len(proximas_entradas)}')
+        print(f'Entradas criadas das medias criada: {len(novas_entradas)} \nEntradas 0 e 1 criada: {proximas_entradas}')
 
         kil1 = np.concatenate((data_teste[i - 120: i], novas_entradas))
         kil2 = np.concatenate((array1, proximas_entradas))
