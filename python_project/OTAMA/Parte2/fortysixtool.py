@@ -32,10 +32,11 @@ def mostrar_menu():
             if escolha == '1':
                 listar_modelos_salvos()
             elif escolha == '2':
-                executar_modelo_existente(escolha)
+                modelo = ()
+                executar_modelo_existente(escolha, modelo)
             elif escolha == '3':
                 modelo = ()
-                executar_novo_modelo(escolha, modelo)
+                executar_novo_modelo(escolha,modelo)
             elif escolha == '4':
                 visualizar_dados()
             elif escolha == '5':
@@ -62,7 +63,7 @@ def listar_modelos_salvos():
         input("Pressione Enter para continuar...")
 
 # Função para carregar e executar um modelo existente
-def executar_modelo_existente(escolha):
+def executar_modelo_existente(escolha, modelo):
     caminho_pasta = '/home/darkcover/Documentos/Out/python_project/OTAMA/Funcoes'
     arquivos = [f for f in os.listdir(caminho_pasta) if f.endswith('.pkl')]
 
@@ -87,6 +88,8 @@ def executar_modelo_existente(escolha):
     print(f"Executando o modelo {arquivos[escolha - 1]}...")
     # Aqui você pode chamar a função para executar o modelo carregado
     # exemplo: modelo.executar()
+    #carregando.ModelManager().listar_modelos_salvos()
+    print(modelo)
     executar_novo_modelo(escolha, modelo)
 
     input("Pressione Enter para continuar...")
@@ -123,6 +126,7 @@ def visualizar_dados():
 # Função para executar um novo modelo
 def executar_novo_modelo(escolha, modelo):
     print("\nExecutando um modelo...")
+    print(len(modelo), print(type(modelo)))
     print(escolha, type(escolha))
     DataGeral = carregando.ModelManager()
 
@@ -348,14 +352,36 @@ def executar_novo_modelo(escolha, modelo):
         if i % 60 == 0 and i >= 120:
             
             print(f'Executando o modelo após {i} entradas coletadas inicialmente:')
-            melhor_individuo = Models.ModelIt().modelo(data_teste=data_teste)
             
-            amplitude, frequencia, offset, ruido = melhor_individuo
-            print("Melhor solução:", melhor_individuo)
-            
+            while True:
+                try:
+                    pergunta1 = int(input("Queres utilizar o último modelo ? (0s e 1n): "))
+                    print(pergunta1)
+                    break
+                except:
+                    print("Entrada incorreta...")
+            if pergunta1 == 0:
+                melhor_individuo = Models.ModelIt().modelo(data_teste=data_teste)
+                amplitude, frequencia, offset, ruido = melhor_individuo
+                print("Melhor solução:", melhor_individuo)
+
+            elif pergunta1 == 1:
+                melhor_individuo = modelo
+                if melhor_individuo is None:
+                    while True:
+                        try:
+                            print("Necessário carregar modelo, para isto: ")
+                            print()
+                            break
+                        except:
+                            print("Opção Invalida...")
+                    
+
             print("Gerando novas entradas, a partir das últimas entradas:")
             incremento_fixo = 1/60
-            novas_entradas = Models.ModelIt().gerar_oscillacao(valor_inicial=data_teste[-1], incremento=incremento_fixo, tamanho=120, limite_inferior=0.28, limite_superior=0.63)
+            #print(data_teste[-1], type(data_teste1[-1]))
+            
+            novas_entradas = Models.ModelIt(melhor_individuo=melhor_individuo).gerar_oscillacao(tamanho=120, valor_inicial=data_teste[-1], limite_inferior=0.28, limite_superior=0.63)
             
             DataGeral.salvar_modelo(novas_entradas, 'Ironic')
 
