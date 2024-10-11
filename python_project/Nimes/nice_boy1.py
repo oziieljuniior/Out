@@ -3,48 +3,52 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr, binomtest
 from sklearn.linear_model import LinearRegression
-
 import time
-import ModelosRegressao
-
 
 ###FUNCOES
 data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k_1.csv')
 
-# Função para gerar oscilação controlada com valor fixo de incremento, decremento ou manutenção do valor
-def gerar_oscillacao(valor_inicial, incremento, tamanho, limite_inferior=0.28, limite_superior=0.63):
-    osc_final = [valor_inicial]
+# Função para gerar oscilação com incremento fixo e ajuste pelo indivíduo genético
+def gerar_oscillacao(tamanho, incremento=1/60, individuo=None, valor_inicial=None, limite_inferior=0.28, limite_superior=0.63):
+    if individuo is None:
+        individuo = [0.5726568559014906, 0.0020658693527675536, 0.43684108427099644, 0.3801867392801998]
     
-    tamanho = int(tamanho)
+    amplitude, frequencia, offset, ruido = individuo
+    valor_inicial = valor_inicial if valor_inicial is not None else offset
+    osc_final = [valor_inicial]
 
     for i in range(1, tamanho):
         probabilidade = np.random.rand()
-        
+
         if probabilidade < 1/3:
-            proximo_valor = osc_final[-1] + incremento
+            proximo_valor = osc_final[-1] + incremento + np.random.normal(0, ruido)
         elif probabilidade < 2/3:
-            proximo_valor = osc_final[-1]
+            proximo_valor = osc_final[-1] + np.random.normal(0, ruido)
         else:
-            proximo_valor = osc_final[-1] - incremento
+            proximo_valor = osc_final[-1] - incremento + np.random.normal(0, ruido)
         
+        proximo_valor += frequencia * amplitude
         proximo_valor = np.clip(proximo_valor, limite_inferior, limite_superior)
         osc_final.append(proximo_valor)
 
     return np.array(osc_final)
 
+# Função fitness para avaliar indivíduos
 def fitness_function(individuo, dados_reais):
-    amplitude, frequencia, offset, ruido = individuo
-    previsoes = gerar_oscillacao(valor_inicial=dados_reais[-1], incremento=frequencia, tamanho=int(len(dados_reais)), limite_inferior=0.28, limite_superior=0.65)
-    erro = np.mean(np.abs(previsoes - dados_reais))
-    return -erro  # Fitness negativo porque queremos minimizar o erro
+    previsoes = gerar_oscillacao(len(dados_reais), individuo=individuo)
+    rmse = np.sqrt(np.mean((previsoes - dados_reais)**2))
+    correlacao, _ = pearsonr(previsoes, dados_reais)
+    return -(rmse - 0.5 * correlacao)
 
-
+# Crossover genético
 def crossover(pai1, pai2):
     return [(gene1 + gene2) / 2 for gene1, gene2 in zip(pai1, pai2)]
 
+# Função de mutação com taxa de mutação variável
 def mutacao(individuo, taxa_mutacao=0.01):
     return [gene + np.random.normal(0, taxa_mutacao) if np.random.rand() < 0.1 else gene for gene in individuo]
 
+# Modelo genético otimizado
 def modelo(data_teste):
     populacao_tamanho = 240
     geracoes = 120
@@ -52,7 +56,7 @@ def modelo(data_teste):
     dados_reais = data_teste
 
     populacao = [np.random.uniform(0, 1, 4) for _ in range(populacao_tamanho)]
-
+    
     for geracao in range(geracoes):
         fitness_scores = [fitness_function(individuo, dados_reais) for individuo in populacao]
         sorted_population = [populacao[i] for i in np.argsort(fitness_scores)]
@@ -71,22 +75,21 @@ def modelo(data_teste):
     print("Melhor solução:", melhor_individuo)
     return melhor_individuo
 
-# Função para calcular a tendência das últimas entradas
+# Função para calcular a tendência
 def calcular_tendencia(novas_entradas, janela=60):
     diffs = np.diff(novas_entradas[-janela:])
-    tendencia = np.mean(diffs)  # Tendência positiva se média está subindo, negativa se está descendo
+    tendencia = np.mean(diffs)
     return tendencia
 
+# Previsão de novas entradas com ajuste de variância
 def prever_entradas(novas_entradas, array, tamanho_previsao=120, limite_inferior=0.28, limite_superior=0.63):
     previsoes = []
     for i in range(tamanho_previsao):
         valor_atual = novas_entradas[-1] if len(novas_entradas) > 0 else 0.5
-        
         tendencia = calcular_tendencia(novas_entradas)
+        variancia = np.var(array)
 
-        variancia = np.var(array)  # Correção: removido o y da função
-
-        probabilidade_de_1 = valor_atual + tendencia * variancia  # Ajuste a influência da tendência
+        probabilidade_de_1 = valor_atual + tendencia * variancia
         probabilidade_de_1 = np.clip(probabilidade_de_1, limite_inferior, limite_superior)
         
         previsao = 1 if np.random.rand() < probabilidade_de_1 else 0
@@ -95,6 +98,7 @@ def prever_entradas(novas_entradas, array, tamanho_previsao=120, limite_inferior
         novas_entradas = np.append(novas_entradas, probabilidade_de_1)
     
     return previsoes, variancia
+
 
 #####DEVELOP
 # Coleta de 120 entradas iniciais
@@ -171,8 +175,14 @@ while i <= 1800:
         print("Melhor solução:", melhor_individuo)
         
         print("Gerando novas entradas, a partir das últimas entradas:")
-        incremento_fixo = 1/60
-        novas_entradas = gerar_oscillacao(valor_inicial=data_teste[-1], incremento=incremento_fixo, tamanho=60, limite_inferior=0.28, limite_superior=0.63)
+        
+        novas_entradas = gerar_oscillacao(
+            tamanho=60,
+            incremento=1/60,
+            individuo=melhor_individuo,
+            valor_inicial=data_teste[-1], 
+            limite_inferior=0.28, 
+            limite_superior=0.63)
         
         proximas_entradas, variancia = prever_entradas(novas_entradas, array=array1[i-120:i], tamanho_previsao=60)
 

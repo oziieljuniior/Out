@@ -1,32 +1,40 @@
+#Guardar informações sobre os modelos treinados. Guarda-los como opção de teste. E guardar informações sobre acertos e guardar funções é opção possível.
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr, binomtest
-from sklearn.linear_model import LinearRegression
-
 import time
-import ModelosRegressao
 
+data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/Saidas/FUNCOES/DOUBLE - 17_09_s1.csv')
 
 ###FUNCOES
-data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k_1.csv')
 
-# Função para gerar oscilação controlada com valor fixo de incremento, decremento ou manutenção do valor
-def gerar_oscillacao(valor_inicial, incremento, tamanho, limite_inferior=0.28, limite_superior=0.63):
-    osc_final = [valor_inicial]
+# Função para gerar oscilação controlada com os parâmetros do melhor indivíduo treinado
+def gerar_oscillacao(
+        tamanho, 
+        individuo = [np.float64(0.5726568559014906), np.float64(0.0020658693527675536), np.float64(0.43684108427099644), np.float64(0.3801867392801998)], 
+        valor_inicial=None, 
+        limite_inferior=0.28, 
+        limite_superior=0.63):
     
-    tamanho = int(tamanho)
+    amplitude, frequencia, offset, ruido = individuo
+
+    valor_inicial = valor_inicial if valor_inicial is not None else offset
+    osc_final = [valor_inicial]
 
     for i in range(1, tamanho):
         probabilidade = np.random.rand()
-        
+
+        # Ajuste o valor de oscilação com base na frequência, amplitude e adicione o ruído
         if probabilidade < 1/3:
-            proximo_valor = osc_final[-1] + incremento
+            proximo_valor = osc_final[-1] + frequencia * amplitude + np.random.normal(0, ruido)
         elif probabilidade < 2/3:
-            proximo_valor = osc_final[-1]
+            proximo_valor = osc_final[-1] + np.random.normal(0, ruido)  # Mantém o valor com ruído
         else:
-            proximo_valor = osc_final[-1] - incremento
-        
+            proximo_valor = osc_final[-1] - frequencia * amplitude + np.random.normal(0, ruido)
+
+        # Limita o valor entre o limite inferior e superior
         proximo_valor = np.clip(proximo_valor, limite_inferior, limite_superior)
         osc_final.append(proximo_valor)
 
@@ -34,7 +42,12 @@ def gerar_oscillacao(valor_inicial, incremento, tamanho, limite_inferior=0.28, l
 
 def fitness_function(individuo, dados_reais):
     amplitude, frequencia, offset, ruido = individuo
-    previsoes = gerar_oscillacao(valor_inicial=dados_reais[-1], incremento=frequencia, tamanho=int(len(dados_reais)), limite_inferior=0.28, limite_superior=0.65)
+    previsoes = gerar_oscillacao(
+        tamanho=int(len(dados_reais)), 
+        individuo=individuo,
+        valor_inicial=dados_reais[-1], 
+        limite_inferior=0.28, 
+        limite_superior=0.65)
     erro = np.mean(np.abs(previsoes - dados_reais))
     return -erro  # Fitness negativo porque queremos minimizar o erro
 
@@ -96,12 +109,15 @@ def prever_entradas(novas_entradas, array, tamanho_previsao=120, limite_inferior
     
     return previsoes, variancia
 
+
 #####DEVELOP
 # Coleta de 120 entradas iniciais
-i, j, l, k, by_sinal = 0, 0, 0, 0, 0
-data_teste, array1, array3, array4, array5, array6, array7, array8, array9, array10, array11, array12, array13, data_teste1, data_teste2, data_teste3, novas_entradas, saida1, saida2, saida3, saida4, saida5, saida6, proximas_entradas = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
+i, j, l, k, m, by_sinal = 0, 0, 0, 0, 0, 0
+data_teste, array1, array3, array4, array5, array6, array7, array8, array9, array10, array11, array12, data_teste1, data_teste2, data_teste3, novas_entradas, saida1, saida2, saida3, saida4, saida5, saida6, proximas_entradas = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
 
-order = np.zeros(62)
+order, order1 = np.zeros(181), np.zeros(181)
+
+acertos = []
 
 # Figuras para diferentes gráficos
 fig, (ax, ax_corr) = plt.subplots(2, 1, figsize=(10, 12))
@@ -112,17 +128,20 @@ while i <= 1800:
     print(24*'*-')
     print(f'Rodada: {i}')
     
-    if i <= 5000:
-        print(data1['Odd'][i])
-        odd = float(data1['Odd'][i])
+    if i <= 240:
+        print(data1['Entrada'][i].replace(",", '.'))
+        odd = float(data1['Entrada'][i].replace(",", '.'))
     else:
         odd = input("Insira o número da odd: ").replace(",",".")
+    
+    if odd == 0:
+        break
         
     if float(odd) >= 2:
         array1.append(1)
     else:
         array1.append(0)
-    
+
     if i >= 60:
         array2 = array1[i - 60: i]
         media = sum(array2)/60
@@ -132,82 +151,50 @@ while i <= 1800:
         data_teste1.append(desvpad)
 
         binomial_teste = binomtest((sum(array2)),len(array2),0.5,alternative='two-sided')
-        if len(proximas_entradas) != 0:
-            order = proximas_entradas
-            if k == 59:
-                k = k - 1
-        print(k)
-        print(f'Media60: {media} \nDesvio Padrão60: {desvpad} \nBinomial Estatistica: {binomial_teste} \nProximas entradas: {order[k+1]} | lenorder: {len(order)}')
-        
-        k += 1
-    if i % 60 == 0 and i >= 120:
-        if i > 120:
-            if i < 360:
-                pergunta = 0
-                print("Continuando a execução do loop...")  # Apenas continue normalmente
-            elif i >=  360:    
-                pergunta = int(input("Você ainda quer continuar modelando? 0S ou 1N: "))
                 
-            if pergunta == 0:
-                print("Continuando a execução do loop...")  # Apenas continue normalmente
+        if k == 119:
+            k = k - 1
+        else:
+            k += 1
+        
+        print(k)
+        print(f'Media60: {media} \nDesvio Padrão60: {desvpad} \nBinomial Estatistica: {binomial_teste} \nProximas entradas: {order[k]} | lenorder: {len(order)}')
+        if len(order) != 181 and i > 180:
+            m += 1
+            if len(order1) >= m:
+                print(f'Proximas Entradas da Predição Anterior: {order1[m]} | lenorder1 >> {len(order1)}')
             else:
-                print("Salvando os dados organizados ... ")
-                # Salvando os dados de saída e saindo do loop
-                data_saida = pd.DataFrame({
-                    'Acertos_Reais_CTG': saida1,
-                    'Acertos_Reais_PCT': saida2,
-                    'Acertos_Predicao_CTG': saida3,
-                    'Acertos_Predicao_PCT': saida4,
-                    'Acertos1_Predicao': saida5,
-                    'Acerto1_Predicao_PCT': saida6,
-                    'Variancia': array12
-                }).to_csv('/home/darkcover/Documentos/Out/dados/Saidas/Data_Saida.csv')
-                l = 1
-                break  # Sai do loop principal
+                print("Calculando novo array")
+           
 
+    if i % 60 == 0 and i >= 120:
+        
         print(f'Executando o modelo após {i} entradas coletadas inicialmente:')
         melhor_individuo = modelo(data_teste)
         amplitude, frequencia, offset, ruido = melhor_individuo
         print("Melhor solução:", melhor_individuo)
         
+        time.sleep(10)
         print("Gerando novas entradas, a partir das últimas entradas:")
         incremento_fixo = 1/60
-        novas_entradas = gerar_oscillacao(valor_inicial=data_teste[-1], incremento=incremento_fixo, tamanho=60, limite_inferior=0.28, limite_superior=0.63)
+        novas_entradas = gerar_oscillacao(
+            tamanho=120,
+            individuo=melhor_individuo, 
+            valor_inicial=data_teste[-1], incremento=incremento_fixo, limite_inferior=0.28, limite_superior=0.63)
         
-        proximas_entradas, variancia = prever_entradas(novas_entradas, array=array1[i-120:i], tamanho_previsao=60)
-
+        order1 = proximas_entradas[59:120]
+        print(len(order1))
+        m = 0
+        time.sleep(10)
+        
+        
+        proximas_entradas, variancia = prever_entradas(novas_entradas, array=array1[i-120:i], tamanho_previsao=120)
+        
         k = 0
-
-        print(f'Entradas criadas das medias criada: {len(novas_entradas)} \nEntradas 0 e 1 criada: {(proximas_entradas)}')
         
-        for i2 in range(i, i + 60):
-            if float(data1['Odd'][i2]) >= 2:
-                array10.append(1)
-            else:
-                array10.append(0)
-        
+        order = proximas_entradas
 
-        for i1 in range(0,len(proximas_entradas)):
-            if array10[i1] == proximas_entradas[i1]:
-                array9.append(1)
-                if array10[i1] == 1:
-                    array13.append(1)
-            else:
-                array9.append(0)
-                array13.append(0)
-        for i3 in range(0, len(array9)):
-            if array9[i3] == 1:
-                array11.append(1)
-            else:
-                array11.append(0)
-        print(24*'*-')
-        print(f'Qt. Real> {sum(array10)} | Porcentagem: {sum(array10) / len(array10)} \nQt. Variancia> {sum(array9)} | Porcentagem: {sum(array9) / len(array9)} \nQt. Acerto 1 Predicao> {sum(array11)} | Acerto 1 Predicao PCT: {sum(array11) / len(array11)} \nVariancia: {variancia} \nAcertos: {sum(array13)} | Acertos(%) >> {len(array13)}')
-
-        saida1.append(sum(array10)), saida2.append(sum(array10) / len(array10)), saida3.append(sum(array9)), saida4.append(sum(array9) / len(array9)), saida5.append(sum(array11)), saida6.append(sum(array11) / len(array11)), array12.append(variancia)
-
-        array9, array10, array11, array13 = [], [], [], []
-
-        time.sleep(30)
+        print(f'Entradas criadas das medias criada: {len(novas_entradas)} \nEntradas 0 e 1 criada: {proximas_entradas}')
 
         kil1 = np.concatenate((data_teste[i - 120: i], novas_entradas))
         kil2 = np.concatenate((array1, proximas_entradas))
@@ -220,15 +207,14 @@ while i <= 1800:
         print(len(kil1), len(kil2), len(array6))
 
         data_teste3 = []
-        for l in range(60, 121):
+        for l in range(120, 181):
             array7 = kil1[l - 60: l]
             array8 = array6[l - 60: l]
-            #print(len(array7), len(array8))
             correlacao_teste, p_value_teste = pearsonr(array7, array8)
             data_teste3.append(correlacao_teste)
 
 
-        time.sleep(10)
+        #time.sleep(10)
 
         # Deslocar as novas entradas para a direita
         x_novas_entradas = np.arange(len(data_teste), len(data_teste) + len(novas_entradas))
@@ -295,4 +281,3 @@ while i <= 1800:
 
 
     i += 1
-

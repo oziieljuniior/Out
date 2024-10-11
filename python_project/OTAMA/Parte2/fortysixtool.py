@@ -360,11 +360,13 @@ def executar_novo_modelo(escolha, modelo):
                     break
                 except:
                     print("Entrada incorreta...")
+            #Caso queira carregar o ultimo modelo é necessario listar modelos disponiveis, alem de configurar o modelo a partir dai
             if pergunta1 == 0:
                 melhor_individuo = Models.ModelIt().modelo(data_teste=data_teste)
                 amplitude, frequencia, offset, ruido = melhor_individuo
                 print("Melhor solução:", melhor_individuo)
 
+            #Caso nao queira carregar um modelo, é necessario continuar com o treinamento para executar um modelo para predicao
             elif pergunta1 == 1:
                 melhor_individuo = modelo
                 if melhor_individuo is None:
