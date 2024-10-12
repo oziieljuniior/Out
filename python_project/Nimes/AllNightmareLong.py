@@ -1,3 +1,11 @@
+'''
+Commits:
+    1.0 : A partir da linha 185, atualizar metodo de geração de entradas. Ele deve suporta novo gerenciamento e consulta de funções salvas.
+    1.1 : A partir da linha 172, atualizar método de salvamento de dados. Ele deve suportar as funções, dados historicos e variaveis.
+    1.2 : A partir da linha 200, através do método de coletar entradas 0 e 1's. Ajustar forma de comparação de resultados em um matrix de confusão.
+    1.3 : A partir da linha 236, adicionar nova função de salvar função(variáveis de predicao) para utilizar como comparação futura em dados.
+'''
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -98,6 +106,7 @@ while i <= 1800:
     print(24*'*-')
     print(f'Rodada: {i}')
     
+    #Rotacionar entradas. Ela pode ser realizada de duas maneiras, através de um banco de dados, ou através de entradas inseridas manualmente.
     while True:
         try:
             if i <= 5000:
@@ -117,17 +126,15 @@ while i <= 1800:
             
 
     # Condição para salvar e sair ao digitar 0
-    if float(odd) == 0:
+    if float(odd) == 0 and i > 120:
         print("Salvando os dados e encerrando a execução...")
-        data1 = pd.DataFrame({"Entrada":array1})
-        try:
-            banco_funcoes_df = pd.read_csv('banco_funcoes.csv')
-            print(f'{len(banco_funcoes_df)} funções carregadas com sucesso.')
-            break
-        except FileNotFoundError:
-            print('Nenhum banco de funções encontrado. Criando um novo.')
-            break
+        data_saida1 = pd.DataFrame({
+            'historico_entradas':np.array([array2]),
+            'Predicao_Medias': np.array([novas_entradas]),
+            'Predicao_01': np.array([proximas_entradas]),
 
+
+        })
         
     if float(odd) >= 2:
         array1.append(1)
@@ -223,6 +230,7 @@ while i <= 1800:
 
         array9, array10, array11, array13 = [], [], [], []
 
+        #Adicionar outro stop aqui
         time.sleep(30)
 
         kil1 = np.concatenate((data_teste[i - 120: i], novas_entradas))
