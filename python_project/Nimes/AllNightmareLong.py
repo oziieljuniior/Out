@@ -174,9 +174,11 @@ while i <= 1800:
         print(f'Media60: {media} \nDesvio Padrão60: {desvpad} \nBinomial Estatistica: {binomial_teste} \nProximas entradas: {order[k+1]} | lenorder: {len(order)}')
         
         k += 1
-    
+
+#1.0    
     if i % 60 == 0 and i >= 120:
-#1.0
+#############################################################################################
+# 1.5 : Atulizar método como se produz as novas_entradas e proximas_entradas
         while m == 0:
             print("Gerando novas entradas, a partir das últimas entradas:")
 ## Verificação das ultimas entradas com modelos já salvos;
@@ -340,6 +342,10 @@ while i <= 1800:
                 except ValueError:
                     print("Entrada Invalida. Algum erro ocorreu ...")
 
+#############################################################################################
+
+
+
 ########################################
 # 1.2   
             print(24*'*-')
@@ -414,7 +420,7 @@ while i <= 1800:
             array9, array10, array11, array13 = [], [], [], []
 
         ########################################
-        # 1.2.1
+        # 1.2.4 : Atualiar método de salvamento dos arrays de historico da medias e historico das predicoes 0 e 1s
             while True:
                 try:
                     pergunta2 = int(input("Desejas salvar este modelo ? (0N e 1S)->"))
@@ -459,15 +465,20 @@ while i <= 1800:
                         print("Saindo do loop após salvar o modelo.")  # Adiciona uma verificação antes do break
                         m = 1
                         break  # Encerra o loop após salvar o modelo
-
+        
+                    ########################################
+                    # 1.2.5 : Atualizar o méto de continuação de loop
                     elif pergunta2 == 0:
                         # Se a entrada for 0, interrompe o loop sem salvar
                         print("Modelo não será salvo. Continuando no loop.")
                         m = 0
                         break
-                        
+                    ########################################
+                      
                 except ValueError:
                     print("Entrada invalida, apenas 0 e 1 permitidos ...")
+
+        ########################################
 
         if m == 1:
             while True:
@@ -560,8 +571,5 @@ while i <= 1800:
         else:
             print('Gráfico deve descer')
         j += 1
-
-
-
 
     i += 1
