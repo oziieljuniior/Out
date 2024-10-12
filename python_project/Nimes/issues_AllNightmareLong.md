@@ -16,9 +16,18 @@ Ajustar forma de comparação de resultados em um matrix de confusão.
 
 Ao final dos resultados, adicionar função de salvar dados, com projeções das funções. Ou seja, salvar método de predição. Adicionar função de stop ao salvar.
 
-## 1.3 : A partir da linha 236
+## 1.2.2 
+Adicionar a função de perguntar se quero realizar a predição a partir de um banco de dados, ou para coleta normal.
+
+
+[sobre](https://github.com/oziieljuniior/Out/issues/3)
+
+## (FECHADO) 1.3 : A partir da linha 236
 
 Adicionar nova função de salvar função(variáveis de predicao) para utilizar como comparação futura em dados.
+
+### SOLUÇÃO
+Solução comentada em: [sobre](https://github.com/oziieljuniior/Out/issues/4)
 
 ## (FECHADO) 1.4 : A partir da linha 237
 Ajustar array's de predição de correlação.

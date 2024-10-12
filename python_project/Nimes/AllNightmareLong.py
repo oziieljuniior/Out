@@ -2,13 +2,18 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr, binomtest
+import datetime
+import os
+import shutil
 import time
 
 ###FUNCOES
 data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k_1.csv')
 
-# Criar DataFrame para salvar variáveis das funções bem-sucedidas
-banco_funcoes_df = pd.DataFrame(columns=["valor_inicial", "incremento", "tamanho", "taxa_acerto", "harray"])
+path_data_modelos = '/home/darkcover/Documentos/Out/dados/Saidas/Metallica/Modelos_Listados/Novos/'
+path_data_modelos_salvos = '/home/darkcover/Documentos/Out/dados/Saidas/Metallica/Modelos_Listados/Salvos/'
+
+path_data_modelos_gerais = '/home/darkcover/Documentos/Out/dados/Saidas/Metallica/Modelo_Geral/ModelosGerais.csv'
 
 # Função para gerar oscilação controlada
 def gerar_oscillacao(valor_inicial, incremento, tamanho, limite_inferior=0.28, limite_superior=0.63):
@@ -32,59 +37,82 @@ def calcular_tendencia(novas_entradas, janela=60):
     return tendencia
 
 # Função para prever com base nas funções armazenadas no DataFrame
-def prever_com_banco(novas_entradas, array, tamanho_previsao=120, limite_inferior=0.28, limite_superior=0.63):
+def prever_01s(novas_entradas, array, tamanho_previsao=120, limite_inferior=0.28, limite_superior=0.63):
+    # Se não houver funções no banco, gerar novas previsões
     previsoes = []
-    
-    # Se houver funções no banco, usar elas
-    if not banco_funcoes_df.empty:
-        print(f'{len(banco_funcoes_df)} funções carregadas do banco para comparação...')
-        for index, row in banco_funcoes_df.iterrows():
-            previsao = gerar_oscillacao(
-                valor_inicial=row['valor_inicial'],
-                incremento=row['incremento'],
-                tamanho=tamanho_previsao,
-                limite_inferior=limite_inferior,
-                limite_superior=limite_superior
-            )
-            previsoes.append(previsao)
-            
-        # Selecionar a melhor previsão, por exemplo com a média mais alta
-        melhor_previsao = max(previsoes, key=lambda x: np.mean(x))
-        return melhor_previsao
-    else:
-        # Se não houver funções no banco, gerar novas previsões
-        previsoes = []
-        for i in range(tamanho_previsao):
-            valor_atual = novas_entradas[-1] if len(novas_entradas) > 0 else 0.5
-            tendencia = calcular_tendencia(novas_entradas)
-            variancia = np.var(array)
+    for i in range(tamanho_previsao):
+        valor_atual = novas_entradas[-1] if len(novas_entradas) > 0 else 0.5
+        tendencia = calcular_tendencia(novas_entradas)
+        variancia = np.var(array)
 
-            probabilidade_de_1 = valor_atual + tendencia * variancia
-            probabilidade_de_1 = np.clip(probabilidade_de_1, limite_inferior, limite_superior)
-            
-            previsao = 1 if np.random.rand() < probabilidade_de_1 else 0
-            previsoes.append(previsao)
-            
-            novas_entradas = np.append(novas_entradas, probabilidade_de_1)
+        probabilidade_de_1 = valor_atual + tendencia * variancia
+        probabilidade_de_1 = np.clip(probabilidade_de_1, limite_inferior, limite_superior)
         
-        return previsoes
+        previsao = 1 if np.random.rand() < probabilidade_de_1 else 0
+        previsoes.append(previsao)
+        
+        novas_entradas = np.append(novas_entradas, probabilidade_de_1)
+    
+    return previsoes
 
-# Função para adicionar uma função de oscilação no banco de funções
-def adicionar_funcao_ao_banco(valor_inicial, incremento, tamanho, taxa_acerto):
-    global banco_funcoes_df
-    nova_funcao = pd.DataFrame({
-        "valor_inicial": [valor_inicial],
-        "incremento": [incremento],
-        "tamanho": [tamanho],
-        "taxa_acerto": [taxa_acerto]
-    })
-    banco_funcoes_df = pd.concat([banco_funcoes_df, nova_funcao], ignore_index=True)
-    print(f'Função com taxa de acerto {taxa_acerto} adicionada ao banco.')
+def consultar_modelos_listados():
+    # Verifica se a pasta de origem existe
+    if not os.path.exists(path_data_modelos):
+        print(f"O diretório {path_data_modelos} não existe.")
+        return
+    
+    # Lista todos os arquivos .csv no diretório de origem
+    arquivos_csv = [f for f in os.listdir(path_data_modelos) if f.endswith('.csv')]
+    
+    if len(arquivos_csv) == 0:
+        print(f"A pasta {path_data_modelos} está vazia.")
+        return
+    
+    # Verifica se a pasta de destino existe; se não, cria-a
+    if not os.path.exists(path_data_modelos_salvos):
+        print(f"O diretório {path_data_modelos} não existe.")
+        return
+    
+    # Loop para consultar e salvar os arquivos .csv
+    for arquivo in arquivos_csv:
+        caminho_origem = os.path.join(path_data_modelos, arquivo)
+        caminho_destino = os.path.join(path_data_modelos_salvos, arquivo)
+        # Lê o arquivo de origem (df)
+        df1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/Saidas/Metallica/Modelo_Geral/ModelosGerais.csv')
+        
+        # Lê o conteúdo do arquivo .csv
+        try:
+
+            # Lê o arquivo de origem (df)
+            df = pd.read_csv(caminho_origem)
+            # Seleciona apenas as colunas correspondentes de df para garantir compatibilidade
+            
+            df = df[['historico_01', 'historico_medias', 'historico_desvio_padrao', 'Predicao_Medias', 
+                    'Predicao_01', 'Predicao_desvpad', 'Predicao_correlacao', 'Acuracia', 'Precisao', 
+                    'Recall', 'F1-Score']]
+            
+
+            # Adiciona as novas linhas ao df1
+            df1 = pd.concat([df1, df], ignore_index=True)
+
+            # Salva o novo df1 com as linhas combinadas
+            df1.to_csv('/home/darkcover/Documentos/Out/dados/Saidas/Metallica/Modelo_Geral/ModelosGerais.csv', index=False)
+
+            print("Dados foram adicionados ao df1 e salvos com sucesso!")
+
+            # Copia o arquivo para o diretório de destino
+            shutil.move(caminho_origem, caminho_destino)
+            print(f"Arquivo {arquivo} movido para {caminho_destino}.")
+        
+        
+        except Exception as e:
+            print(f"Erro ao processar o arquivo {arquivo}: {e}")
+    return
 
 
 #####DEVELOP
 # Coleta de 120 entradas iniciais
-i, j, l, k, by_sinal = 0, 0, 0, 0, 0
+i, j, l, k, m, n, n1, n2, by_sinal = 0, 0, 0, 0, 0, 0, 0, 0, 0
 data_teste, array1, array3, array4, array5, array6, array7, array8, array9, array10, array11, array12, array13, data_teste1, data_teste2, data_teste3, novas_entradas, saida1, saida2, saida3, saida4, saida5, saida6, proximas_entradas = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
 
 order = np.zeros(162)
@@ -97,6 +125,8 @@ novas_entradas_fixas, correlacao_fixas = None, None  # Para manter as novas entr
 while i <= 1800:
     print(24*'*-')
     print(f'Rodada: {i}')
+    
+    consultar_modelos_listados()
     
     #Rotacionar entradas. Ela pode ser realizada de duas maneiras, através de um banco de dados, ou através de entradas inseridas manualmente.
     while True:
@@ -119,14 +149,8 @@ while i <= 1800:
 
     # Condição para salvar e sair ao digitar 0
     if float(odd) == 0 and i > 120:
-        print("Salvando os dados e encerrando a execução...")
-        data_saida1 = pd.DataFrame({
-            'historico_entradas':np.array([array2]),
-            'Predicao_Medias': np.array([novas_entradas]),
-            'Predicao_01': np.array([proximas_entradas]),
-
-
-        })
+        print("Encerrando a execução...")
+        break
         
     if float(odd) >= 2:
         array1.append(1)
@@ -150,117 +174,328 @@ while i <= 1800:
         print(f'Media60: {media} \nDesvio Padrão60: {desvpad} \nBinomial Estatistica: {binomial_teste} \nProximas entradas: {order[k+1]} | lenorder: {len(order)}')
         
         k += 1
+    
     if i % 60 == 0 and i >= 120:
-        if i > 120:
-            if i < 360:
-                pergunta = 0
-                print("Continuando a execução do loop...")  # Apenas continue normalmente
-            elif i >=  360:    
-                pergunta = int(input("Você ainda quer continuar modelando? 0S ou 1N: "))
-                
-            if pergunta == 0:
-                print("Continuando a execução do loop...")  # Apenas continue normalmente
-########################################
-#1.1 
-            else:
-                print("Salvando os dados organizados ... ")
-                # Salvando os dados de saída e saindo do loop
-                data_saida = pd.DataFrame({
-                    'Acertos_Reais_CTG': saida1,
-                    'Acertos_Reais_PCT': saida2,
-                    'Acertos_Predicao_CTG': saida3,
-                    'Acertos_Predicao_PCT': saida4,
-                    'Acertos1_Predicao': saida5,
-                    'Acerto1_Predicao_PCT': saida6,
-                    'Variancia': array12
-                }).to_csv('/home/darkcover/Documentos/Out/dados/Saidas/Data_Saida.csv')
-                l = 1
-                break  # Sai do loop principal
-########################################
-
-########################################
 #1.0
-        print("Gerando novas entradas, a partir das últimas entradas:")
-        
-        novas_entradas = gerar_oscillacao(
-            valor_inicial=data_teste[-1], 
-            incremento=1/60,
-            tamanho=60,
-            limite_inferior=0.28, 
-            limite_superior=0.63)
-        
-        proximas_entradas = prever_com_banco(novas_entradas, array=array1[i-60:i], tamanho_previsao=60)
+        while m == 0:
+            print("Gerando novas entradas, a partir das últimas entradas:")
+## Verificação das ultimas entradas com modelos já salvos;
+            while True:
+                try:
+                    pergunta1 = int(input("Consultar banco de funções (0N e 1S) --> "))
+                    if pergunta1 == 0:
+                        kil1, kil2 = [], []
 
-        k = 0
+                        novas_entradas = gerar_oscillacao(
+                            valor_inicial=data_teste[-1], 
+                            incremento=1/60,
+                            tamanho=60,
+                            limite_inferior=0.28, 
+                            limite_superior=0.63)
+                        
+                        proximas_entradas = prever_01s(novas_entradas, 
+                                                    array=array1[i-60:i], 
+                                                    tamanho_previsao=60)
+
+                        k = 0
+                        break
+                    
+                    elif pergunta1 == 1:
+                        print(12*'*-')
+                        kil1, kil2 = [], []
+
+                        # Leitura do dataframe
+                        df = pd.read_csv(path_data_modelos_gerais)
+                        mute1 = np.array(array1[i - 60: i])
+
+                        n2, acuracia, precisao, recall, f1_score = 0, 0, 0, 0
+                        novas_entradas, proximas_entradas = [], []
+                        data_saida2 = pd.DataFrame(columns=['n_i', 'Predicao_Medias', 'Predicao_01', 'Acuracia', 'Precisao', 'Recall', 'F1-Score'])
+
+                        data_saida2 = pd.DataFrame({
+                                        'n_i':[n2],
+                                        'Predicao_Medias': [np.array(novas_entradas)],
+                                        'Predicao_01': [np.array((proximas_entradas))], 
+                                        'Acuracia': [acuracia], 
+                                        'Precisao': [precisao], 
+                                        'Recall': [recall], 
+                                        'F1-Score': [f1_score]
+                                        })
+
+                        print(data_saida2)
+                        print(len(data_saida2))
+                        print(type(data_saida2))
+
+                        # Itera sobre os valores da coluna 'historico_01'
+                        for name in range(0, len(df['historico_01'])):
+                            # Aqui, array1 é o array com o qual você está comparando
+                            # Supondo que array1 já seja um numpy array
+                            print("Array1:")
+                            print(mute1)
+                            print("Comprimento Array1:", len(mute1))
+                            print("Tipo de Array1:", type(mute1))
+                            
+                            # Tentativa de converter a string da coluna 'historico_01' em um numpy array
+                            try:
+                                mute2 = np.array(eval(df['historico_01'][name]))  # Converte string para array
+                            except:
+                                print(f"Erro ao converter {df['historico_01'][name]}")
+                                continue
+                            
+                            print("Array2:")
+                            print(mute2)
+                            print("Comprimento Array2:", len(mute2))
+                            print("Tipo de Array2:", type(mute2))
+
+                            time.sleep(60)                            
+                            # Comparação entre os arrays
+                            if np.array_equal(mute1, mute2):
+                                print("Encontramos alguém com o mesmo array")
+                                novas_entradas = np.array(eval(df['Predicao_Medias'][name]))
+                                proximas_entradas = np.array(eval(df['Predicao_01'][name]))
+                                acuracia = df['Acuracia'][name]
+                                precisao = df['Precisao'][name]
+                                recall = df['Recall'][name]
+                                f1_score = df['F1-Score'][name]
+
+                                data_saida1 = pd.DataFrame({
+                                            'n_i':[n2],
+                                            'Predicao_Medias': [novas_entradas],
+                                            'Predicao_01': [proximas_entradas], 
+                                            'Acuracia': [acuracia], 
+                                            'Precisao': [precisao], 
+                                            'Recall': [recall], 
+                                            'F1-Score': [f1_score]
+                                            })
+                                
+                                print(data_saida1)
+                                print(len(data_saida1))
+                                print(type(data_saida1))
+
+                                time.sleep(60)
+                                data_saida2 = data_saida2.concat([data_saida2, data_saida1], ignore_index = True)
+                                
+                                n2 += 1
+                                n1 = 1
+                        
+                        
+                                time.sleep(45)
+                            else:
+                                print("Os arrays são diferentes")
+
+
+                        time.sleep(50)
+                            
+                                
+
+                        
+                        if n1 == 1:
+                            for o in range(0,len(data_saida2)):
+                                print(f'n_i: {data_saida2['n_1'][o]} \nAcuracia: {data_saida2['Acuracia'][o]} \nPrecisao: {data_saida2['Precisao'][o]} \nRecall: {data_saida2['Recall'][o]} \nF1-Score: {data_saida2['F1-Score'][o]}')
+
+                            print(12*'*-')
+                            n4 = 0
+                            while n4 == 0:
+                                n3 = int(input("Escolha sua entrada n_i: "))
+                                print(n3, type(n3))
+
+                                if n3 == -1:
+                                    n1 = 0
+                                    n4 = 1
+
+                                for o in range(0, len(data_saida2)):
+                                    if int(n3) == o:
+                                        print('Entrada selecionada: ', o)
+                                        novas_entradas = data_saida2["Predicao_Medias"][int(n3)]
+                                        proximas_entradas = data_saida2['Predicao_01'][int(n3)]
+                                        n4 = 1
+                                
+
+                            
+                            print(data_saida2)
+                            print(novas_entradas)
+                            print(proximas_entradas)
+                            n1 = 0
+
+                        k = 0
+                        
+                        if n1 == 0:
+                            kil1, kil2 = [], []
+
+                            novas_entradas = gerar_oscillacao(
+                                valor_inicial=data_teste[-1], 
+                                incremento=1/60,
+                                tamanho=60,
+                                limite_inferior=0.28, 
+                                limite_superior=0.63)
+                            
+                            proximas_entradas = prever_01s(novas_entradas, 
+                                                        array=array1[i-60:i], 
+                                                        tamanho_previsao=60)
+
+                            k = 0
+                            n1 = 0
+                                                    
+                        break
+                except ValueError:
+                    print("Entrada Invalida. Algum erro ocorreu ...")
 
 ########################################
-# 1.2
-        print(f'Entradas criadas das medias criada: {len(novas_entradas)} \nEntradas 0 e 1 criada: {(proximas_entradas)}')
-        
-        for i2 in range(i, i + 60):
-            if float(data1['Odd'][i2]) >= 2:
-                array10.append(1)
-            else:
-                array10.append(0)
-        
+# 1.2   
+            print(24*'*-')
+            print(f'Entradas criadas das medias criada: {len(novas_entradas)} \nEntradas 0 e 1 criada: {(proximas_entradas)}')
 
-        for i1 in range(0,len(proximas_entradas)):
-            if array10[i1] == proximas_entradas[i1]:
-                array9.append(1)
-                if array10[i1] == 1:
-                    array13.append(1)
+            kil1 = np.concatenate((data_teste[i - 120: i], novas_entradas))
+            kil2 = np.concatenate((array1, proximas_entradas))
+            array5, array6 = [], []
+            for j in range(len(array1) - 61, len(kil2)):
+                array5 = kil2[j-60:j]
+                desvpad_teste = np.std(array5, ddof=1)
+                array6.append(desvpad_teste)
+
+            print(len(kil1), len(kil2), len(array6))
+
+            data_teste3 = []
+            for l in range(60, 121):
+                array7 = kil1[l - 60: l]
+                array8 = array6[l - 60: l]
+                #print(len(array7), len(array8))
+                correlacao_teste, p_value_teste = pearsonr(array7, array8)
+                data_teste3.append(correlacao_teste)
+
+    ## 1.2.2 : Adicionar a função de perguntar se quero realizar a predição a partir de um banco de dados, ou para coleta normal.
+            
+    ### Função que gera uma matriz de confusão a partir de uma nova entrada, proximas entradas e banco de dados
+            #Determina as próximas 60 entradas
+            for i2 in range(i, i + 60):
+                if float(data1['Odd'][i2]) >= 2:
+                    array10.append(1)
                 else:
-                    array13.append(0)
-            else:
-                array9.append(0)
-        for i3 in range(0, len(array9)):
-            if array9[i3] == 1:
-                array11.append(1)
-            else:
-                array11.append(0)
-        print(24*'*-')
-        print(f'Qt. Real> {sum(array10)} | Porcentagem: {sum(array10) / len(array10)} \nQt. Variancia> {sum(array9)} | Porcentagem: {sum(array9) / len(array9)} \nQt. Acerto 1 Predicao> {sum(array11)} | Acerto 1 Predicao PCT: {sum(array11) / len(array11)} \nAcertos: {sum(array13)} | Acertos(%) >> {sum(array13)/len(array13)}')
+                    array10.append(0)
+                
+            # Inicializar variáveis da matriz de confusão
+            TP, TN, FP, FN = 0, 0, 0, 0
 
-        taxa_acerto1 = sum(array13)/len(array13)
-        if taxa_acerto1 >= 0.5:
-            adicionar_funcao_ao_banco(valor_inicial=array10[0], incremento=1/60,tamanho=60, taxa_acerto = taxa_acerto1)
+            # Comparar as entradas reais com as preditas
+            for i1 in range(len(proximas_entradas)):
+                real = array10[i1]
+                predito = proximas_entradas[i1]
+                
+                if real == 1 and predito == 1:
+                    TP += 1  # True Positive
+                elif real == 0 and predito == 0:
+                    TN += 1  # True Negative
+                elif real == 0 and predito == 1:
+                    FP += 1  # False Positive
+                elif real == 1 and predito == 0:
+                    FN += 1  # False Negative
 
-        saida1.append(sum(array10)), saida2.append(sum(array10) / len(array10)), saida3.append(sum(array9)), saida4.append(sum(array9) / len(array9)), saida5.append(sum(array11)), saida6.append(sum(array11) / len(array11))
+            # Exibir a matriz de confusão
+            print(24*'*')
+            print("Matriz de Confusão:")
+            print(f"TP (True Positive): {TP}")
+            print(f"TN (True Negative): {TN}")
+            print(f"FP (False Positive): {FP}")
+            print(f"FN (False Negative): {FN}")
+            print(24*'*')
 
-        array9, array10, array11, array13 = [], [], [], []
-    ########################################
-    # 1.2.1
-        #Adicionar outro stop aqui
-########################################
+            # A partir da matriz de confusão, você pode calcular outras métricas de performance, como:
+            acuracia = (TP + TN) / (TP + TN + FP + FN)
+            precisao = TP / (TP + FP) if (TP + FP) != 0 else 0
+            recall = TP / (TP + FN) if (TP + FN) != 0 else 0
+            f1_score = 2 * (precisao * recall) / (precisao + recall) if (precisao + recall) != 0 else 0
 
-        time.sleep(30)
+            print(f"Acurácia: {acuracia}")
+            print(f"Precisão: {precisao}")
+            print(f"Recall: {recall}")
+            print(f"F1-Score: {f1_score}")
 
-########################################
-#1.3
+            # Limpar os arrays para a próxima iteração
+            array9, array10, array11, array13 = [], [], [], []
+
+        ########################################
+        # 1.2.1
+            while True:
+                try:
+                    pergunta2 = int(input("Desejas salvar este modelo ? (0N e 1S)->"))
+                    print(pergunta2, type(pergunta2))
+                
+                    if pergunta2 == 1:
+                        print("Salvando modelo ...")
+                        data_e_hora = datetime.datetime.now()
+                        timestamp = data_e_hora.strftime("%Y-%m-%d_%H-%M-%S")
+                        nome1 = path_data_modelos + str(n2)+ '_' + timestamp + '.csv' 
+                        n2 += 1
+                        #print(nome1)
+                        if len(data_teste) >= 61:
+                            data_teste_order = data_teste
+                        if len(data_teste1) >= 61:
+                            data_teste1_order = data_teste1
+                        
+                        #Erro de array
+                        print(data_teste_order)
+                        print(len(data_teste_order))
+                        print(data_teste1_order)
+                        print(len(data_teste1_order))
+
+                        data_saida = pd.DataFrame({
+                            'historico_01':[array2], 
+                            'historico_medias': [data_teste_order],
+                            'historico_desvio_padrao': [data_teste1_order],
+                            'Predicao_Medias': [novas_entradas],
+                            'Predicao_01': [proximas_entradas], 
+                            'Predicao_desvpad': [array6],
+                            'Predicao_correlacao': [data_teste3],
+                            'Acuracia': acuracia, 
+                            'Precisao': precisao, 
+                            'Recall': recall, 
+                            'F1-Score': f1_score
+                            })
+                        
+                        # Salva o DataFrame em um arquivo CSV
+                        data_saida.to_csv(str(nome1))
+                        print(f"Modelo salvo com sucesso no arquivo {nome1}")
+
+                        print("Saindo do loop após salvar o modelo.")  # Adiciona uma verificação antes do break
+                        m = 1
+                        break  # Encerra o loop após salvar o modelo
+
+                    elif pergunta2 == 0:
+                        # Se a entrada for 0, interrompe o loop sem salvar
+                        print("Modelo não será salvo. Continuando no loop.")
+                        m = 0
+                        break
+                        
+                except ValueError:
+                    print("Entrada invalida, apenas 0 e 1 permitidos ...")
+
+        if m == 1:
+            while True:
+                try:
+                    pergunta3 = int(input("Deseja continuar a executar o código ? (0S e 1N) -> "))
+                    if pergunta3 == 0:
+                        n = 0
+                        m = 0
+                        break
+                    elif pergunta3 == 1:
+                        n = 1
+                        m = 0
+                        break
+                    else:
+                        print("Entrada não é válida, tente novamente ...")
+
+
+                except ValueError:
+                    print("Entrada não lista, tente novamente ...")
+        
+        if n == 1:
+            break
 
 ########################################
 
 
 ########################################
 #1.4 : Aqui obtem-se o data_teste3. Além de analisar o gráfico de correlação entre o histórico e a predição.
-        kil1 = np.concatenate((data_teste[i - 120: i], novas_entradas))
-        kil2 = np.concatenate((array1, proximas_entradas))
-        array5, array6 = [], []
-        for j in range(len(array1) - 61, len(kil2)):
-            array5 = kil2[j-60:j]
-            desvpad_teste = np.std(array5, ddof=1)
-            array6.append(desvpad_teste)
-
-        print(len(kil1), len(kil2), len(array6))
-
-        data_teste3 = []
-        for l in range(60, 121):
-            array7 = kil1[l - 60: l]
-            array8 = array6[l - 60: l]
-            #print(len(array7), len(array8))
-            correlacao_teste, p_value_teste = pearsonr(array7, array8)
-            data_teste3.append(correlacao_teste)
-
         # Deslocar as novas entradas para a direita
         x_novas_entradas = np.arange(len(data_teste), len(data_teste) + len(novas_entradas))
         xx_novas_entradas = np.arange(len(data_teste2), len(data_teste2) + len(data_teste3))
@@ -277,6 +512,9 @@ while i <= 1800:
 
         j = 0
 ########################################
+
+########################################
+
     if l == 1:
         break
         
