@@ -44,7 +44,9 @@ Solução comentada em: [sobre](https://github.com/oziieljuniior/Out/issues/5)
 
 ### 1.5 : A partir da linha 181, atulizar método como se produz as novas_entradas e proximas_entradas.
 
-### 1.2.4 : A partir da linha 423. Atualiar método de salvamento dos arrays de historico da medias e historico das predicoes 0 e 1s
+### (FECHADO) 1.2.4 : A partir da linha 423. Atualiar método de salvamento dos arrays de historico da medias e historico das predicoes 0 e 1s
 
+#### SOLUÇÃO
+[sobre](https://github.com/oziieljuniior/Out/issues/7)
 ### 1.2.5 : A partir da linha 470. Atualizar o método de continuação de loop
                     
