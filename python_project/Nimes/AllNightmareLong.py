@@ -1,11 +1,3 @@
-'''
-Commits:
-    1.0 : A partir da linha 185, atualizar metodo de geração de entradas. Ele deve suporta novo gerenciamento e consulta de funções salvas.
-    1.1 : A partir da linha 172, atualizar método de salvamento de dados. Ele deve suportar as funções, dados historicos e variaveis.
-    1.2 : A partir da linha 200, através do método de coletar entradas 0 e 1's. Ajustar forma de comparação de resultados em um matrix de confusão.
-    1.3 : A partir da linha 236, adicionar nova função de salvar função(variáveis de predicao) para utilizar como comparação futura em dados.
-'''
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -168,6 +160,8 @@ while i <= 1800:
                 
             if pergunta == 0:
                 print("Continuando a execução do loop...")  # Apenas continue normalmente
+########################################
+#1.1 
             else:
                 print("Salvando os dados organizados ... ")
                 # Salvando os dados de saída e saindo do loop
@@ -182,7 +176,10 @@ while i <= 1800:
                 }).to_csv('/home/darkcover/Documentos/Out/dados/Saidas/Data_Saida.csv')
                 l = 1
                 break  # Sai do loop principal
+########################################
 
+########################################
+#1.0
         print("Gerando novas entradas, a partir das últimas entradas:")
         
         novas_entradas = gerar_oscillacao(
@@ -196,6 +193,8 @@ while i <= 1800:
 
         k = 0
 
+########################################
+# 1.2
         print(f'Entradas criadas das medias criada: {len(novas_entradas)} \nEntradas 0 e 1 criada: {(proximas_entradas)}')
         
         for i2 in range(i, i + 60):
@@ -229,10 +228,21 @@ while i <= 1800:
         saida1.append(sum(array10)), saida2.append(sum(array10) / len(array10)), saida3.append(sum(array9)), saida4.append(sum(array9) / len(array9)), saida5.append(sum(array11)), saida6.append(sum(array11) / len(array11))
 
         array9, array10, array11, array13 = [], [], [], []
-
+    ########################################
+    # 1.2.1
         #Adicionar outro stop aqui
+########################################
+
         time.sleep(30)
 
+########################################
+#1.3
+
+########################################
+
+
+########################################
+#1.4 : Aqui obtem-se o data_teste3. Além de analisar o gráfico de correlação entre o histórico e a predição.
         kil1 = np.concatenate((data_teste[i - 120: i], novas_entradas))
         kil2 = np.concatenate((array1, proximas_entradas))
         array5, array6 = [], []
@@ -251,9 +261,6 @@ while i <= 1800:
             correlacao_teste, p_value_teste = pearsonr(array7, array8)
             data_teste3.append(correlacao_teste)
 
-
-        time.sleep(10)
-
         # Deslocar as novas entradas para a direita
         x_novas_entradas = np.arange(len(data_teste), len(data_teste) + len(novas_entradas))
         xx_novas_entradas = np.arange(len(data_teste2), len(data_teste2) + len(data_teste3))
@@ -269,6 +276,7 @@ while i <= 1800:
         plt.pause(0.01)
 
         j = 0
+########################################
     if l == 1:
         break
         
