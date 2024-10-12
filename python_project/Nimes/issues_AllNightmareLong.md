@@ -1,22 +1,22 @@
 # Issues:
 
-## 1.0 : A partir da linha 191, atualizar metodo de geração de entradas.
+## (FECHADO) 1.0 : A partir da linha 191, atualizar metodo de geração de entradas.
 
 Ele deve suporta novo gerenciamento e consulta de funções salvas.
 
-## 1.1 : A partir da linha 172, atualizar método de salvamento de dados.
+## (FECHADO) 1.1 : A partir da linha 172, atualizar método de salvamento de dados.
 
 Ele deve suportar as funções, dados historicos e variaveis.
 
-## 1.2 : A partir da linha 200, através do método de coletar entradas 0 e 1's. 
+## (FECHADO) 1.2 : A partir da linha 200, através do método de coletar entradas 0 e 1's. 
 
 Ajustar forma de comparação de resultados em um matrix de confusão.
 
-### 1.2.1
+### (FECHADO) 1.2.1
 
 Ao final dos resultados, adicionar função de salvar dados, com projeções das funções. Ou seja, salvar método de predição. Adicionar função de stop ao salvar.
 
-## 1.2.2 
+## (FECHADO) 1.2.2 
 Adicionar a função de perguntar se quero realizar a predição a partir de um banco de dados, ou para coleta normal.
 
 
@@ -30,9 +30,14 @@ Adicionar nova função de salvar função(variáveis de predicao) para utilizar
 Solução comentada em: [sobre](https://github.com/oziieljuniior/Out/issues/4)
 
 ## (FECHADO) 1.4 : A partir da linha 237
+
 Ajustar array's de predição de correlação.
 
 ### Solução
 
 Solução comentada em: [sobre](https://github.com/oziieljuniior/Out/issues/5)
 '''
+
+## 12/10/2024
+
+## 1.5 : 
