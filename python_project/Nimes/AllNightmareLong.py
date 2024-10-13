@@ -682,8 +682,13 @@ while i <= 1800:
         
         n6 += 1
         
-        print(12*'*-')
-        print(f'Predição: {predito}')
+        if n6 >= 60:
+            print("Alcançamos o limite de predições")
+            print(12*'*-')
+        if n6 < 60:
+            predito_futura = proximas_entradas[n6] 
+            print(12*'*-')
+            print(f'Predição: {predito_futura}')
         
          
     
