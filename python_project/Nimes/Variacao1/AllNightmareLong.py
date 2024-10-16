@@ -11,7 +11,9 @@ from statsmodels.tsa.stattools import adfuller
 
 
 ###Carregar Paths e Dados
-data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k_1.csv')
+#dados/Saidas/FUNCOES/SBS - 13_10S1.csv
+#/home/darkcover/Documentos/Out/dados/odds_200k.csv
+data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k.csv')
 
 path_data_modelos = '/home/darkcover/Documentos/Out/dados/Saidas/Metallica/Modelos_Listados/Novos/'
 path_data_modelos_salvos = '/home/darkcover/Documentos/Out/dados/Saidas/Metallica/Modelos_Listados/Salvos/'
@@ -22,21 +24,6 @@ path_data_modelos_gerais = '/home/darkcover/Documentos/Out/dados/Saidas/Metallic
 ###FUNCOES
 # Função para gerar oscilação controlada, agora com referência ao modelo AR
 
-def selecionar_lag_otimo(dados):
-    # Testar diferentes lags e selecionar com base no AIC ou BIC
-    melhor_aic = float('inf')
-    melhor_lag = None
-    
-    for lag in range(1, len(dados)):  # Exemplo com lag até 50
-        modelo = AutoReg(dados, lags=lag)
-        resultado = modelo.fit()
-        
-        # Comparar o AIC
-        if resultado.aic < melhor_aic:
-            melhor_aic = resultado.aic
-            melhor_lag = lag
-            
-    return melhor_lag
 
 
 def gerar_oscillacao(valor_inicial, incremento, previsao_ar, limite_inferior=0.28, limite_superior=0.63):
@@ -46,9 +33,9 @@ def gerar_oscillacao(valor_inicial, incremento, previsao_ar, limite_inferior=0.2
         if i == 0:
             probabilidade1 = valor_inicial
         else:
-            probabilidade1 = round(previsao_ar[i],5)
+            probabilidade1 = round(previsao_ar[i],4)
         
-        probabilidade2 = round(previsao_ar[i+1],5)
+        probabilidade2 = round(previsao_ar[i+1],4)
 
         if probabilidade1 < probabilidade2:
             proximo_valor = osc_final[-1] + incremento
@@ -109,13 +96,13 @@ def prever_01s(novas_entradas, array, tamanho_previsao=120, limite_inferior=0.28
             
             novas_entradas = np.append(novas_entradas, probabilidade_de_1)
 
-        binomial1 = round(calcular_distribuicao_binomial(previsoes), 5)
-        binomial2 = round(calcular_distribuicao_binomial(array), 5)
+        binomial1 = round(calcular_distribuicao_binomial(previsoes), 14)
+        binomial2 = round(calcular_distribuicao_binomial(array), 14)
         print(binomial1, binomial2)
         mediass = sum(previsoes)/len(previsoes)
         print(mediass)
 
-        if binomial1 <= binomial2 and mediass >= limite_inferior and mediass <= limite_superior:
+        if binomial1 == binomial2 and mediass >= limite_inferior and mediass <= limite_superior:
             return previsoes
         previsoes = []
         novas_entradas = novas_entradas_fixas1
@@ -174,8 +161,6 @@ def consultar_modelos_listados():
             print(f"Erro ao processar o arquivo {arquivo}: {e}")
     return
 
-import datetime
-
 def salvar_resumo_ar(model_ar_fit, nome_arquivo="resumo_modelo_ar.txt"):
     # Obter o resumo do modelo
     resumo = model_ar_fit.summary()
@@ -183,15 +168,20 @@ def salvar_resumo_ar(model_ar_fit, nome_arquivo="resumo_modelo_ar.txt"):
     # Obter a data e hora atual
     data_atual = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
-    # Abrir (ou criar) um arquivo txt para salvar o resumo
-    with open(nome_arquivo, "w") as arquivo:
+    # Abrir o arquivo no modo append ("a"), para adicionar conteúdo ao final
+    with open(nome_arquivo, "a") as arquivo:
+        # Adicionar separador para identificar cada execução
+        arquivo.write("\n" + "="*40 + "\n")
+        
         # Escrever a data no início do arquivo
         arquivo.write(f"Data das entradas: {data_atual}\n\n")
         
         # Escrever o resumo do modelo no arquivo
         arquivo.write(str(resumo))
-    
-    print(f"Resumo do modelo AR salvo em {nome_arquivo}")
+        arquivo.write("\n" + "="*40 + "\n")  # Adicionar separador no final
+
+    print(f"Resumo do modelo AR adicionado ao arquivo {nome_arquivo}")
+
 
 ###DEVELOP
 # Coleta de 120 entradas iniciais
@@ -205,6 +195,7 @@ fig, (ax, ax_corr) = plt.subplots(2, 1, figsize=(10, 12))
 
 novas_entradas_fixas, correlacao_fixas = None, None  # Para manter as novas entradas fixas no gráfico
 
+data1 = data1.iloc[2000:].reset_index(drop=True)
 while i <= 1800:
     print(24*'*-')
     print(f'Rodada: {i}')
@@ -214,7 +205,7 @@ while i <= 1800:
     #Rotacionar entradas. Ela pode ser realizada de duas maneiras, através de um banco de dados, ou através de entradas inseridas manualmente.
     while True:
         try:
-            if i <= 5000:
+            if i <= 64000:
                 print(data1['Odd'][i])
                 odd = float(data1['Odd'][i])
                 if odd == 0:
@@ -343,7 +334,7 @@ while i <= 1800:
             while True:
                 try:
                     pergunta1 = int(input("Consultar banco de funções (0N e 1S) --> "))
-                    pergunta4 = int(input("Além disso, desejas visualizar os acertos direto no banco de dados ? Ou desejas atualizar em tempo real ? (0Banco 1Real) -> "))
+                    pergunta4 = int(input("Além disso, desejas visualizar os acertos direto no banco de dados ? Ou desejas atualizar em tempo real ? (0Banco 1Real) --> "))
                     
                     if pergunta1 == 0:
                         kil1, kil2 = [], []
@@ -351,7 +342,8 @@ while i <= 1800:
                         if i <= 300:
                             guitar = 20
                         else:
-                            guitar = i // 60
+                            guitar = 12 * (i // 60)
+                            print('Guitar ---------------------------------------->',guitar)
 
                         model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
                         model_ar_fit = model_ar.fit()
@@ -364,7 +356,7 @@ while i <= 1800:
 
                         previsao_ar = model_ar_fit.predict(start=len(data_teste), end=len(data_teste) + 60)
                         novas_entradas = gerar_oscillacao(
-                            valor_inicial=data_teste[-1], 
+                            valor_inicial=media, 
                             incremento=1/60,
                             previsao_ar=previsao_ar,
                             limite_inferior=0.28, 
@@ -514,7 +506,8 @@ while i <= 1800:
                             if i <= 300:
                                 guitar = 20
                             else:
-                                guitar = i // 60
+                                guitar = 24 * (i // 60)
+                                print('Guitar ---------------------------------------->', guitar)
 
                             model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
                             model_ar_fit = model_ar.fit()
@@ -527,7 +520,7 @@ while i <= 1800:
 
                             previsao_ar = model_ar_fit.predict(start=len(data_teste), end=len(data_teste) + 60)
                             novas_entradas = gerar_oscillacao(
-                                valor_inicial=data_teste[-1], 
+                                valor_inicial=media, 
                                 incremento=1/60,
                                 previsao_ar=previsao_ar,
                                 limite_inferior=0.28, 
@@ -692,7 +685,8 @@ while i <= 1800:
                                 if i <= 300:
                                     guitar = 20
                                 else:
-                                    guitar = i // 60
+                                    guitar = 12 * (i // 60)
+                                    print('Guitar ---------------------------------------->',guitar)
 
                                 model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
                                 model_ar_fit = model_ar.fit()
@@ -708,7 +702,7 @@ while i <= 1800:
 
                                 previsao_ar = model_ar_fit.predict(start=len(data_teste), end=len(data_teste) + 60)
                                 novas_entradas = gerar_oscillacao(
-                                    valor_inicial=data_teste[-1], 
+                                    valor_inicial=media, 
                                     incremento=1/60,
                                     previsao_ar=previsao_ar,
                                     limite_inferior=0.28, 

@@ -22,22 +22,6 @@ path_data_modelos_gerais = '/home/darkcover/Documentos/Out/dados/Saidas/Metallic
 ###FUNCOES
 # Função para gerar oscilação controlada, agora com referência ao modelo AR
 
-def selecionar_lag_otimo(dados):
-    # Testar diferentes lags e selecionar com base no AIC ou BIC
-    melhor_aic = float('inf')
-    melhor_lag = None
-    
-    for lag in range(1, len(dados)):  # Exemplo com lag até 50
-        modelo = AutoReg(dados, lags=lag)
-        resultado = modelo.fit()
-        
-        # Comparar o AIC
-        if resultado.aic < melhor_aic:
-            melhor_aic = resultado.aic
-            melhor_lag = lag
-            
-    return melhor_lag
-
 
 def gerar_oscillacao(valor_inicial, incremento, previsao_ar, limite_inferior=0.28, limite_superior=0.63):
     osc_final = [valor_inicial]
@@ -46,9 +30,9 @@ def gerar_oscillacao(valor_inicial, incremento, previsao_ar, limite_inferior=0.2
         if i == 0:
             probabilidade1 = valor_inicial
         else:
-            probabilidade1 = round(previsao_ar[i],5)
+            probabilidade1 = round(previsao_ar[i],4)
         
-        probabilidade2 = round(previsao_ar[i+1],5)
+        probabilidade2 = round(previsao_ar[i+1],4)
 
         if probabilidade1 < probabilidade2:
             proximo_valor = osc_final[-1] + incremento
@@ -91,7 +75,9 @@ def prever_01s(novas_entradas, array, tamanho_previsao=120, limite_inferior=0.28
     fator_decaimento = fator_decaimento = 1 - min(0.05, np.var(novas_entradas[-60:]) / 10) # Para suavização
     desvio_padrao = np.std(array)
     ini = 0
+    count = 0
     while ini == 0:
+        count += 1
 
         for i in range(tamanho_previsao):
             valor_atual = novas_entradas[-1]
@@ -109,14 +95,20 @@ def prever_01s(novas_entradas, array, tamanho_previsao=120, limite_inferior=0.28
             
             novas_entradas = np.append(novas_entradas, probabilidade_de_1)
 
-        binomial1 = round(calcular_distribuicao_binomial(previsoes), 5)
-        binomial2 = round(calcular_distribuicao_binomial(array), 5)
+        binomial1 = round(calcular_distribuicao_binomial(previsoes), 15)
+        binomial2 = round(calcular_distribuicao_binomial(array), 15)
         print(binomial1, binomial2)
         mediass = sum(previsoes)/len(previsoes)
         print(mediass)
 
-        if binomial1 <= binomial2 and mediass >= limite_inferior and mediass <= limite_superior:
+        if binomial1 == binomial2 and mediass >= limite_inferior and mediass <= limite_superior:
+            
             return previsoes
+        
+        elif count >= 5000:
+            print("Previsoes Aleatorias vão aparecer ...")
+            return previsoes
+
         previsoes = []
         novas_entradas = novas_entradas_fixas1
 
@@ -207,7 +199,7 @@ fig, (ax, ax_corr) = plt.subplots(2, 1, figsize=(10, 12))
 
 novas_entradas_fixas, correlacao_fixas = None, None  # Para manter as novas entradas fixas no gráfico
 
-while i <= 1800:
+while i <= 2500:
     print(24*'*-')
     print(f'Rodada: {i}')
     
@@ -216,7 +208,7 @@ while i <= 1800:
     #Rotacionar entradas. Ela pode ser realizada de duas maneiras, através de um banco de dados, ou através de entradas inseridas manualmente.
     while True:
         try:
-            if i <= 500:
+            if i <= 1800:
                 print(data1['Entrada'][i].replace(",",'.'))
                 odd = float(data1['Entrada'][i].replace(",",'.'))
                 if odd == 0:
@@ -353,7 +345,7 @@ while i <= 1800:
                         if i <= 300:
                             guitar = 20
                         if i > 300:
-                            guitar = i / 10
+                            guitar = i // 6
 
                         model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
                         model_ar_fit = model_ar.fit()
@@ -516,7 +508,7 @@ while i <= 1800:
                             if i <= 300:
                                 guitar = 20
                             if i > 300:
-                                guitar = i / 10
+                                guitar = i // 6
 
                             model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
                             model_ar_fit = model_ar.fit()
@@ -694,7 +686,7 @@ while i <= 1800:
                                 if i <= 300:
                                     guitar = 20
                                 if i > 300:
-                                    guitar = i / 10
+                                    guitar = i // 6
 
                                 model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
                                 model_ar_fit = model_ar.fit()
@@ -776,51 +768,56 @@ while i <= 1800:
         j = 0
 
 ########################################
+
+########################################################## AJUSTANDO ESSA PARTE
     if i >= 180 and pergunta4 == 1:
         # Inicializar variáveis da matriz de confusão
-        
-        real = array1[-1]
-        predito = proximas_entradas[n6]
-
-        if real == 1 and predito == 1:
-            TP += 1  # True Positive
-        elif real == 0 and predito == 0:
-            TN += 1  # True Negative
-        elif real == 0 and predito == 1:
-            FP += 1  # False Positive
-        elif real == 1 and predito == 0:
-            FN += 1  # False Negative
-
-        # Exibir a matriz de confusão
-        print(24*'*')
-        print("Matriz de Confusão:")
-        print(f"TP (True Positive): {TP}")
-        print(f"TN (True Negative): {TN}")
-        print(f"FP (False Positive): {FP}")
-        print(f"FN (False Negative): {FN}")
-        print(24*'*')
-        
-        # A partir da matriz de confusão, você pode calcular outras métricas de performance, como:
-        acuracia = (TP + TN) / (TP + TN + FP + FN)
-        precisao = TP / (TP + FP) if (TP + FP) != 0 else 0
-        recall = TP / (TP + FN) if (TP + FN) != 0 else 0
-        f1_score = 2 * (precisao * recall) / (precisao + recall) if (precisao + recall) != 0 else 0
-
-        print(f"Acurácia: {acuracia}")
-        print(f"Precisão: {precisao}")
-        print(f"Recall: {recall}")
-        print(f"F1-Score: {f1_score}")
-        
-        n6 += 1
-        
-        if n6 >= 60:
-            print("Alcançamos o limite de predições")
-            print(12*'*-')
-        if n6 < 60:
+        if n6 == 0:
             predito_futura = proximas_entradas[n6] 
             print(12*'*-')
             print(f'Predição: {predito_futura}')
-        
+            print(12*'*-')   
+
+        else:
+            predito_futura = proximas_entradas[n6] 
+            print(12*'*-')
+            print(f'Predição: {predito_futura}')
+            print(12*'*-')   
+            
+            real = array1[-1]
+            predito = proximas_entradas[n6-1]
+            
+            if real == 1 and predito == 1:
+                TP += 1  # True Positive
+            elif real == 0 and predito == 0:
+                TN += 1  # True Negative
+            elif real == 0 and predito == 1:
+                FP += 1  # False Positive
+            elif real == 1 and predito == 0:
+                FN += 1  # False Negative
+
+            # Exibir a matriz de confusão
+            print(24*'*')
+            print("Matriz de Confusão:")
+            print(f"TP (True Positive): {TP}")
+            print(f"TN (True Negative): {TN}")
+            print(f"FP (False Positive): {FP}")
+            print(f"FN (False Negative): {FN}")
+            print(24*'*')
+            
+            # A partir da matriz de confusão, você pode calcular outras métricas de performance, como:
+            acuracia = (TP + TN) / (TP + TN + FP + FN)
+            precisao = TP / (TP + FP) if (TP + FP) != 0 else 0
+            recall = TP / (TP + FN) if (TP + FN) != 0 else 0
+            f1_score = 2 * (precisao * recall) / (precisao + recall) if (precisao + recall) != 0 else 0
+
+            print(f"Acurácia: {acuracia}")
+            print(f"Precisão: {precisao}")
+            print(f"Recall: {recall}")
+            print(f"F1-Score: {f1_score}")
+
+        n6 += 1 
+    
          
     
 ########################################
