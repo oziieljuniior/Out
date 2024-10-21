@@ -199,7 +199,7 @@ fig, (ax, ax_corr) = plt.subplots(2, 1, figsize=(10, 12))
 
 novas_entradas_fixas, correlacao_fixas = None, None  # Para manter as novas entradas fixas no gráfico
 
-while i <= 2500:
+while i <= 5000:
     print(24*'*-')
     print(f'Rodada: {i}')
     
@@ -208,7 +208,7 @@ while i <= 2500:
     #Rotacionar entradas. Ela pode ser realizada de duas maneiras, através de um banco de dados, ou através de entradas inseridas manualmente.
     while True:
         try:
-            if i <= 1800:
+            if i <= 840:
                 print(data1['Entrada'][i].replace(",",'.'))
                 odd = float(data1['Entrada'][i].replace(",",'.'))
                 if odd == 0:
