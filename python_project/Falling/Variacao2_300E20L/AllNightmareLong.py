@@ -208,7 +208,7 @@ while i <= 5000:
     #Rotacionar entradas. Ela pode ser realizada de duas maneiras, através de um banco de dados, ou através de entradas inseridas manualmente.
     while True:
         try:
-            if i <= 199:
+            if i <= 178:
                 print(data1['Entrada'][i].replace(",",'.'))
                 odd = float(data1['Entrada'][i].replace(",",'.'))
                 if odd == 0:
@@ -342,12 +342,12 @@ while i <= 5000:
                     if pergunta1 == 0:
                         kil1, kil2 = [], []
                         # Ajustar o modelo AR ao array2
-                        if i <= 400:
+                        if i <= 330:
                             guitar = 20
                             model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme 
-                        if i > 400:
-                            guitar = 61
-                            model_ar = AutoReg(data_teste[len(data_teste) - 360: len(data_teste)], lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
+                        if i > 330:
+                            guitar = 20
+                            model_ar = AutoReg(data_teste[len(data_teste) - 300: len(data_teste)], lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
 
                         model_ar_fit = model_ar.fit()
 
@@ -506,12 +506,12 @@ while i <= 5000:
                         if n1 == 0:
                             kil1, kil2 = [], []
                             # Ajustar o modelo AR ao array2
-                            if i <= 400:
+                            if i <= 330:
                                 guitar = 20
                                 model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme 
-                            if i > 400:
-                                guitar = 61
-                                model_ar = AutoReg(data_teste[len(data_teste) - 360: len(data_teste)], lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
+                            if i > 330:
+                                guitar = 20
+                                model_ar = AutoReg(data_teste[len(data_teste) - 300: len(data_teste)], lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
 
                             model_ar_fit = model_ar.fit()
 
@@ -685,12 +685,12 @@ while i <= 5000:
                                 # Se a entrada for 0, interrompe o loop sem salvar
                                 print("Modelo não será salvo. Continuando o loop.")
                                 # Ajustar o modelo AR ao array2
-                                if i <= 400:
+                                if i <= 330:
                                     guitar = 20
                                     model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme 
-                                if i > 400:
-                                    guitar = 61
-                                    model_ar = AutoReg(data_teste[len(data_teste) - 360: len(data_teste)], lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
+                                if i > 330:
+                                    guitar = 20
+                                    model_ar = AutoReg(data_teste[len(data_teste) - 300: len(data_teste)], lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
 
                                 model_ar_fit = model_ar.fit()
 
