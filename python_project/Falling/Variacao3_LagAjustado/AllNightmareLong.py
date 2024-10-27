@@ -381,7 +381,7 @@ while i <= 5000:
                             incremento=1/60,
                             previsao_ar=previsao_ar,
                             limite_inferior=0.28, 
-                            limite_superior=0.63)
+                            limite_superior=0.68)
     
                         proximas_entradas = prever_01s(novas_entradas[1:len(novas_entradas)], 
                                                     array=array1[i-30:i], 
@@ -563,7 +563,7 @@ while i <= 5000:
                                 incremento=1/60,
                                 previsao_ar=previsao_ar,
                                 limite_inferior=0.28, 
-                                limite_superior=0.63)
+                                limite_superior=0.68)
                             
                             proximas_entradas = prever_01s(novas_entradas[1:len(novas_entradas)], 
                                                         array=array1[i-30:i], 
@@ -762,7 +762,7 @@ while i <= 5000:
                                     incremento=1/60,
                                     previsao_ar=previsao_ar,
                                     limite_inferior=0.28, 
-                                    limite_superior=0.63)
+                                    limite_superior=0.68)
                                 
                                 proximas_entradas = prever_01s(novas_entradas[1:len(novas_entradas)], 
                                                             array=array1[i-30:i], 
