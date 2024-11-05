@@ -70,7 +70,7 @@ def calcular_distribuicao_binomial(array):
 def prever_01s(novas_entradas, array, tamanho_previsao=120, limite_inferior=0.28, limite_superior=0.72):
     previsoes = []
     novas_entradas_fixas1 = novas_entradas
-    fator_decaimento = fator_decaimento = 1 - min(0.05, np.var(novas_entradas[-60:]) / 10) # Para suavização
+    fator_decaimento = fator_decaimento = 1 - min(0.05, np.var(novas_entradas[-30:]) / 10) # Para suavização
     desvio_padrao = np.std(array)
     ini = 0
     count = 0
@@ -93,8 +93,8 @@ def prever_01s(novas_entradas, array, tamanho_previsao=120, limite_inferior=0.28
             
             novas_entradas = np.append(novas_entradas, probabilidade_de_1)
 
-        binomial1 = round(calcular_distribuicao_binomial(previsoes), 15)
-        binomial2 = round(calcular_distribuicao_binomial(array), 15)
+        binomial1 = round(calcular_distribuicao_binomial(previsoes), 10)
+        binomial2 = round(calcular_distribuicao_binomial(array), 10)
         print(binomial1, binomial2)
         mediass = sum(previsoes)/len(previsoes)
         print(mediass)
@@ -199,7 +199,7 @@ novas_entradas_fixas, correlacao_fixas = None, None  # Para manter as novas entr
 
 inteiro = int(input("Tamanho da amostra da tabela --> "))
 
-while i <= 5000:
+while i <= 10000:
     print(24*'*-')
     print(f'Rodada: {i}')
     
@@ -378,46 +378,9 @@ while i <= 5000:
                         if i > 2130 and i <= 2430:
                             guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421]
                             model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 2430 and i <= 2730:
+                        if i > 2430:
                             guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481]
                             model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 2730 and i <= 3030:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 3030 and i <= 3330:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 3330 and i <= 3630:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 3630 and i <= 3930:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 3930 and i <= 4230:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 4230 and i <= 4530:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,820,821]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 4530 and i <= 4830:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 4830 and i <= 5130:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 5130 and i <= 5430:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 5430 and i <= 6030:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901,960,961]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 6030 and i <= 6330:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901,960,961,1020,1021]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                        if i > 6330:
-                            guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901,960,961,1020,1021, 1320, 1321]
-                            model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-
                         model_ar_fit = model_ar.fit()
 
                         # Exibir sumário do modelo AR
@@ -435,7 +398,7 @@ while i <= 5000:
                         # Exemplo de uso da função
                         salvar_resumo_ar(model_ar_fit, "resumo_modelo_ar.txt")
                         
-                        previsao_ar = model_ar_fit.predict(start=len(data_teste), end=len(data_teste) + 60)
+                        previsao_ar = model_ar_fit.predict(start=len(data_teste), end=len(data_teste) + 30)
 
                         ajuste1 = [x + 0.5 for x in previsao_ar]
                         
@@ -612,44 +575,8 @@ while i <= 5000:
                             if i > 2130 and i <= 2430:
                                 guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421]
                                 model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 2430 and i <= 2730:
+                            if i > 2430:
                                 guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 2730 and i <= 3030:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 3030 and i <= 3330:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 3330 and i <= 3630:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 3630 and i <= 3930:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 3930 and i <= 4230:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 4230 and i <= 4530:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,820,821]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 4530 and i <= 4830:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 4830 and i <= 5130:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 5130 and i <= 5430:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 5430 and i <= 6030:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901,960,961]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 6030 and i <= 6330:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901,960,961,1020,1021]
-                                model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                            if i > 6330:
-                                guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901,960,961,1020,1021, 1320, 1321]
                                 model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
 
                             model_ar_fit = model_ar.fit()
@@ -860,44 +787,8 @@ while i <= 5000:
                                 if i > 2130 and i <= 2430:
                                     guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421]
                                     model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 2430 and i <= 2730:
+                                if i > 2430:
                                     guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 2730 and i <= 3030:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 3030 and i <= 3330:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 3330 and i <= 3630:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 3630 and i <= 3930:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 3930 and i <= 4230:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 4230 and i <= 4530:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,820,821]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 4530 and i <= 4830:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 4830 and i <= 5130:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 5130 and i <= 5430:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 5430 and i <= 6030:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901,960,961]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 6030 and i <= 6330:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901,960,961,1020,1021]
-                                    model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
-                                if i > 6330:
-                                    guitar = [1,60,61,120,121,180,181,240,241,300,301,360,361,420,421,480,481,540,541,600,601,660,661,720,721,780,781,840,841,900,901,960,961,1020,1021, 1320, 1321]
                                     model_ar = AutoReg(ajuste, lags=guitar)  # Ajuste o lag conforme model_ar = AutoReg(data_teste, lags=guitar)  # Ajuste o lag conforme sua análise de ACF
 
                                 model_ar_fit = model_ar.fit()
