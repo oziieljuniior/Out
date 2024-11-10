@@ -12,9 +12,27 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
+import numpy as np
+import matplotlib.pyplot as plt
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+
+import tkinter as tk
+from tkinter import filedialog
+
+# Inicializar a janela root
+root = tk.Tk()
+root.withdraw()  # Ocultar a janela principal
+
+# Abrir a caixa de diálogo para selecionar arquivo
+file_path = filedialog.askopenfilename()
+
+print(f"O arquivo selecionado foi: {file_path}")
+
 
 ###Carregar Paths e Dados
-data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/Saidas/FUNCOES/DOUBLE - 17_09_s1.csv')
+data1 = pd.read_csv(file_path)
 
 path_data_modelos = '/home/darkcover/Documentos/Out/dados/Saidas/Metallica/Modelos_Listados/Novos/'
 path_data_modelos_salvos = '/home/darkcover/Documentos/Out/dados/Saidas/Metallica/Modelos_Listados/Salvos/'
@@ -62,6 +80,28 @@ def calcular_distribuicao_binomial(array):
     probabilidade_binomial = binom.pmf(num_sucessos, n, prob_sucesso)
     
     return probabilidade_binomial
+
+def prever01s(saida3, saida4):
+    #print(len(data_teste), len(array1[60:]))
+
+    # Supondo que data_teste e array1 sejam listas de valores
+    X = np.array(saida4)
+    y = np.array(saida3)
+    #print(f'{X} \n \n \n {y}')
+
+    # Criando o modelo
+    model = Sequential()
+    model.add(Dense(128, activation='relu', input_shape=(30,)))  # Primeira camada densa com 64 neurônios
+    model.add(Dense(64, activation='relu'))  # Segunda camada densa com 32 neurônios
+    model.add(Dense(30, activation='sigmoid'))  # Camada de saída com 30 neurônios, usando 'sigmoid' para prever 0s e 1s
+
+    # Compilando o modelo com uma métrica adicional
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+    # Treinando o modelo e armazenando o histórico
+    model.fit(X, y, epochs=100, batch_size=128, validation_split=0.2)
+
+    return model
 
 def consultar_modelos_listados():
     # Verifica se a pasta de origem existe
@@ -203,7 +243,19 @@ while i <= 10000:
         print(k)
         print(f'Media60: {media} \nDesvio Padrão60: {desvpad} \nBinomial Estatistica: {binomial_teste}')
         
-        k += 1
+        k += 1    
+    
+    if i >= 100:
+        saida1 = array2[-30:]
+        saida2 = data_teste[-30:]
+
+        #print(len(saida1), len(saida2))
+        #print(saida2)
+        #print(data_teste)
+        saida3.append(saida1) ## Array das entradas 0 e 1's -> y
+        saida4.append(saida2) ## Array das entradas medias -> X
+        #print(len(saida3), len(saida4))
+
 
 #1.0    
     if i % 30 == 0 and i >= 180:
@@ -363,36 +415,22 @@ while i <= 10000:
                             limite_superior=0.72)
 
                         #######
-                        print(len(data_teste), len(array1[60:]))
-
-                        # Supondo que data_teste e array1 sejam listas de valores
-                        X1 = np.array(data_teste).reshape(-1, 1)  # Garante que X1 seja 2D
-                        y1 = np.array(array1[60:])  # Converte array1 para NumPy array
-
-                        # Escalonar as variáveis de entrada
-                        scaler = StandardScaler()
-                        X1 = scaler.fit_transform(X1)
-
-                        # Separar os dados em conjuntos de treinamento e teste
-                        X_train, X_test, y_train, y_test = train_test_split(X1, y1, test_size=0.2, random_state=42)
-
-                        # Treinando um modelo de Regressão Logística
-                        model = LogisticRegression(class_weight='balanced')
-                        model.fit(X_train, y_train)
+                        #print(len(novas_entradas))
+                        
+                        justdoit = prever01s(saida3,saida4)
+                        
+                        X_pred = np.array([novas_entradas[-30:]])
                         
                         # Fazendo previsões
-                        y_pred = model.predict(X_test)
+                        y_pred = justdoit.predict(X_pred)
+                        
+                        # Arredondando as previsões para 0 ou 1
+                        y_pred = np.round(y_pred)
+                        
+                        for name in y_pred:
+                            proximas_entradas = name
 
-                        # Avaliando o desempenho do modelo
-                        accuracy = accuracy_score(y_test, y_pred)
-                        print(f'Acurácia: {accuracy}')
-                        
-                        x_only = np.array(novas_entradas).reshape(-1,1)
-                        x_only = scaler.fit_transform(x_only)
-                        proximas_entradas = model.predict(x_only)
-                        
                         print(proximas_entradas)
-                        
                         
                         #######
                         k = 0
@@ -589,37 +627,22 @@ while i <= 10000:
                                 limite_superior=0.72)
                             
                             #######
-                            #######
-                            print(len(data_teste), len(array1[60:]))
-
-                            # Supondo que data_teste e array1 sejam listas de valores
-                            X1 = np.array(data_teste).reshape(-1, 1)  # Garante que X1 seja 2D
-                            y1 = np.array(array1[60:])  # Converte array1 para NumPy array
-
-                            # Escalonar as variáveis de entrada
-                            scaler = StandardScaler()
-                            X1 = scaler.fit_transform(X1)
-
-                            # Separar os dados em conjuntos de treinamento e teste
-                            X_train, X_test, y_train, y_test = train_test_split(X1, y1, test_size=0.2, random_state=42)
-
-                            # Treinando um modelo de Regressão Logística
-                            model = LogisticRegression(class_weight='balanced')
-                            model.fit(X_train, y_train)
+                            #print(len(novas_entradas))
+                        
+                            justdoit = prever01s(saida3,saida4)
+                            
+                            X_pred = np.array([novas_entradas[-30:]])
                             
                             # Fazendo previsões
-                            y_pred = model.predict(X_test)
+                            y_pred = justdoit.predict(X_pred)
+                            
+                            # Arredondando as previsões para 0 ou 1
+                            y_pred = np.round(y_pred)
+                            
+                            for name in y_pred:
+                                proximas_entradas = name
 
-                            # Avaliando o desempenho do modelo
-                            accuracy = accuracy_score(y_test, y_pred)
-                            print(f'Acurácia: {accuracy}')
-                            
-                            x_only = np.array(novas_entradas).reshape(-1,1)
-                            x_only = scaler.fit_transform(x_only)
-                            proximas_entradas = model.predict(x_only)
-                            
                             print(proximas_entradas)
-                            
                             
                             #######
 
@@ -831,37 +854,22 @@ while i <= 10000:
                                     limite_superior=0.72)
                                 
                                 #######
-                                #######
-                                print(len(data_teste), len(array1[60:]))
-
-                                # Supondo que data_teste e array1 sejam listas de valores
-                                X1 = np.array(data_teste).reshape(-1, 1)  # Garante que X1 seja 2D
-                                y1 = np.array(array1[60:])  # Converte array1 para NumPy array
-
-                                # Escalonar as variáveis de entrada
-                                scaler = StandardScaler()
-                                X1 = scaler.fit_transform(X1)
-
-                                # Separar os dados em conjuntos de treinamento e teste
-                                X_train, X_test, y_train, y_test = train_test_split(X1, y1, test_size=0.2, random_state=42)
-
-                                # Treinando um modelo de Regressão Logística
-                                model = LogisticRegression(class_weight='balanced')
-                                model.fit(X_train, y_train)
+                                #print(len(novas_entradas))
+                        
+                                justdoit = prever01s(saida3,saida4)
+                                
+                                X_pred = np.array([novas_entradas[-30:]])
                                 
                                 # Fazendo previsões
-                                y_pred = model.predict(X_test)
+                                y_pred = justdoit.predict(X_pred)
+                                
+                                # Arredondando as previsões para 0 ou 1
+                                y_pred = np.round(y_pred)
+                                
+                                for name in y_pred:
+                                    proximas_entradas = name
 
-                                # Avaliando o desempenho do modelo
-                                accuracy = accuracy_score(y_test, y_pred)
-                                print(f'Acurácia: {accuracy}')
-                                
-                                x_only = np.array(novas_entradas).reshape(-1,1)
-                                x_only = scaler.fit_transform(x_only)
-                                proximas_entradas = model.predict(x_only)
-                                
                                 print(proximas_entradas)
-                                
                                 
                                 #######
                                 k = 0
