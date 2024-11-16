@@ -47,7 +47,7 @@ def gerar_oscillacao(valor_inicial, incremento, previsao_ar, limite_inferior=0.2
     return osc_final
 
 # Função para calcular a tendência
-def calcular_tendencia(novas_entradas, janela=60):
+def calcular_tendencia(novas_entradas, janela=30):
     diffs = np.diff(novas_entradas[-janela:])
     tendencia = np.mean(diffs)
     return tendencia
@@ -74,6 +74,8 @@ def prever_01s(novas_entradas, array, tamanho_previsao=120, limite_inferior=0.28
     desvio_padrao = np.std(array)
     ini = 0
     count = 0
+    epsilon_ajustado = 0
+    outro_ajuste = 0
     while ini == 0:
         count += 1
 
@@ -93,20 +95,24 @@ def prever_01s(novas_entradas, array, tamanho_previsao=120, limite_inferior=0.28
             
             novas_entradas = np.append(novas_entradas, probabilidade_de_1)
 
-        binomial1 = round(calcular_distribuicao_binomial(previsoes), 10)
-        binomial2 = round(calcular_distribuicao_binomial(array), 10)
-        print(binomial1, binomial2)
+        print(24*'*.')
+        binomial1 = round(calcular_distribuicao_binomial(previsoes), 25)
+        binomial2 = round(calcular_distribuicao_binomial(array), 25)
         mediass = sum(previsoes)/len(previsoes)
-        print(mediass)
-
-        if binomial1 == binomial2 and mediass >= limite_inferior and mediass <= limite_superior:
-            
-            return previsoes
+        print(f'Binomial1(Previsões) -> {binomial1:.25f} \nBinomial2(Array_Entrada) -> {binomial2:.25f} \nMedia_Previsao -> {mediass}')
+                
+        error = binomial2 - binomial1
+        diferenca = np.abs(error)
         
-        elif count >= 5000:
+        epsilon_ajustado = 10**(-(25 - outro_ajuste)) 
+        print(f'error -> {error} \nDirença -> {diferenca} \nEpsilon --> {epsilon_ajustado}')
+        if diferenca < epsilon_ajustado and mediass >= limite_inferior and mediass <= limite_superior:
             print("Previsoes Aleatorias vão aparecer ...")
             return previsoes
-
+        elif count >= 1000:
+            outro_ajuste = outro_ajuste + 2
+            count = 0
+            
         previsoes = []
         novas_entradas = novas_entradas_fixas1
 
@@ -409,9 +415,13 @@ while i <= 10000:
                             limite_inferior=0.28, 
                             limite_superior=0.72)
     
-                        proximas_entradas = prever_01s(novas_entradas[1:len(novas_entradas)], 
+                        proximas_entradas = prever_01s(
+                                                    novas_entradas[1:len(novas_entradas)], 
                                                     array=array1[i-30:i], 
-                                                    tamanho_previsao=30)
+                                                    tamanho_previsao=30,
+                                                    limite_inferior=0.28, 
+                                                    limite_superior=0.72 
+                                                    )
 
                         k = 0
                         m = 1
@@ -606,9 +616,13 @@ while i <= 10000:
                                 limite_inferior=0.28, 
                                 limite_superior=0.72)
                             
-                            proximas_entradas = prever_01s(novas_entradas[1:len(novas_entradas)], 
-                                                        array=array1[i-30:i], 
-                                                        tamanho_previsao=30)
+                            proximas_entradas = prever_01s(
+                                                    novas_entradas[1:len(novas_entradas)], 
+                                                    array=array1[i-30:i], 
+                                                    tamanho_previsao=30,
+                                                    limite_inferior=0.28, 
+                                                    limite_superior=0.72 
+                                                    )
 
                             k = 0
                             n1 = 0
@@ -817,9 +831,13 @@ while i <= 10000:
                                     limite_inferior=0.28, 
                                     limite_superior=0.72)
                                 
-                                proximas_entradas = prever_01s(novas_entradas[1:len(novas_entradas)], 
-                                                            array=array1[i-30:i], 
-                                                            tamanho_previsao=30)
+                                proximas_entradas = prever_01s(
+                                                    novas_entradas[1:len(novas_entradas)], 
+                                                    array=array1[i-30:i], 
+                                                    tamanho_previsao=30,
+                                                    limite_inferior=0.28, 
+                                                    limite_superior=0.72 
+                                                    )
 
                                 k = 0
                                 
