@@ -205,7 +205,7 @@ novas_entradas_fixas, correlacao_fixas = None, None  # Para manter as novas entr
 
 inteiro = int(input("Tamanho da amostra da tabela --> "))
 
-while i <= 10000:
+while i <= 210000:
     print(24*'*-')
     print(f'Rodada: {i}')
     
@@ -216,7 +216,9 @@ while i <= 10000:
         try:
             if i <= inteiro:
                 print(data1['Entrada'][i].replace(",",'.'))
+                #print(data1['Entrada'][i])
                 odd = float(data1['Entrada'][i].replace(",",'.'))
+                #odd = float(data1['Entrada'][i])
                 if odd == 0:
                     odd = 1
                     break
@@ -678,6 +680,7 @@ while i <= 10000:
                     #Determina as próximas 60 entradas
                     for i2 in range(i, i + 60):
                         if float(data1['Entrada'][i].replace(",",'.')) >= 2:
+                        #if float(data1['Entrada'][i]) >= 2:
                             array10.append(1)
                         else:
                             array10.append(0)

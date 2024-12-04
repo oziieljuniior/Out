@@ -18,7 +18,7 @@ while True:
     #abrir imagem com a biblioteca Pil, para realizar corte
     img = Image.open('/home/darkcover/Documentos/Out/python_project/Falling/Variacao3_LagAjustado/variacao_data_ajuste/Carolina/tela.jpeg')
     #area de corte pretendida
-    area0 = (521, 203, 997, 430) #area com numeros 
+    area0 = (525, 254, 999, 530) #area com numeros 
     #comando para cortar area da imagem 
     corte = img.crop(area0)
 
@@ -37,9 +37,9 @@ while True:
     j = 1
     while j <= 6:
         time.sleep(50)
-        pyautogui.click((841, 208), interval=1)
+        pyautogui.click((637, 252), interval=1)
         time.sleep(10)
-        pyautogui.click((688, 208), interval=1)
+        pyautogui.click((871, 252), interval=1)
 
 
         j += 1

@@ -37,6 +37,38 @@ from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, r
 
 import time
 
+#data1 = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k.csv')
+#data2 = pd.read_csv("/home/darkcover/Documentos/Out/dados/odds_200k_1.csv")
+
+array1, array2, array3 = [], [], []
+
+#for i in range(0,len(data1)-1):
+#    print(f'Número da Entrada - {i}')
+#    odd = float(data1['Odd'][i])
+#    if odd == 0:
+#        odd = 1
+#    array2.append(odd)
+#    if i >= 191:
+#        array3.append(array2[-60:])
+        #if float(data['Entrada'][i + 1].replace(",",'.')) >= 2:
+#        if float(data1['Odd'][i + 1]) >= 5:
+#            array1.append([1])
+#        else:
+#            array1.append([0])
+
+#for i in range(0,len(data1)-1):
+#    print(f'Número da Entrada - {i}')
+#    odd = float(data2['Odd'][i])
+#    if odd == 0:
+#        odd = 1
+#    array2.append(odd)
+#    if i >= 191:
+#        array3.append(array2[-60:])
+#        #if float(data['Entrada'][i + 1].replace(",",'.')) >= 2:
+#        if float(data2['Odd'][i + 1]) >= 5:
+#            array1.append([1])
+#        else:
+#            array1.append([0])
 # Configs
 warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.set_option('display.max_columns', None)
@@ -46,13 +78,16 @@ a1 = 0
 i = 0
 j = 0
 acerto = 0
-array1, array2, array3 = [], [], []
+array5 = []
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
 
-while i <= 200000:
+while i <= 210000:
     print(f'Número da Entrada - {i}')
     if i <= inteiro:
         odd = float(data['Entrada'][i].replace(",",'.'))
+        #odd = float(data['Entrada'][i])
+        if odd == 0:
+            odd = 1
     else:
         odd = float(input("Entrada -> ").replace(",",'.'))
     
@@ -65,17 +100,17 @@ while i <= 200000:
     if i <= inteiro:
     
         if i >= 191:
-            array3.append(array2[-30:])
-            
-            if float(data['Entrada'][i + 1].replace(",",'.')) >= 5:
+            array3.append(array2[-60:])
+            if float(data['Entrada'][i + 1].replace(",",'.')) >= 1.75:
+            #if float(data['Entrada'][i + 1]) >= 2:
                 array1.append([1])
             else:
                 array1.append([0])
             
-        if i >= 302:
+        if i >= 242:
             for name in predicted_classes:
                 if name == 1:
-                    if odd >= 2:
+                    if odd >= 1.75:
                         count = 1
                         if count == name:
                             acerto = acerto + 1
@@ -93,8 +128,9 @@ while i <= 200000:
 
 
         #print(len(array2))
-        if i % 30 == 0 and i >= 300:
+        if i % 30 == 0 and i >= 240:
             # Extraindo as 60 primeiras entradas de cada sublista e salvando no array 'X'
+            # Verificando as formas dos arrays
             X = np.array(array3)  # Pegue todas as colunas, exceto a última
             # Extraindo a última entrada de cada sublista e salvando no array 'y'
             y = np.array(array1)  # Pegue a última coluna de cada sublista (última entrada)
@@ -108,7 +144,7 @@ while i <= 200000:
             print(X)
             # Model / data parameters
             num_classes = 2
-            input_shape = (30, 1, 1) #verifique
+            input_shape = (60, 1, 1) #verifique
 
             # Load the data and split it between train and test sets
             # (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
@@ -135,33 +171,35 @@ while i <= 200000:
                     #layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
                     #layers.MaxPooling2D(pool_size=(2, 2)),
                     layers.Flatten(),
-                    #layers.Dropout(0.5),
+                    layers.Dropout(0.5),
                     layers.Dense(num_classes, activation="relu"),
+                    layers.Dropout(0.5),
                     layers.Dense(num_classes, activation="softmax"),
                 ]
             )
 
             print(model.summary())
-            batch_size = 128
-            epochs = 100
+            batch_size = 512
+            epochs = 15
+            class_weights = {0: 1., 1: 2.}  # Ajuste de acordo com a distribuição das classes
             model.compile(loss="categorical_crossentropy", optimizer="Nadam", metrics=["accuracy"])
             model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1)
             score = model.evaluate(x_test, y_test, verbose=0)
             print("Test loss:", score[0])
             print("Test accuracy:", score[1])
         
-        if i >= 301:
+        if i >= 241:
             x_new = np.array(array3[-1])
             x_new = x_new.astype("float32")
             x_new = np.expand_dims(x_new, -1)
-            x_new = np.reshape(x_new, (-1, 30, 1, 1))
+            x_new = np.reshape(x_new, (-1, 60, 1, 1))
             #print(x_new)
             predictions = model.predict(x_new)
 
             predicted_classes = np.argmax(predictions, axis=1)
             print(f'Proxima entrada: {predicted_classes}')
             print(24*'*-')
-            time.sleep(0.5)
+            #time.sleep(0.5)
 
     else:
         #Organizar sem os dados futuros
@@ -171,21 +209,21 @@ while i <= 200000:
                 a1 = a1 + 1
                 
             if a1 >= 1:
-                array4 = array2[-31:]
-                array_ajuste1 = array4[:30]
+                array4 = array2[-61:]
+                array_ajuste1 = array4[:60]
 
                 array3.append(array_ajuste1)
                 #organizar
             
-                if array4[-1] >= 5:
+                if array4[-1] >= 1.75:
                     array1.append([1])
                 else:
                     array1.append([0])
             
-        if i >= 302:
+        if i >= 242:
             for name in predicted_classes:
                 if name == 1:
-                    if odd >= 5:
+                    if odd >= 1.75:
                         count = 1
                         if count == name:
                             acerto = acerto + 1
@@ -203,8 +241,9 @@ while i <= 200000:
 
 
         #print(len(array2))
-        if i % 30 == 0 and i >= 300:
+        if i % 30 == 0 and i >= 240:
             # Extraindo as 60 primeiras entradas de cada sublista e salvando no array 'X'
+            # Verificando as formas dos arrays
             X = np.array(array3)  # Pegue todas as colunas, exceto a última
             # Extraindo a última entrada de cada sublista e salvando no array 'y'
             y = np.array(array1)  # Pegue a última coluna de cada sublista (última entrada)
@@ -218,7 +257,7 @@ while i <= 200000:
             print(X)
             # Model / data parameters
             num_classes = 2
-            input_shape = (30, 1, 1) #verifique
+            input_shape = (60, 1, 1) #verifique
 
             # Load the data and split it between train and test sets
             # (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
@@ -245,33 +284,35 @@ while i <= 200000:
                     #layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
                     #layers.MaxPooling2D(pool_size=(2, 2)),
                     layers.Flatten(),
-                    #layers.Dropout(0.5),
+                    layers.Dropout(0.5),
                     layers.Dense(num_classes, activation="relu"),
+                    layers.Dropout(0.5),
                     layers.Dense(num_classes, activation="softmax"),
                 ]
             )
 
             print(model.summary())
-            batch_size = 128
-            epochs = 100
+            batch_size = 512
+            epochs = 15
+            class_weights = {0: 1., 1: 2.}  # Ajuste de acordo com a distribuição das classes
             model.compile(loss="categorical_crossentropy", optimizer="Nadam", metrics=["accuracy"])
             model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1)
             score = model.evaluate(x_test, y_test, verbose=0)
             print("Test loss:", score[0])
             print("Test accuracy:", score[1])
         
-        if i >= 301:
-            x_new = np.array(array2[-30:])
+        if i >= 241:
+            x_new = np.array(array2[-60:])
             x_new = x_new.astype("float32")
             x_new = np.expand_dims(x_new, -1)
-            x_new = np.reshape(x_new, (-1, 30, 1, 1))
+            x_new = np.reshape(x_new, (-1, 60, 1, 1))
             #print(x_new)
             predictions = model.predict(x_new)
 
             predicted_classes = np.argmax(predictions, axis=1)
             print(f'Proxima entrada: {predicted_classes}')
             print(24*'*-')
-            time.sleep(0.25)
+            
     i += 1 
 
 print(array2)
