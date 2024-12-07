@@ -47,7 +47,7 @@ def gerar_oscillacao(valor_inicial, incremento, previsao_ar, limite_inferior=0.2
     return osc_final
 
 # Função para calcular a tendência
-def calcular_tendencia(novas_entradas, janela=30):
+def calcular_tendencia(novas_entradas, janela=60):
     diffs = np.diff(novas_entradas[-janela:])
     tendencia = np.mean(diffs)
     return tendencia
@@ -70,7 +70,7 @@ def calcular_distribuicao_binomial(array):
 def prever_01s(novas_entradas, array, tamanho_previsao=120, limite_inferior=0.28, limite_superior=0.72):
     previsoes = []
     novas_entradas_fixas1 = novas_entradas
-    fator_decaimento = fator_decaimento = 1 - min(0.05, np.var(novas_entradas[-30:]) / 10) # Para suavização
+    fator_decaimento = fator_decaimento = 1 - min(0.05, np.var(novas_entradas[-60:]) / 10) # Para suavização
     desvio_padrao = np.std(array)
     ini = 0
     count = 0

@@ -19,6 +19,7 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
+from tensorflow.keras.metrics import Precision, Recall
 
 import statistics as stt
 from scipy.stats import wilcoxon
@@ -100,14 +101,14 @@ while i <= 210000:
     if i <= inteiro:
     
         if i >= 141:
-            array3.append(array2[-60:])
+            array3.append(array2[-30:])
             if float(data['Entrada'][i + 1].replace(",",'.')) >= 2:
             #if float(data['Entrada'][i + 1]) >= 2:
                 array1.append([1])
             else:
                 array1.append([0])
             
-        if i >= 362:
+        if i >= 272:
             for name in predicted_classes:
                 if name == 1:
                     if odd >= 2:
@@ -128,7 +129,8 @@ while i <= 210000:
 
 
         #print(len(array2))
-        if i % 30 == 0 and i >= 360:
+        if i % 30 == 0 and i >= 270:
+            j, acerto=0,0
             # Extraindo as 60 primeiras entradas de cada sublista e salvando no array 'X'
             X = np.array(array3)  # Pegue todas as colunas, exceto a última
             # Extraindo a última entrada de cada sublista e salvando no array 'y'
@@ -143,7 +145,7 @@ while i <= 210000:
             print(X)
             # Model / data parameters
             num_classes = 2
-            input_shape = (60, 1, 1) #verifique
+            input_shape = (30, 1, 1) #verifique
 
             # Load the data and split it between train and test sets
             # (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
@@ -170,9 +172,9 @@ while i <= 210000:
                     #layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
                     #layers.MaxPooling2D(pool_size=(2, 2)),
                     layers.Flatten(),
-                    layers.Dropout(0.5),
+                    layers.Dropout(0.6),
                     layers.Dense(num_classes, activation="relu"),
-                    layers.Dropout(0.5),
+                    layers.Dropout(0.55),
                     layers.Dense(num_classes, activation="softmax"),
                 ]
             )
@@ -181,17 +183,17 @@ while i <= 210000:
             batch_size = 264
             epochs = 30
             class_weights = {0: 1., 1: 2.}  # Ajuste de acordo com a distribuição das classes
-            model.compile(loss="categorical_crossentropy", optimizer="Nadam", metrics=["accuracy"])
-            model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1)
+            model.compile(loss="categorical_crossentropy", optimizer="Nadam", metrics=['accuracy', Precision(), Recall()])
+            model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1, class_weight=class_weights)
             score = model.evaluate(x_test, y_test, verbose=0)
             print("Test loss:", score[0])
             print("Test accuracy:", score[1])
         
-        if i >= 361:
+        if i >= 271:
             x_new = np.array(array3[-1])
             x_new = x_new.astype("float32")
             x_new = np.expand_dims(x_new, -1)
-            x_new = np.reshape(x_new, (-1, 60, 1, 1))
+            x_new = np.reshape(x_new, (-1, 30, 1, 1))
             #print(x_new)
             predictions = model.predict(x_new)
 
@@ -208,8 +210,8 @@ while i <= 210000:
                 a1 = a1 + 1
                 
             if a1 >= 1:
-                array4 = array2[-61:]
-                array_ajuste1 = array4[:60]
+                array4 = array2[-31:]
+                array_ajuste1 = array4[:30]
 
                 array3.append(array_ajuste1)
                 #organizar
@@ -219,7 +221,7 @@ while i <= 210000:
                 else:
                     array1.append([0])
             
-        if i >= 362:
+        if i >= 272:
             for name in predicted_classes:
                 if name == 1:
                     if odd >= 2:
@@ -240,7 +242,8 @@ while i <= 210000:
 
 
         #print(len(array2))
-        if i % 30 == 0 and i >= 360:
+        if i % 30 == 0 and i >= 270:
+            j, acerto=0,0
             # Extraindo as 60 primeiras entradas de cada sublista e salvando no array 'X'
             X = np.array(array3)  # Pegue todas as colunas, exceto a última
             # Extraindo a última entrada de cada sublista e salvando no array 'y'
@@ -255,7 +258,7 @@ while i <= 210000:
             print(X)
             # Model / data parameters
             num_classes = 2
-            input_shape = (60, 1, 1) #verifique
+            input_shape = (30, 1, 1) #verifique
 
             # Load the data and split it between train and test sets
             # (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
@@ -282,9 +285,9 @@ while i <= 210000:
                     #layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
                     #layers.MaxPooling2D(pool_size=(2, 2)),
                     layers.Flatten(),
-                    layers.Dropout(0.5),
+                    layers.Dropout(0.60),
                     layers.Dense(num_classes, activation="relu"),
-                    layers.Dropout(0.5),
+                    layers.Dropout(0.55),
                     layers.Dense(num_classes, activation="softmax"),
                 ]
             )
@@ -293,17 +296,17 @@ while i <= 210000:
             batch_size = 264
             epochs = 30
             class_weights = {0: 1., 1: 2.}  # Ajuste de acordo com a distribuição das classes
-            model.compile(loss="categorical_crossentropy", optimizer="Nadam", metrics=["accuracy"])
-            model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1)
+            model.compile(loss="categorical_crossentropy", optimizer="Nadam", metrics=['accuracy', Precision(), Recall()])
+            model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1, class_weight=class_weights)
             score = model.evaluate(x_test, y_test, verbose=0)
             print("Test loss:", score[0])
             print("Test accuracy:", score[1])
         
-        if i >= 361:
-            x_new = np.array(array2[-60:])
+        if i >= 271:
+            x_new = np.array(array2[-30:])
             x_new = x_new.astype("float32")
             x_new = np.expand_dims(x_new, -1)
-            x_new = np.reshape(x_new, (-1, 60, 1, 1))
+            x_new = np.reshape(x_new, (-1, 30, 1, 1))
             #print(x_new)
             predictions = model.predict(x_new)
 

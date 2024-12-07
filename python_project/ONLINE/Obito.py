@@ -56,25 +56,25 @@ while i <= 200000:
 
 
     ## Visualização
-    if i >= 60 and contador == False:
+    if i >= 240 and contador == False:
         print(18*"---")
         print("Contador de apostas -> OFF")
-        array3 = array2[-60:]
+        array3 = array2[-240:]
         
-        media = sum(array3)/60
+        media = sum(array3)/240
 
-        print(f'Media -> {media} \nPrimeiro Elemento -> {array3[0]} \nQt. de 1s -> {sum(array3)} \nQt. de 0s -> {60 - sum(array3)}')
+        print(f'Media -> {media} \nPrimeiro Elemento -> {array3[0]} \nQt. de 1s -> {sum(array3)} \nQt. de 0s -> {240 - sum(array3)}')
 
         print(18*"---")
 
-    if i >= 60 and contador == True:
+    if i >= 240 and contador == True:
         print(18*"---")
         print("Contador de apostas -> ON")
-        array3 = array2[-60:]
+        array3 = array2[-240:]
         
-        media = sum(array3)/60
+        media = sum(array3)/240
 
-        print(f'Media -> {media} \nPrimeiro Elemento -> {array3[0]} \nQt. de 1s -> {sum(array3)} \nQt. de 0s -> {60 - sum(array3)}')
+        print(f'Media -> {media} \nPrimeiro Elemento -> {array3[0]} \nQt. de 1s -> {sum(array3)} \nQt. de 0s -> {240 - sum(array3)}')
 
         media_pontual = i0 / i1 
         print(f'Acuracia -> {media_pontual}')
