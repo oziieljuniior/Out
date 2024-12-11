@@ -129,9 +129,10 @@ def salvar_resumo_ar(model_ar_fit, nome_arquivo="resumo_modelo_ar.txt"):
 
     print(f"Resumo do modelo AR adicionado ao arquivo {nome_arquivo}")
 
+
 ## Producao
 i, i0, i1, i2, i3, i4, i5, i6, i7, j2 = 0,0,0,0,0,0,0,0,0,0
-array1 = []
+array1, array2 = [], []
 tilt, logica1 = False, False
 inteiro = int(input("Insira a posição da data ---> "))
 
@@ -163,6 +164,7 @@ while i <= 10000:
         
         if count1 == 2:
             k1 = j1
+            array2.append(att1)
     
         j1 += 1
         count1 = count1 + 0.01
@@ -308,33 +310,45 @@ while i <= 10000:
                 matrix5 = np.hstack([matrix5, array])
             
             predicao = np.sum(matrix5, axis=1)
-            #print('.....')
+        print(f'Dimensão matriz de predição: {matrix5.shape}')
         
     if i >= 180:
-        print(len(predicao))
+        
         m = i % 60
+        vitoria = matrix5[m]
+        #print('*.*'*24)
+        #print(len(vitoria))
+        #print('*.*'*24)
+        carolina = np.sum(vitoria)
         j2 = m
 
-        tilt = round((m * 0.01) + 1,2)
+        tilt = round((carolina * 0.01) + 1.75,2)
         array1.append(tilt)
         print(15*'---')
         
         if i7 <= 60:
-            order = 1.5
+            order = 2
+            desvpad = 2
         else:
-            order = (np.sum(array1)) / len(array1)
+            ajuste = array2[-60:]
+            desvpad = np.std(ajuste, ddof=1)
+            if desvpad <= 0.495:
+                rope = 0.10
+            else:
+                rope = -0.10
+            order = ((np.sum(array1)) / len(array1)) + rope 
 
         order = np.round(order,2)
 
         if tilt >= order:
-            print("APOSTAR")
+            print(f"APOSTAR")
             logica1 = True
         else:
             logica1 = False
 
 
-        print(f'Predição: {tilt} | Coeficiente de Corte: {order}')
-        
+        print(f'Predição: {tilt} | Coeficiente de Corte: {order} | rope: {desvpad}')
+        i7 = i7 + 1
         print(15*'---')
 
     i += 1
