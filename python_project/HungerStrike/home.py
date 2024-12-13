@@ -11,7 +11,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 ## Carregar data
-data1 = pd.read_csv('/home/darkcover/Documentos/Data/Out/Entrada.csv')
+data1 = pd.read_csv('/home/darkcover1/Documentos/Data/Out/Entrada.csv')
 
 ## Funcoes
 ### Função para gerar oscilação controlada, agora com referência ao modelo AR
@@ -150,11 +150,11 @@ while i <= 10000:
         break
     
     #Sequencia de if:
-    count1 = 1.75
+    count1 = 1.5
     array = []
     j1 = 1
     k1 = 1
-    while count1 <= 3:
+    while count1 <= 2.5:
         #print('*-'*24, count1)
         if odd > count1:
             att1 = 1
@@ -189,7 +189,7 @@ while i <= 10000:
             matrix3 = media
         else:
             matrix3 = np.vstack([matrix3, media])
-        ####Issue1.0 -> Confirmar se a variavel matrix3[i-60,19] corresponde aos dados reais
+        ####Issue1.0 -> Confirmar se a variavel matrix3[i-30,19] corresponde aos dados reais
         print(f'Media2: {matrix3[i-60, (k1-2)]} | Tamanho amostra: {matrix3.shape}')
 
     if tilt is not False:
@@ -213,7 +213,7 @@ while i <= 10000:
             print(f'Rodada da predição: {j2 + 1} \nAcuracia Local: {acuracia_local} | Acuracia Global: {acuracia_geral}')
             print('o-o'*12)
 
-    if i >= 180 and (i % 60) == 0:
+    if i >= 180 and (i % 30) == 0:
         i3, i4 = 0,0
 
         # Determinando o número de colunas
@@ -255,7 +255,7 @@ while i <= 10000:
             
             model_ar_fit = model_ar.fit()
 
-            previsao_ar = model_ar_fit.predict(start = len(coluna), end = len(coluna) + 60)
+            previsao_ar = model_ar_fit.predict(start = len(coluna), end = len(coluna) + 30)
             #print(f'Tamanho do previsa_ar: {len(previsao_ar)}')
             #print('.')
             # Exibir sumário do modelo AR
@@ -295,8 +295,8 @@ while i <= 10000:
             #print('...')
             proximas_entradas = prever_01s(
                                         novas_entradas[1:len(novas_entradas)], 
-                                        array=matrix1[-60:, m], 
-                                        tamanho_previsao=60,
+                                        array=matrix1[-30:, m], 
+                                        tamanho_previsao=30,
                                         limite_inferior=min1, 
                                         limite_superior=max1 
                                         )
@@ -313,6 +313,7 @@ while i <= 10000:
         print(f'Dimensão matriz de predição: {matrix5.shape}')
         
     if i >= 180:
+<<<<<<< Updated upstream
         
         m = i % 60
         vitoria = matrix5[m]
@@ -323,12 +324,24 @@ while i <= 10000:
         j2 = m
 
         tilt = round((carolina * 0.01) + 1.75,2)
+=======
+        print(len(predicao))
+        m = i % 30
+        j2 = m
+        vitoria = matrix5[:,m]
+        carolina = np.sum(vitoria)
+        tilt = round((carolina * 0.01) + 1.5,2)
+>>>>>>> Stashed changes
         array1.append(tilt)
         print(15*'---')
         
         if i7 <= 60:
+<<<<<<< Updated upstream
             order = 2
             desvpad = 2
+=======
+            order = 1.8
+>>>>>>> Stashed changes
         else:
             ajuste = array2[-60:]
             desvpad = np.std(ajuste, ddof=1)
@@ -345,7 +358,7 @@ while i <= 10000:
             logica1 = True
         else:
             logica1 = False
-
+        i7 = i7 + 1
 
         print(f'Predição: {tilt} | Coeficiente de Corte: {order} | rope: {desvpad}')
         i7 = i7 + 1
