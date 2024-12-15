@@ -43,34 +43,6 @@ import time
 
 array1, array2, array3 = [], [], []
 
-#for i in range(0,len(data1)-1):
-#    print(f'Número da Entrada - {i}')
-#    odd = float(data1['Odd'][i])
-#    if odd == 0:
-#        odd = 1
-#    array2.append(odd)
-#    if i >= 191:
-#        array3.append(array2[-60:])
-        #if float(data['Entrada'][i + 1].replace(",",'.')) >= 2:
-#        if float(data1['Odd'][i + 1]) >= 2:
-#            array1.append([1])
-#        else:
-#            array1.append([0])
-
-#for i in range(0,len(data1)-1):
-#    print(f'Número da Entrada - {i}')
-#    odd = float(data2['Odd'][i])
-#    if odd == 0:
-#        odd = 1
-#    array2.append(odd)
-#    if i >= 191:
-#        array3.append(array2[-60:])
-#        #if float(data['Entrada'][i + 1].replace(",",'.')) >= 2:
-#        if float(data2['Odd'][i + 1]) >= 2:
-#            array1.append([1])
-#        else:
-#            array1.append([0])
-
 # Configs
 warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.set_option('display.max_columns', None)
@@ -182,7 +154,7 @@ while i <= 210000:
             print(model.summary())
             batch_size = 264
             epochs = 30
-            class_weights = {0: 1., 1: 2.}  # Ajuste de acordo com a distribuição das classes
+            class_weights = {0: 1., 1: 3.}  # Ajuste de acordo com a distribuição das classes
             model.compile(loss="categorical_crossentropy", optimizer="Nadam", metrics=['accuracy', Precision(), Recall()])
             model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1, class_weight=class_weights)
             score = model.evaluate(x_test, y_test, verbose=0)
@@ -295,7 +267,7 @@ while i <= 210000:
             print(model.summary())
             batch_size = 264
             epochs = 30
-            class_weights = {0: 1., 1: 2.}  # Ajuste de acordo com a distribuição das classes
+            class_weights = {0: 1., 1: 3.}  # Ajuste de acordo com a distribuição das classes
             model.compile(loss="categorical_crossentropy", optimizer="Nadam", metrics=['accuracy', Precision(), Recall()])
             model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1, class_weight=class_weights)
             score = model.evaluate(x_test, y_test, verbose=0)

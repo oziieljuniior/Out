@@ -22,6 +22,9 @@ array1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [],
 
 a1, i, j = 0,0,0
 
+lautgh1 = np.zeros(60, dtype = int)
+lautgh2 = np.zeros(60, dtype = int)
+
 acerto = 0
 
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
@@ -77,15 +80,17 @@ while i <= 210000:
                     
                 #print(matrix1n)
                 print(f'Order3: {i} | LArrayIII: {[len(array3n), len(array3s)]} | MatrixS: {[matrix1n.shape, matrix1s.shape]}')
-                print('*-'*20)
+                print('*-'*16)
+        print('**'*20)
         
         if i >= 601:
+            print(24*"-'-")
             for name in y_pred:
-                print(name)
-                if name == 1:
-                    if odd >= 1.2:
+                print(f'Predição Modelo R.: {name[0]}')
+                if name[0] == 1:
+                    if odd >= 2:
                         count = 1
-                        if count == name:
+                        if count == name[0]:
                             acerto = acerto + 1
                             j = j + 1
                     else:
@@ -94,9 +99,26 @@ while i <= 210000:
                 acuracia = 0
             else:
                 acuracia = (acerto / j) * 100
-            print(24*'-')
-            print(f'Acuracia modelo: {acuracia}')
-            print(24*'-')
+
+            if np.sum(y_pred[0]) == 1:
+                if core == 59:
+                    lautgh1[0] = lautgh1[0] + 1
+                    lautgh2[0] = lautgh2[0] + 1
+                else:
+                    lautgh1[core + 1] = lautgh1[core + 1] + 1
+                    lautgh2[core + 1] = lautgh2[core + 1] + 1
+            else:
+                if core == 59:
+                    lautgh1[0] = lautgh1[0] + 1
+                else:
+                    lautgh1[core + 1] = lautgh1[core + 1] + 1
+            if core == 59:
+                medida_pontual = lautgh2[0] / lautgh1[0]
+            else:    
+                medida_pontual = lautgh2[core + 1] / lautgh1[core + 1]
+
+            print(f'Acuracia modelo Geral: {round(acuracia,4)} | Acuracia_{core + 1}: {round(medida_pontual,4)}')
+            print(24*"-'-")
 
         if i >= 600 and i % 60 == 0:
             print('/-/'*16)
@@ -112,6 +134,8 @@ while i <= 210000:
                 #print(X.shape, y.shape)
                 modelo.fit(X,y)
                 modelos.append(modelo)
+            print(f'Treinamento Realizado com Sucesso ...')
+            print('/-/'*16)
 
         if i >= 600:
             core = i % 60
@@ -154,12 +178,13 @@ while i <= 210000:
                 print(f'Order3: {i} | LArrayIII: {[len(array3n), len(array3s)]} | MatrixS: {[matrix1n.shape, matrix1s.shape]}')
                 print('*-'*20)
         
-        if i >= 602:
+        if i >= 601:
+            print(24*"-'-")
             for name in y_pred:
-                if name == 1:
-                    if odd >= 1.75:
+                if name[0] == 1:
+                    if odd >= 2:
                         count = 1
-                        if count == name:
+                        if count == name[0]:
                             acerto = acerto + 1
                             j = j + 1
                     else:
@@ -168,9 +193,26 @@ while i <= 210000:
                 acuracia = 0
             else:
                 acuracia = (acerto / j) * 100
-            print(24*'-')
-            print(f'Acuracia modelo: {acuracia}')
-            print(24*'-')
+
+            if np.sum(y_pred[0]) == 1:
+                if core == 59:
+                    lautgh1[0] = lautgh1[0] + 1
+                    lautgh2[0] = lautgh2[0] + 1
+                else:
+                    lautgh1[core + 1] = lautgh1[core + 1] + 1
+                    lautgh2[core + 1] = lautgh2[core + 1] + 1
+            else:
+                if core == 59:
+                    lautgh1[0] = lautgh1[0] + 1
+                else:
+                    lautgh1[core + 1] = lautgh1[core + 1] + 1
+            if core == 59:
+                medida_pontual = lautgh2[0] / lautgh1[0]
+            else:    
+                medida_pontual = lautgh2[core + 1] / lautgh1[core + 1]
+
+            print(f'Acuracia modelo Geral: {round(acuracia,4)} | Acuracia_{core + 1}: {round(medida_pontual,4)}')
+            print(24*"-'-")
 
         if i >= 600 and i % 60 == 0:
             print('/-/'*16)
