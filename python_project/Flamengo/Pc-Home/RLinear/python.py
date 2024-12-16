@@ -25,13 +25,21 @@ a1, i, j = 0,0,0
 lautgh1 = np.zeros(60, dtype = int)
 lautgh2 = np.zeros(60, dtype = int)
 
-acerto = 0
+acerto, core = 0,0
 
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
 
+media_parray, acerto01 = [], []
+
 while i <= 210000:
     print(24*'---')
-    print(f'Número da Entrada - {i}')
+    
+    if len(media_parray) < 59:
+        m = 0
+    else:
+        m = media_parray[len(media_parray) - 60]
+
+    print(f'Número da Entrada - {i} | Acuracia_{core + 1}: {round(m,4)}')
     if i <= inteiro:
         odd = float(data['Entrada'][i].replace(",",'.'))
         #odd = float(data['Entrada'][i])
@@ -117,6 +125,7 @@ while i <= 210000:
             else:    
                 medida_pontual = lautgh2[core + 1] / lautgh1[core + 1]
 
+            media_parray.append(medida_pontual)
             print(f'Acuracia modelo Geral: {round(acuracia,4)} | Acuracia_{core + 1}: {round(medida_pontual,4)}')
             print(24*"-'-")
 
@@ -211,6 +220,7 @@ while i <= 210000:
             else:    
                 medida_pontual = lautgh2[core + 1] / lautgh1[core + 1]
 
+            media_parray.append(medida_pontual)
             print(f'Acuracia modelo Geral: {round(acuracia,4)} | Acuracia_{core + 1}: {round(medida_pontual,4)}')
             print(24*"-'-")
 

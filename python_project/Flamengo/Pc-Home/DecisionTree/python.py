@@ -22,17 +22,25 @@ array1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [],
 
 a1, i, j = 0,0,0
 
+media_parray, acerto01 = [], []
+
 # Inicializar classes
 lautgh1 = np.zeros(60, dtype = int)
 lautgh2 = np.zeros(60, dtype = int)
 
-acerto = 0
+acerto, core = 0,0
 
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
 
 while i <= 210000:
     print(24*'---')
-    print(f'Número da Entrada - {i}')
+    
+    if len(media_parray) < 59:
+        m = 0
+    else:
+        m = media_parray[len(media_parray) - 60]
+
+    print(f'Número da Entrada - {i} | Acuracia_{core + 1}: {round(m,4)}')
     if i <= inteiro:
         odd = float(data['Entrada'][i].replace(",",'.'))
         #odd = float(data['Entrada'][i])
@@ -84,7 +92,7 @@ while i <= 210000:
                 print('*-'*16)
         print('**'*20)
         
-        if i >= 601:
+        if i >= 301:
             print(24*"-'-")
             for name in y_pred:
                 print(f'Predição Modelo R.: {name}')
@@ -118,10 +126,11 @@ while i <= 210000:
             else:    
                 medida_pontual = lautgh2[core + 1] / lautgh1[core + 1]
 
+            media_parray.append(medida_pontual)
             print(f'Acuracia modelo Geral: {round(acuracia,4)} | Acuracia_{core + 1}: {round(medida_pontual,4)}')
             print(24*"-'-")
 
-        if i >= 600 and i % 60 == 0:
+        if i >= 300 and i % 60 == 0:
             print('/-/'*16)
             print(f'Treinamento necessario ...')
             print(f'MatrixS: {[matrix1n.shape, matrix1s.shape]} | Indice: {matrix1n.shape[1]}')
@@ -138,14 +147,14 @@ while i <= 210000:
             print(f'Treinamento Realizado com Sucesso ...')
             print('/-/'*16)
 
-        if i >= 600:
+        if i >= 300:
             core = i % 60
             if core == 59:
                 x_pred = np.array(matrix1n[0,1:matrix1n.shape[1]]).reshape(1,-1).astype("float32")
-                y_pred = modelos[core].predict(x_pred)
+                y_pred = modelos[0].predict(x_pred)
             else:
                 x_pred = np.array(matrix1n[core+1,1:matrix1n.shape[1]]).reshape(1,-1).astype("float32")
-                y_pred = modelos[core].predict(x_pred)
+                y_pred = modelos[core + 1].predict(x_pred)
             
             
             #print(x_pred, y_pred)
@@ -179,7 +188,7 @@ while i <= 210000:
                 print(f'Order3: {i} | LArrayIII: {[len(array3n), len(array3s)]} | MatrixS: {[matrix1n.shape, matrix1s.shape]}')
                 print('*-'*20)
         
-        if i >= 601:
+        if i >= 301:
             print(24*"-'-")
             for name in y_pred:
                 if name == 1:
@@ -212,10 +221,11 @@ while i <= 210000:
             else:    
                 medida_pontual = lautgh2[core + 1] / lautgh1[core + 1]
 
+            media_parray.append(medida_pontual)
             print(f'Acuracia modelo Geral: {round(acuracia,4)} | Acuracia_{core + 1}: {round(medida_pontual,4)}')
             print(24*"-'-")
 
-        if i >= 600 and i % 60 == 0:
+        if i >= 300 and i % 60 == 0:
             print('/-/'*16)
             print(f'Treinamento necessario ...')
             print(f'MatrixS: {[matrix1n.shape, matrix1s.shape]} | Indice: {matrix1n.shape[1]}')
@@ -233,15 +243,15 @@ while i <= 210000:
             print('/-/'*16)
             
 
-        if i >= 600:
+        if i >= 300:
             core = i % 60
             if core == 59:
                 x_pred = np.array(matrix1n[0,1:matrix1n.shape[1]]).reshape(1,-1).astype("float32")
-                y_pred = modelos[core].predict(x_pred)
+                y_pred = modelos[0].predict(x_pred)
                 print(f'Proxima Entrada:{y_pred}')
             else:
                 x_pred = np.array(matrix1n[core+1,1:matrix1n.shape[1]]).reshape(1,-1).astype("float32")
-                y_pred = modelos[core].predict(x_pred)
+                y_pred = modelos[core + 1].predict(x_pred)
                 print(f'Proxima Entrada:{y_pred}')
 
     
