@@ -34,7 +34,7 @@ inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> 
 
 while i <= 210000:
     print(24*'---')
-    
+    #print(len(media_parray))
     if len(media_parray) < 59:
         m = 0
     else:
@@ -95,7 +95,6 @@ while i <= 210000:
         if i >= 301:
             print(24*"-'-")
             for name in y_pred:
-                print(f'Predição Modelo R.: {name}')
                 if name == 1:
                     if odd >= 2:
                         count = 1
@@ -108,23 +107,21 @@ while i <= 210000:
                 acuracia = 0
             else:
                 acuracia = (acerto / j) * 100
-
-            if np.sum(y_pred[0]) == 1:
-                if core == 59:
-                    lautgh1[0] = lautgh1[0] + 1
-                    lautgh2[0] = lautgh2[0] + 1
+            
+            if np.sum(y_pred) == 1:
+                if odd >= 2:
+                    lautgh1[core] = lautgh1[core] + 1
+                    lautgh2[core] = lautgh2[core] + 1
+                    medida_pontual = lautgh2[core] / lautgh1[core]
                 else:
-                    lautgh1[core + 1] = lautgh1[core + 1] + 1
-                    lautgh2[core + 1] = lautgh2[core + 1] + 1
+                    lautgh1[core] = lautgh1[core] + 1
+                    lautgh2[core] = lautgh2[core]
+                    medida_pontual = lautgh2[core] / lautgh1[core]
             else:
-                if core == 59:
-                    lautgh1[0] = lautgh1[0] + 1
+                if len(media_parray)<59:
+                    medida_pontual = 0
                 else:
-                    lautgh1[core + 1] = lautgh1[core + 1] + 1
-            if core == 59:
-                medida_pontual = lautgh2[0] / lautgh1[0]
-            else:    
-                medida_pontual = lautgh2[core + 1] / lautgh1[core + 1]
+                    medida_pontual = media_parray[len(media_parray) - 60]
 
             media_parray.append(medida_pontual)
             print(f'Acuracia modelo Geral: {round(acuracia,4)} | Acuracia_{core + 1}: {round(medida_pontual,4)}')
@@ -152,9 +149,12 @@ while i <= 210000:
             if core == 59:
                 x_pred = np.array(matrix1n[0,1:matrix1n.shape[1]]).reshape(1,-1).astype("float32")
                 y_pred = modelos[0].predict(x_pred)
+                print(f'Predição Modelo R.: {y_pred[0]}')
+                
             else:
                 x_pred = np.array(matrix1n[core+1,1:matrix1n.shape[1]]).reshape(1,-1).astype("float32")
                 y_pred = modelos[core + 1].predict(x_pred)
+                print(f'Predição Modelo R.: {y_pred[0]}')
             
             
             #print(x_pred, y_pred)
@@ -205,21 +205,20 @@ while i <= 210000:
                 acuracia = (acerto / j) * 100
 
             if np.sum(y_pred) == 1:
-                if core == 59:
-                    lautgh1[0] = lautgh1[0] + 1
-                    lautgh2[0] = lautgh2[0] + 1
+                if odd >= 2:
+                    lautgh1[core] = lautgh1[core] + 1
+                    lautgh2[core] = lautgh2[core] + 1
+                    medida_pontual = lautgh2[core] / lautgh1[core]
                 else:
-                    lautgh1[core + 1] = lautgh1[core + 1] + 1
-                    lautgh2[core + 1] = lautgh2[core + 1] + 1
+                    lautgh1[core] = lautgh1[core] + 1
+                    lautgh2[core] = lautgh2[core]
+                    medida_pontual = lautgh2[core] / lautgh1[core]
             else:
-                if core == 59:
-                    lautgh1[0] = lautgh1[0] + 1
+                if len(media_parray)<59:
+                    medida_pontual = 0
                 else:
-                    lautgh1[core + 1] = lautgh1[core + 1] + 1
-            if core == 59:
-                medida_pontual = lautgh2[0] / lautgh1[0]
-            else:    
-                medida_pontual = lautgh2[core + 1] / lautgh1[core + 1]
+                    medida_pontual = media_parray[len(media_parray) - 60]
+            
 
             media_parray.append(medida_pontual)
             print(f'Acuracia modelo Geral: {round(acuracia,4)} | Acuracia_{core + 1}: {round(medida_pontual,4)}')

@@ -127,7 +127,7 @@ while i <= 210000:
             print(model.summary())
             batch_size = 264
             epochs = 30
-            class_weights = {0: 1., 1: 5.}  # Ajuste de acordo com a distribuição das classes
+            class_weights = {0: 1., 1: 1.}  # Ajuste de acordo com a distribuição das classes
             model.compile(loss="categorical_crossentropy", optimizer="Nadam", metrics=['accuracy', Precision(), Recall()])
             model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1, class_weight=class_weights)
             score = model.evaluate(x_test, y_test, verbose=0)
@@ -240,7 +240,7 @@ while i <= 210000:
             print(model.summary())
             batch_size = 264
             epochs = 30
-            class_weights = {0: 1., 1: 5.}  # Ajuste de acordo com a distribuição das classes
+            class_weights = {0: 1., 1: 1.}  # Ajuste de acordo com a distribuição das classes
             model.compile(loss="categorical_crossentropy", optimizer="Nadam", metrics=['accuracy', Precision(), Recall()])
             model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1, class_weight=class_weights)
             score = model.evaluate(x_test, y_test, verbose=0)
