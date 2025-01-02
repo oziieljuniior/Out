@@ -43,18 +43,18 @@ def matriz(i0, array1, array2):
     for name in info:
         m0, m1 = len(array1), len(array2)
         order1 = m1 // name
-        
-        print(name, order1, m0, m1)
-        num_linhas0 = m0 - name + 1        
-        num_linhas1 = m1 - name + 1        
-        
-        # Criando a matriz sequencial
-        matriz1 = np.array([array1[i00:i00 + name] for i00 in range(num_linhas0)])
-        matriz2 = np.array([array2[i00:i00 + name] for i00 in range(num_linhas1)])
-        
-        info1.append(matriz1.shape[0])
-        print(f'Order3: {i} | MatrixS: {[matriz1.shape, matriz2.shape]}')
-        final1.append(matriz1), final2.append(matriz2)
+        if order1 >= 5: 
+            print(name, order1, m0, m1)
+            num_linhas0 = m0 - name + 1        
+            num_linhas1 = m1 - name + 1        
+            
+            # Criando a matriz sequencial
+            matriz1 = np.array([array1[i00:i00 + name] for i00 in range(num_linhas0)])
+            matriz2 = np.array([array2[i00:i00 + name] for i00 in range(num_linhas1)])
+            
+            info1.append(matriz1.shape[1])
+            print(f'Order3: {i} | MatrixS: {[matriz1.shape, matriz2.shape]}')
+            final1.append(matriz1), final2.append(matriz2)
     return final1, final2, info1
 
 def reden(array1, array3, m, n):
@@ -117,7 +117,7 @@ def reden(array1, array3, m, n):
     print("Test accuracy:", score[1])
     return model
         
-def ponderar_lista(lista, base=1.15):
+def ponderar_lista(lista, base=1.5):
     """
     Realiza uma ponderação dos elementos da lista com pesos exponenciais crescentes.
 
@@ -158,8 +158,8 @@ lautgh2 = np.zeros(60, dtype = int)
 
 acerto, core = 0,0
 
-modelos = [None]*10
-recurso1, recurso2 = [None]*10, [None]*10
+modelos = [None]*50
+recurso1, recurso2 = [None]*50, [None]*50
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
 
 while i <= 210000:
@@ -233,7 +233,7 @@ while i <= 210000:
     if i >= 600 and (i % 60) == 0:
         print('**'*20)
         print(f'Carregando dados ...')
-        retorno1, retorno2, info = matriz(i,array2n[1:],array2s[1:])
+        retorno1, retorno2, info = matriz(i,array2n,array2s)
         print(f'Posições que devem ser carregadas: {info}')
         
         print('**'*20)

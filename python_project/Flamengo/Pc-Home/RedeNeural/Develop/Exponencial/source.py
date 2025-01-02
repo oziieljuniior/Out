@@ -102,7 +102,7 @@ def reden(array1, array3, m, n):
     print(model.summary())
     batch_size = 264
     epochs = 30
-    class_weights = {0: 1., 1: 5.}  # Ajuste de acordo com a distribuição das classes
+    class_weights = {0: 1., 1: 2.}  # Ajuste de acordo com a distribuição das classes
     model.compile(loss="categorical_crossentropy", optimizer="Nadam", metrics=['accuracy', Precision(), Recall()])
     model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1, class_weight=class_weights)
     score = model.evaluate(x_test, y_test, verbose=0)
@@ -110,7 +110,7 @@ def reden(array1, array3, m, n):
     print("Test accuracy:", score[1])
     return model
         
-def ponderar_lista(lista, base=1.15):
+def ponderar_lista(lista, base=1.175):
     """
     Realiza uma ponderação dos elementos da lista com pesos exponenciais crescentes.
 
@@ -133,7 +133,7 @@ def ponderar_lista(lista, base=1.15):
     total_pesos = sum(pesos)
     
     # Retornar 1 se média ponderada >= 0.5, senão 0
-    return 1 if soma_ponderada / total_pesos >= 0.6 else 0
+    return 1 if soma_ponderada / total_pesos >= 0.575 else 0
 
 
 ## Carregar data
