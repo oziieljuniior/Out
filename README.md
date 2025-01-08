@@ -1,5 +1,5 @@
 # Out
-[PROJETO EM DESENVOLVIMENTO](https://github.com/oziieljuniior/Out/tree/main/python_project/Nimes)
+[PROJETO EM DESENVOLVIMENTO](https://github.com/oziieljuniior/Out/tree/main/python_project/Echoes)
 ## Como o código funciona
 Informações como o jogo funciona, acesse:
 

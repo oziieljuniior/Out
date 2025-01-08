@@ -18,19 +18,20 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.set_option('display.max_columns', None)
 
 ## Funções
-def placar60(df1, i, media_parray, resultado, odd):
+
+def placar60(df1, core1, media_parray, resultado, odd):
     """
     Função que organizar o placar das 60 entradas.
     Args:
         df1 (pd.DataFrame): DataFrame responsavel por armazenar as somas de cada entrada.
-        i (int): Valor inteiro não-negativo crescente. Responsável por controlar a posição dos dados.
+        core1 (int): Valor inteiro não-negativo crescente ciclico. Responsável por controlar a posição dos dados.
         media_parray (array): Array responsavel por armazenar a acuracia de cada entrada.
         resultado (int): Valor interio(0 ou 1) gerado pela função ponderar lista com a entrada anterior.
         odd (float): Valor real com duas casas decimais. Ele é determinado pela entrada dos dados, ou usuário.
     Returns:
         array: Array contendo as variaveis df1 e mediap_array atualizadas, também retorna a acuracia atualizada.
     """
-    core1 = i % 60
+
     if resultado == 1:
         if odd >= 2:
             df1.iloc[core1,:] += 1
@@ -288,11 +289,11 @@ media_parray, acerto01 = [], []
 
 acerto2, acerto3, core1 = 0,0,0
 
-modelos = [None]*5000
 recurso1, recurso2 = [None]*5000, [None]*5000
 
 array_geral = np.zeros(6, dtype=float)
 df1 = pd.DataFrame({'lautgh1': np.zeros(60, dtype = int), 'lautgh2': np.zeros(60, dtype = int)})
+modelos, acumu, atrasado = [None]*50, [0]*50, [0]*60
 
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
 
@@ -300,12 +301,13 @@ while i <= 210000:
     print(24*'---')
     #print(len(media_parray))
     if len(media_parray) < 59:
-        m = 0
+        m1 = 0
         core1 = 0
     else:
-        m = media_parray[len(media_parray) - 60]
+        m1 = media_parray[len(media_parray) - 60]
+        core1 = i % 60
 
-    print(f'Número da Entrada - {i} | Acuracia_{core1 + 1}: {round(m,4)}')
+    print(f'Número da Entrada - {i} | Acuracia_{core1 + 1}: {round(m1,4)}')
     
     array2s, array2n, odd = coletarodd(i, inteiro, data, array2s, array2n)
     if odd == 0:
@@ -315,9 +317,9 @@ while i <= 210000:
         print(24*"-'-")
         
         array_geral = placargeral(resultado, odd, array_geral)
-        media_parray = placar60(df1, i, media_parray, resultado, odd)
+        media_parray = placar60(df1, core1, media_parray, resultado, odd)
         
-        if i % 60 == 0:
+        if core1 == 0:
             core11 = 60
         else:
             core11 = core1
@@ -328,8 +330,15 @@ while i <= 210000:
         print('***'*20)
         print(f'Carregando dados ...')
         info = []
-        cronor = (i + 600) // 5
+        cronor = (i + 300) // 5
         lista = [name for name in range(60, cronor, 60)]
+
+        if len(lista) >= (len(modelos) - 25):
+            print(f'T. Lista: {len(lista)} | T. Mod. Real: {len(modelos)} | T. Mod. Ajustado: {len(modelos)}')
+            cronor1 = [None]*50
+            modelos = modelos.extend(cronor1)
+            acumu = acumu.extend(cronor1)
+
         for click in lista:
             k0 = i % click
             if k0 == 0:
@@ -343,23 +352,39 @@ while i <= 210000:
             m, n = matrix1n.shape
             print(f'Matrix_{click}: {[matrix1n.shape, matrix1s.shape]} | Indice: {matrix1n.shape[1]} | Posicao: {posicao0}')
             models = reden(array1,array3, m, n)
-            if i >= 540:
-                if models[1] >= 0.5:
+            
+            if i >= 420:
+                if acumu[posicao0] < models[1]:
                     modelos[posicao0] = models[0]
+                    acumu[posicao0] = models[1]
+                    print('REDE NEURAL POSICIONAL ATUALIZADA...')
             else:
                 modelos[posicao0] = models[0]
-            print(f'Treinamento {click} realizado com sucesso ...  \n')
+                acumu[posicao0] = models[1]
+            print(f'Treinamento {click} realizado com sucesso ... {acumu[posicao0]} \n')
         print('***'*20)
 
 
     if i >= 300:
         y_pred1 = lista_predicao(len(modelos), modelos, array2s)
-        resultado = ponderar_lista(y_pred1)
+        resultado1 = ponderar_lista(y_pred1)
+        
+        if i >= 660:
+            core2 = (i + 1) % 60
+            m2 = media_parray[len(media_parray) - 59]
+            if atrasado[core2] < 1 and m2 <= 0.175:
+                resultado = 0
+            atrasado[core2] += 1
+            if atrasado[core2] >= 1:
+                atrasado[core2] = 0
+                resultado = resultado1
+        else:
+            resultado = resultado1
+        
         print(24*'*-')
-        print(f'Proxima Entrada: {resultado}')
+        print(f'Predição da Entrada: {resultado1} | Entrada Cadastrada: {resultado}')
         print(24*'*-')
-
-
+    
     i += 1
 
 
