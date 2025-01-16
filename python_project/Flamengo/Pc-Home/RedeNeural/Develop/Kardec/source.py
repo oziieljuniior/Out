@@ -38,11 +38,12 @@ def matriz(i0, array1, array2):
         if order == 0:
             info.append(name)
         
-    print(f'Novas colunas para: {info} ...')
+    print(f'Novas linhas para: {info} ...')
     info1 = []
     for name in info:
         m0, m1 = len(array1), len(array2)
         order1 = m1 // name
+<<<<<<< Updated upstream
         if order1 >= 5: 
             print(name, order1, m0, m1)
             num_linhas0 = m0 - name + 1        
@@ -55,6 +56,20 @@ def matriz(i0, array1, array2):
             info1.append(matriz1.shape[1])
             print(f'Order3: {i} | MatrixS: {[matriz1.shape, matriz2.shape]}')
             final1.append(matriz1), final2.append(matriz2)
+=======
+        
+        print(name, order1, m0, m1)
+        num_linhas0 = m0 - name + 1        
+        num_linhas1 = m1 - name + 1        
+        
+        # Criando a matriz sequencial
+        matriz1 = np.array([array1[i00:i00 + name] for i00 in range(num_linhas0)])
+        matriz2 = np.array([array2[i00:i00 + name] for i00 in range(num_linhas1)])
+        
+        info1.append(matriz1.shape[1])
+        print(f'Order3: {i} | MatrixS: {[matriz1.shape, matriz2.shape]}')
+        final1.append(matriz1), final2.append(matriz2)
+>>>>>>> Stashed changes
     return final1, final2, info1
 
 def reden(array1, array3, m, n):
