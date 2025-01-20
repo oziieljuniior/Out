@@ -14,6 +14,8 @@ class Odd:
             array_1 (List[float]): Lista de odds.
             limite (float): Limite para classificação. Padrão: 2.0.
         """
+        if not all(isinstance(x, (int, float)) for x in array_1):
+            raise TypeError("Todos os elementos do array_1 devem ser números.")
         self.array_1 = array_1
         self.limite = limite
 
@@ -24,7 +26,7 @@ class Odd:
         Returns:
             List[float]: Array modificado com zeros substituídos por 1.0.
         """
-        return [1.0 if x == 0 else x for x in self.array1]
+        return [1.0 if x == 0 else x for x in self.array_1]
 
     def array_int(self) -> List[int]:
         """
@@ -34,4 +36,4 @@ class Odd:
             List[int]: Lista com valores 1 (abaixo do limite) ou 2
             (acima ou igual ao limite).
         """
-        return [1 if x >= self.limite else 0 for x in self.array1]
+        return [1 if x >= self.limite else 0 for x in self.array_1]

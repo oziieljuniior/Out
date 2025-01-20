@@ -2,7 +2,7 @@ from typing import List
 import numpy as np
 
 
-class Ordernar60:
+class Ordernar:
     """
         Classe responsavel pela ordenação do array em matriz.
     """
@@ -21,13 +21,14 @@ class Ordernar60:
             Returns:
                 List[int]: Lista com tipos de matrizes.
         """
-        tamanho = self.tamanho // 5
-        lista = [name for name in range(60, tamanho, 60)]
+        lista = [name for name in range(60, self.tamanho, 60)]
 
         info = []
+        #print(lista)
         for name in lista:
-            order = tamanho % name
-            if order == 0:
+            order = self.tamanho % name
+            limite = self.tamanho // name
+            if order == 0 and limite >= 10:
                 info.append(name)
         return info
 
@@ -37,7 +38,7 @@ class Ordernar60:
             returns:
                 List[np.array, ..., np.array]: Uma lista com matrizes.
         """
-        info = Ordernar60(self.array1).ordernar_colunas()
+        info = Ordernar(self.array1).ordernar_colunas()
         print(f'Novas matrizes para: {info} ...')
         final = []
         for name in info:
