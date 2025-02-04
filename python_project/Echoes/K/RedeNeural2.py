@@ -204,6 +204,9 @@ while i <= 210000:
 
     if odd == 0:
         break
+    
+    if odd >= 3:
+        odd = 3
 
     array2s.append(odd)
     if odd >= 2:

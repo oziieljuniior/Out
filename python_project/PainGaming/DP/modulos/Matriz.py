@@ -16,8 +16,8 @@ class Ordernar:
 
     def ordernar_colunas(self) -> List[int]:
         """
-            Lista os tipos de colunas que podem ser tranformadas
-            em matrizes.
+            Ordena os tipos de colunas que podem ser tranformadas
+            em matrizes, sempre multiplo de 60.
             Returns:
                 List[int]: Lista com tipos de matrizes.
         """
@@ -28,7 +28,7 @@ class Ordernar:
         for name in lista:
             order = self.tamanho % name
             limite = self.tamanho // name
-            if order == 0 and limite >= 10:
+            if order == 0 and limite >= 5:
                 info.append(name)
         return info
 

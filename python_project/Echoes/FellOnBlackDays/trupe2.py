@@ -8,11 +8,13 @@ from tensorflow.keras import layers
 
 from tensorflow.keras.layers import LeakyReLU
 from tensorflow.keras.optimizers import Nadam
+from tensorflow.keras.callbacks import EarlyStopping
 
 # Libs
 import time
 import warnings
 
+import time
 # Configs
 warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.set_option('display.max_columns', None)
@@ -90,26 +92,23 @@ def coletarodd(i, inteiro, data, array2s, array2n):
 
     return array2s, array2n, odd
 
-def matriz(num_colunas, array1):
+def matriz(num_linhas, array):
     """
-    Gera uma matriz sequencial a partir de um array, com o número de colunas especificado.
-
+    Transforma um array unidimensional em uma matriz organizada por colunas.
+    
     Args:
-        array (list ou np.ndarray): Array de entrada.
-        num_colunas (int): Número de colunas desejado na matriz.
+        array (list ou np.array): Lista de números a serem organizados.
+        num_linhas (int): Número de linhas desejadas na matriz.
 
     Returns:
-        np.ndarray: Matriz sequencial.
+        np.array: Matriz ordenada.
     """
-    if num_colunas > len(array1):
-        raise ValueError("O número de colunas não pode ser maior que o tamanho do array.")
+    
+    # Reshape para matriz (por linha) e depois transpõe para organizar por colunas
+    matriz = np.array(array).reshape(-1, num_linhas).T
+    
+    return matriz # Retorna como lista para melhor legibilidade
 
-    # Número de linhas na matriz
-    num_linhas = len(array1) - num_colunas + 1
-
-    # Criando a matriz sequencial
-    matriz = np.array([array1[i:i + num_colunas] for i in range(num_linhas)])
-    return matriz
 
 def placargeral(resultado, odd, array_geral):
     """
@@ -167,16 +166,25 @@ def lista_predicao(t, modelos, array1):
         np.array: Array que contém a predição de cada modelo da lista original.
     """
     y_pred1 = []
+    tam = len(array1)
     for sk in range(0,t):
         if modelos[sk] is not None:
             posicao = 60*sk + 60
-            print(sk, posicao)
-            matriz1s = matriz(posicao,array1)
-
-            x_new = np.array(matriz1s[-1,1:])
+            ajuste = tam % posicao
+            trick1 = tam - ajuste
+            array_ajustado = array1[:trick1]
+            print(sk, posicao,trick1, len(array_ajustado), ajuste)
+            matriz1s = matriz(posicao,array_ajustado)
+            if ajuste == 0:
+                trick2 = -1
+            else:
+                trick2 = ajuste - 1
+            cc = colunas[sk]
+            n = matriz1s.shape[1]
+            x_new = np.array(matriz1s[trick2,(n - cc) + 1:])
             x_new = x_new.astype("float32")
             x_new = np.expand_dims(x_new, -1)
-            x_new = np.reshape(x_new, (-1, ((matriz1s.shape[1])-1), 1, 1))
+            x_new = np.reshape(x_new, (-1, (cc-1), 1, 1))
 
             predictions = modelos[sk].predict(x_new)
 
@@ -198,15 +206,14 @@ def reden(array1, array3, m, n):
         keras.Model: Modelo treinado.
     """
     # Dividindo os dados em treino e teste
-    X = np.array(array3, dtype=np.float32)
-    y = np.array(array1, dtype=np.float32)
-    X = (X - np.mean(X, axis=0)) / (np.std(X, axis=0) + 1e-8)  # Normalização
+    X = np.array(array3)
+    y = np.array(array1)
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
     # Ajustando dimensões para entrada no modelo
-    x_train = np.expand_dims(x_train, -1)
-    x_test = np.expand_dims(x_test, -1)
-    input_shape = (n - 1, 1)
+    x_train = np.expand_dims(x_train, -1).astype("float32")
+    x_test = np.expand_dims(x_test, -1).astype("float32")
+    input_shape = (n - 1, 1)  # Formato esperado de entrada
 
     # Convertendo saídas para categóricas
     num_classes = 2
@@ -217,33 +224,32 @@ def reden(array1, array3, m, n):
     model = keras.Sequential([
         keras.Input(shape=input_shape),
         layers.Flatten(),
-        layers.Dense(264, use_bias=True),
-        layers.BatchNormalization(),
-        layers.LeakyReLU(alpha=0.01),
+        layers.Dense(264, activation="relu", kernel_regularizer=keras.regularizers.l2(0.01)),
         layers.Dropout(0.3),
-        layers.Dense(128, use_bias=True),
-        layers.BatchNormalization(),
-        layers.LeakyReLU(alpha=0.01),
-        layers.Dense(64, use_bias=True),
-        layers.BatchNormalization(),
-        layers.LeakyReLU(alpha=0.01),
+        layers.Dense(128, activation="relu", kernel_regularizer=keras.regularizers.l2(0.01)),
+        layers.Dense(64, activation="relu"),
         layers.Dense(num_classes, activation="softmax"),
     ])
 
+    #model.layers[-1].bias.assign([1]*64),
     model.compile(
         loss="binary_crossentropy",
-        optimizer=Nadam(learning_rate=0.001, beta_1=0.9, beta_2=0.999),
+        #optimizer="adam",
+        optimizer=Nadam(learning_rate=0.001, beta_1 = 0.9, beta_2 = 0.999),
         metrics=['accuracy', Precision(name="precision"), Recall(name="recall")]
     )
 
     # Treinamento
     batch_size = 2**10
     epochs = 50
+    # Early Stopping
+    early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
     model.fit(
         x_train, y_train,
         batch_size=batch_size,
         epochs=epochs,
-        validation_split=0.2
+        validation_split=0.2,
+        callbacks=[early_stopping]
     )
 
     # Avaliação
@@ -255,7 +261,7 @@ def reden(array1, array3, m, n):
 
     return [model, score[2]]
 
-def ponderar_lista(lista, base=2):
+def ponderar_lista(lista, base=1.25):
     """
     Realiza uma ponderação dos elementos da lista com pesos exponenciais crescentes.
 
@@ -277,17 +283,17 @@ def ponderar_lista(lista, base=2):
     soma_ponderada = sum(elemento * peso for elemento, peso in zip(lista, pesos))
     total_pesos = sum(pesos)
 
-    # Retornar 1 se média ponderada >= 0.5, senão 0
+    # Retornar 1 se média ponderada >= 0.55, senão 0
     return 1 if soma_ponderada / total_pesos >= 0.5 else 0
 
 
 ## Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
-data = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k.csv')
+data = pd.read_csv('/home/darkcover/Documentos/Out/dados/odds_200k_1.csv')
 
 array1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [], [], [], []
 
-a1, i, j2, j3 = 0,0,0,0
+a1, i, j2, j3 = 0,1,0,0
 
 media_parray, acerto01 = [], []
 
@@ -297,7 +303,7 @@ recurso1, recurso2 = [None]*5000, [None]*5000
 
 array_geral = np.zeros(6, dtype=float)
 df1 = pd.DataFrame({'lautgh1': np.zeros(60, dtype = int), 'lautgh2': np.zeros(60, dtype = int)})
-modelos, acumu, atrasado = [None]*50, [0]*50, [0]*60
+modelos, acumu, atrasado, colunas = [None]*50, [0]*50, [0]*60, [0]*50
 
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
 
@@ -346,11 +352,14 @@ while i <= 210000:
         for click in lista:
             k0 = i % click
             if k0 == 0:
-                info.append(click)
+                trap = i // click
+                if trap >= 5:
+                    info.append(click)
+        
         print(f'{12*"*-"} \nPosições que devem ser carregadas: {info} \n{12*"*-"}')
         for click in info:
             print(f'Treinamento para {click}')
-            matrix1s, matrix1n = matriz(click, array2s), matriz(click, array2n)
+            matrix1s, matrix1n = matriz(click, array2s[:i]), matriz(click, array2n[:i])
             posicao0 = int((click / 60) - 1)
             array1, array3 = matrix1n[:,-1], matrix1s[:,:-1]
             m, n = matrix1n.shape
@@ -361,32 +370,25 @@ while i <= 210000:
                 if acumu[posicao0] < models[1]:
                     modelos[posicao0] = models[0]
                     acumu[posicao0] = models[1]
+                    colunas[posicao0] = n
                     print('REDE NEURAL POSICIONAL ATUALIZADA...')
             else:
                 modelos[posicao0] = models[0]
                 acumu[posicao0] = models[1]
+                colunas[posicao0] = n
+            #modelos[posicao0] = models[0]
+            #acumu[posicao0] = models[1]
             print(f'Treinamento {click} realizado com sucesso ... {acumu[posicao0]} \n')
+            time.sleep(1)
         print('***'*20)
 
 
     if i >= 300:
         y_pred1 = lista_predicao(len(modelos), modelos, array2s)
-        resultado1 = ponderar_lista(y_pred1)
-        
-        if i >= 660:
-            core2 = (i + 1) % 60
-            m2 = media_parray[len(media_parray) - 59]
-            if atrasado[core2] < 1 and m2 <= 0.175:
-                resultado = 0
-            atrasado[core2] += 1
-            if atrasado[core2] >= 1:
-                atrasado[core2] = 0
-                resultado = resultado1
-        else:
-            resultado = resultado1
+        resultado = ponderar_lista(y_pred1)
         
         print(24*'*-')
-        print(f'Predição da Entrada: {resultado1} | Entrada Cadastrada: {resultado}')
+        print(f'Entrada Cadastrada: {resultado}')
         print(24*'*-')
     
     i += 1
