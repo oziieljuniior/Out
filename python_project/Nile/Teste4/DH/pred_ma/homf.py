@@ -20,6 +20,13 @@ pd.set_option('display.max_columns', None)
 
 ## Funções
 
+array_global = []
+
+def modificar_ag(odd):
+    global array_global
+    array_global.append(odd)
+    
+
 def placar60(df1, core1, media_parray, resultado, odd):
     """
     Função que organizar o placar das 60 entradas.
@@ -103,13 +110,17 @@ def coletarodd(i, inteiro, data, array2s, array2n):
 
     if odd == 0:
         return array2s, array2n, odd
+    
     if odd >= 4:
         odd = 4
-
-    array2s.append(odd)
-    corte2 = fuzzy_classification(odd)  # Aplicando lógica fuzzy
+    
+    corte1 = fuzzy_classification(odd)
+    array2s.append(corte1) # Aplicando lógica fuzzy
+    if odd >= 2:
+        corte2 = 1
+    else:
+        corte2 = 0
     array2n.append(corte2)
-
     return array2s, array2n, odd
 
 
@@ -276,7 +287,7 @@ def reden(array1, array3, m, n):
 
     return [model, score[2]]
 
-def ponderar_lista(lista, base=1.75):
+def ponderar_lista(lista, base=1.5):
     """
     Realiza uma ponderação dos elementos da lista com pesos exponenciais crescentes.
 
@@ -288,23 +299,28 @@ def ponderar_lista(lista, base=1.75):
         int: Resultado ponderado, 0 ou 1.
     """
     n = len(lista)
+    print(lista)
     if n == 0:
         raise ValueError("A lista não pode estar vazia.")
 
-    if n <= 3:
+    if n <= 10:
+        
+        # Calcular soma ponderada e total de pesos
+        soma_ponderada = sum(lista)
+        total_pesos = n
+        qrange = 0.50
+
+    else:
         # Calcular pesos exponenciais
         pesos = [base ** (n-i) for i in range(n)]
 
         # Calcular soma ponderada e total de pesos
         soma_ponderada = sum(elemento * peso for elemento, peso in zip(lista, pesos))
         total_pesos = sum(pesos)
-
-    else:
-        soma_ponderada = sum(lista)
-        total_pesos = sum(len(lista))
+        qrange = 0.4
 
     # Retornar 1 se média ponderada >= 0.5, senão 0
-    return 1 if soma_ponderada / total_pesos >= 0.5 else 0
+    return 1 if soma_ponderada / total_pesos >= qrange else 0
 
 
 ## Carregar data
@@ -327,6 +343,13 @@ modelos, acumu, atrasado = [None]*50, [0]*50, [0]*60
 
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
 
+contagem = 0
+
+array_contagem = []
+
+limite_i = 360
+contagem2 = 5
+
 while i <= 210000:
     print(24*'---')
     #print(len(media_parray))
@@ -337,13 +360,14 @@ while i <= 210000:
         m1 = media_parray[len(media_parray) - 60]
         core1 = i % 60
 
-    print(f'Número da Entrada - {i} | Acuracia_{core1 + 1}: {round(m1,4)}')
+    print(f'Número da Entrada - {i} | Acuracia_{core1}: {round(m1,4)}')
     
     array2s, array2n, odd = coletarodd(i, inteiro, data, array2s, array2n)
+    modificar_ag(odd)
     if odd == 0:
         break
 
-    if i >= 301:
+    if i >= (limite_i + 1):
         print(24*"-'-")
         
         array_geral = placargeral(resultado1, odd, array_geral)
@@ -353,15 +377,33 @@ while i <= 210000:
             core11 = 60
         else:
             core11 = core1
+            
         print(f'Acuracia modelo Geral: {round(array_geral[0],4)} | Acuracia_{core11}: {round(media_parray[-1],4)} \nPrecisao modelo Geral: {round(array_geral[1],4)}')
+        
+        print(24*"-'-")
+        if resultado1 == 1:
+            if odd >= 2:
+                trick1 = 1
+            else:
+                trick1 = 0
+            
+            if resultado1 == trick1:
+                contagem = contagem + 1
+            else:
+                contagem = contagem - 1
+        print(24*'-')    
+        print(f'Contagem: {contagem} | T. Data: {len(data)}')
+        array_contagem.append(contagem)
+        if  contagem >= 5 or contagem <= -5:
+            print("ATENÇÃO ...")
         print(24*"-'-")
 
-    if i >= 300 and (i % 60) == 0:
+
+    if i >= limite_i and (i % 60) == 0:
         print('***'*20)
         print(f'Carregando dados ...')
         info = []
-        cronor = (i + 300) // 5
-        lista = [name for name in range(60, cronor, 60)]
+        lista = [60,120]
 
         if len(lista) >= (len(modelos) - 25):
             print(f'T. Lista: {len(lista)} | T. Mod. Real: {len(modelos)} | T. Mod. Ajustado: {len(modelos)}')
@@ -383,19 +425,13 @@ while i <= 210000:
             print(f'Matrix_{click}: {[matrix1n.shape, matrix1s.shape]} | Indice: {matrix1n.shape[1]} | Posicao: {posicao0}')
             models = reden(array1,array3, m, n)
             
-            if i >= 420:
-                if acumu[posicao0] < models[1]:
-                    modelos[posicao0] = models[0]
-                    acumu[posicao0] = models[1]
-                    print('REDE NEURAL POSICIONAL ATUALIZADA...')
-            else:
-                modelos[posicao0] = models[0]
-                acumu[posicao0] = models[1]
+            modelos[posicao0] = models[0]
+            acumu[posicao0] = models[1]
             print(f'Treinamento {click} realizado com sucesso ... {acumu[posicao0]} \n')
         print('***'*20)
 
 
-    if i >= 300:
+    if i >= limite_i:
         y_pred1 = lista_predicao(len(modelos), modelos, array2s)
         resultado1 = ponderar_lista(y_pred1)
                 
@@ -406,3 +442,11 @@ while i <= 210000:
     i += 1
 
 
+# Criando DataFrames
+data_final = pd.DataFrame({"Contagem": array_contagem})
+#data_acuracia = pd.DataFrame({"Acuracia": array_acuracia})
+
+# Escrevendo ambos no mesmo arquivo, mas em sheets diferentes
+with pd.ExcelWriter('order.xlsx', engine='xlsxwriter') as writer:
+    data_final.to_excel(writer, sheet_name='Contagem', index=False)
+#    data_acuracia.to_excel(writer, sheet_name='Acuracia', index=False)
