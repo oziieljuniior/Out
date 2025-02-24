@@ -310,10 +310,10 @@ def ponderar_lista(lista, base=1.25):
     soma_ponderada = sum(elemento * peso for elemento, peso in zip(lista, pesos))
     total_pesos = sum(pesos)
     
-    qrange = 2 / n
+    qrange = 1/3
 
     # Retornar 1 se média ponderada >= 0.5, senão 0
-    return 1 if soma_ponderada / total_pesos >= qrange else 0
+    return 1 if soma_ponderada / total_pesos <= qrange else 0
 
 
 ## Carregar data

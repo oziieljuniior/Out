@@ -261,7 +261,7 @@ def reden(array1, array3, m, n):
     ])
 
     model.compile(
-        loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.7, gamma=2.0),
+        loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.8, gamma=2.0),
         #loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.25, gamma=2.0), #testa loss = tfa.losses.SigmoidFocalCrossEntropy(alpha=0.25, gamma=2.0)
         optimizer=tf.keras.optimizers.AdamW(learning_rate=0.001, weight_decay=1e-4),
         metrics=['accuracy', Precision(name="precision"), Recall(name="recall")]
