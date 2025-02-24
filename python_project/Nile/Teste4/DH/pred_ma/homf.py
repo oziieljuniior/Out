@@ -114,8 +114,7 @@ def coletarodd(i, inteiro, data, array2s, array2n):
     if odd >= 4:
         odd = 4
     
-    corte1 = fuzzy_classification(odd)
-    array2s.append(corte1) # Aplicando lógica fuzzy
+    array2s.append(odd) # Aplicando lógica fuzzy
     if odd >= 2:
         corte2 = 1
     else:
@@ -250,14 +249,11 @@ def reden(array1, array3, m, n):
     model = keras.Sequential([
         keras.Input(shape=input_shape),
         layers.Flatten(),
-        layers.Dense(264, activation="relu", use_bias=True),
-        layers.Dropout(0.3),
+        layers.Dense(256, activation="relu", use_bias=True),
+        layers.Dropout(0.5),
         layers.Dense(128, activation="relu", use_bias=True),
+        #layers.Dropout(0.4),
         layers.Dense(64, activation="relu", use_bias=True),
-
-
-
-        #layers.Dropout(0.5),
         layers.Dense(num_classes, activation="softmax"),
     ])
     #model.layers[-1].bias.assign([1]*64),
@@ -287,7 +283,7 @@ def reden(array1, array3, m, n):
 
     return [model, score[2]]
 
-def ponderar_lista(lista, base=1.5):
+def ponderar_lista(lista, base=1.15):
     """
     Realiza uma ponderação dos elementos da lista com pesos exponenciais crescentes.
 
@@ -303,21 +299,13 @@ def ponderar_lista(lista, base=1.5):
     if n == 0:
         raise ValueError("A lista não pode estar vazia.")
 
-    if n <= 10:
-        
-        # Calcular soma ponderada e total de pesos
-        soma_ponderada = sum(lista)
-        total_pesos = n
-        qrange = 0.50
+    # Calcular pesos exponenciais
+    pesos = [base ** (n-i) for i in range(n)]
 
-    else:
-        # Calcular pesos exponenciais
-        pesos = [base ** (n-i) for i in range(n)]
-
-        # Calcular soma ponderada e total de pesos
-        soma_ponderada = sum(elemento * peso for elemento, peso in zip(lista, pesos))
-        total_pesos = sum(pesos)
-        qrange = 0.4
+    # Calcular soma ponderada e total de pesos
+    soma_ponderada = sum(elemento * peso for elemento, peso in zip(lista, pesos))
+    total_pesos = sum(pesos)
+    qrange = round(1/n, 3)
 
     # Retornar 1 se média ponderada >= 0.5, senão 0
     return 1 if soma_ponderada / total_pesos >= qrange else 0
@@ -403,7 +391,8 @@ while i <= 210000:
         print('***'*20)
         print(f'Carregando dados ...')
         info = []
-        lista = [60,120]
+        cronor = (i + 300) // 5
+        lista = [name for name in range(60, cronor, 60)]
 
         if len(lista) >= (len(modelos) - 25):
             print(f'T. Lista: {len(lista)} | T. Mod. Real: {len(modelos)} | T. Mod. Ajustado: {len(modelos)}')
@@ -425,8 +414,14 @@ while i <= 210000:
             print(f'Matrix_{click}: {[matrix1n.shape, matrix1s.shape]} | Indice: {matrix1n.shape[1]} | Posicao: {posicao0}')
             models = reden(array1,array3, m, n)
             
-            modelos[posicao0] = models[0]
-            acumu[posicao0] = models[1]
+            if i >= 420:
+                if (acumu[posicao0] - 0.10) < models[1]:
+                    modelos[posicao0] = models[0]
+                    acumu[posicao0] = models[1]
+                    print('REDE NEURAL POSICIONAL ATUALIZADA...')
+            else:
+                modelos[posicao0] = models[0]
+                acumu[posicao0] = models[1]
             print(f'Treinamento {click} realizado com sucesso ... {acumu[posicao0]} \n')
         print('***'*20)
 

@@ -8,7 +8,32 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
+import skfuzzy as fuzz
 
+def fuzzy_classification(odd):
+    """
+    Implementação da lógica fuzzy para classificar as odds
+    """
+    odd_range = np.arange(1, 4.1, 0.1)
+    
+    # Conjuntos fuzzy
+    baixo = fuzz.trimf(odd_range, [1, 1, 2])
+    medio = fuzz.trimf(odd_range, [1.5, 2.5, 3.5])
+    alto = fuzz.trimf(odd_range, [2.5, 4, 4])
+    
+    # Graus de pertinência
+    pert_baixo = fuzz.interp_membership(odd_range, baixo, odd)
+    pert_medio = fuzz.interp_membership(odd_range, medio, odd)
+    pert_alto = fuzz.interp_membership(odd_range, alto, odd)
+    
+    # Classificação
+    if pert_alto > pert_medio and pert_alto > pert_baixo:
+        return 1  # Alta confiança na subida
+    elif pert_medio > pert_baixo:
+        return 0.5  # Média confiança
+    else:
+        return 0  # Baixa confiança
+    
 def coletarodd(i, inteiro, data, array2s, array2n):
     """
     Função que coleta e organiza as entradas iniciais do banco de dados.
@@ -39,8 +64,10 @@ def coletarodd(i, inteiro, data, array2s, array2n):
         return array2s, array2n, odd
     if odd >= 4:
         odd = 4
-
-    array2s.append(odd)
+    
+    corte1 = fuzzy_classification(odd)
+    array2s.append(corte1)
+    
     if odd >= 2:
         corte2 = 1
     else:

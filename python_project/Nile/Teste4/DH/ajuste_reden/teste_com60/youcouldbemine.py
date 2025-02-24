@@ -2,12 +2,11 @@ import pandas as pd
 import numpy as np
 
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.metrics import Precision, Recall
+
 from tensorflow import keras
+from tensorflow.keras.metrics import Precision, Recall
 from tensorflow.keras import layers
-import tensorflow as tf
-import tensorflow_addons as tfa
-#activation = tf.keras.activations.elu
+from tensorflow.keras.optimizers import Nadam
 
 import skfuzzy as fuzz
 
@@ -19,21 +18,28 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.set_option('display.max_columns', None)
 
-
 ## Funções
-def placar60(df1, i, media_parray, resultado, odd):
+
+array_global = []
+
+def modificar_ag(odd):
+    global array_global
+    array_global.append(odd)
+    
+
+def placar60(df1, core1, media_parray, resultado, odd):
     """
     Função que organizar o placar das 60 entradas.
     Args:
         df1 (pd.DataFrame): DataFrame responsavel por armazenar as somas de cada entrada.
-        i (int): Valor inteiro não-negativo crescente. Responsável por controlar a posição dos dados.
+        core1 (int): Valor inteiro não-negativo crescente ciclico. Responsável por controlar a posição dos dados.
         media_parray (array): Array responsavel por armazenar a acuracia de cada entrada.
         resultado (int): Valor interio(0 ou 1) gerado pela função ponderar lista com a entrada anterior.
         odd (float): Valor real com duas casas decimais. Ele é determinado pela entrada dos dados, ou usuário.
     Returns:
         array: Array contendo as variaveis df1 e mediap_array atualizadas, também retorna a acuracia atualizada.
     """
-    core1 = i % 60
+
     if resultado == 1:
         if odd >= 2:
             df1.iloc[core1,:] += 1
@@ -50,6 +56,7 @@ def placar60(df1, i, media_parray, resultado, odd):
     media_parray.append(medida_pontual)
 
     return media_parray
+
 
 def fuzzy_classification(odd):
     """
@@ -103,17 +110,13 @@ def coletarodd(i, inteiro, data, array2s, array2n):
 
     if odd == 0:
         return array2s, array2n, odd
+    
     if odd >= 4:
         odd = 4
     
-    corte1 = fuzzy_classification(odd)  # Aplicando lógica fuzzy
-    array2s.append(odd)
-    if odd >= 2:
-        corte2 = 1
-    else:
-        corte2 = 0    
+    corte1 = fuzzy_classification(odd)
+    array2s.append(odd) # Aplicando lógica fuzzy
     array2n.append(corte1)
-
     return array2s, array2n, odd
 
 
@@ -183,48 +186,79 @@ def placargeral(resultado, odd, array_geral):
 
     return array_geral
 
+
 def lista_predicao(t, modelos, array1):
     """
-    Gera uma lista com possíveis predições.
+    Gera uma lista com possíveis predições contínuas entre 0 e 1.
+    
     Args:
-        t (int): Quantidade de modelos contidos na lista original.
-        modelos (np.array): Array que contém modelos treinados.
+        t (int): Quantidade de modelos na lista original.
+        modelos (list): Lista contendo modelos treinados.
         array1 (np.array): Lista contendo os últimos valores.
+
     Returns:
-        np.array: Array que contém a predição de cada modelo da lista original.
+        list: Lista que contém a predição de cada modelo.
     """
     y_pred1 = []
-    for sk in range(0,t):
+    for sk in range(t):
         if modelos[sk] is not None:
-            posicao = 60*sk + 60
+            posicao = 60 * sk + 60
             print(sk, posicao)
-            matriz1s = matriz(posicao,array1)
 
-            x_new = np.array(matriz1s[-1,1:])
+            matriz1s = matriz(posicao, array1)
+
+            x_new = np.array(matriz1s[-1, 1:])  # Pegamos a última entrada para predição
             x_new = x_new.astype("float32")
             x_new = np.expand_dims(x_new, -1)
-            x_new = np.reshape(x_new, (-1, ((matriz1s.shape[1])-1), 1, 1))
+            x_new = np.reshape(x_new, (-1, (matriz1s.shape[1]) - 1, 1, 1))
 
             predictions = modelos[sk].predict(x_new)
+            y_pred = predictions.flatten()[0]  # Pegamos o valor contínuo entre 0 e 1
+            
+            y_pred1.append(y_pred)
 
-            y_pred = np.argmax(predictions, axis=1)
-            y_pred1.append(y_pred[0])
     print(y_pred1)
     return y_pred1
 
-def reden(array1, array3, m, n):
+import os
+import json
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+from tensorflow.keras.optimizers import Nadam
+from sklearn.model_selection import train_test_split
+
+def reden(array1, array3, m, n, salvar=True, carregar=False):
     """
-    Função para treinar uma rede neural usando as entradas e saídas fornecidas.
+    Treina uma rede neural para prever valores contínuos entre 0 e 1, com suporte a salvamento e carregamento.
 
     Args:
-        array1 (numpy.array): Saídas (rótulos) binárias (0 ou 1).
+        array1 (numpy.array): Valores reais entre 0 e 1 (target).
         array3 (numpy.array): Entradas preditoras.
         m (int): Número de amostras.
         n (int): Número de características por amostra.
+        salvar (bool): Se True, salva o modelo treinado.
+        carregar (bool): Se True, carrega o modelo previamente salvo.
 
     Returns:
         keras.Model: Modelo treinado.
     """
+
+    # Diretório para salvar os modelos
+    dir_modelo = "modelos_salvos"
+    modelo_path = os.path.join(dir_modelo, "ultimo_modelo.keras")
+    pesos_path = os.path.join(dir_modelo, "pesos.weights.h5")
+    historico_path = os.path.join(dir_modelo, "historico.json")
+
+    if carregar and os.path.exists(modelo_path):
+        print("Carregando modelo pré-treinado...")
+        model = keras.models.load_model(modelo_path)
+        return model
+
+    # Criando diretório se não existir
+    os.makedirs(dir_modelo, exist_ok=True)
+
     # Dividindo os dados em treino e teste
     X = np.array(array3)
     y = np.array(array1)
@@ -235,48 +269,65 @@ def reden(array1, array3, m, n):
     x_test = np.expand_dims(x_test, -1).astype("float32")
     input_shape = (n - 1, 1)  # Formato esperado de entrada
 
-    # Convertendo saídas para categóricas
-    num_classes = 2
-    y_train = keras.utils.to_categorical(y_train, num_classes)
-    y_test = keras.utils.to_categorical(y_test, num_classes)
-
     # Definição do modelo
     model = keras.Sequential([
         keras.Input(shape=input_shape),
         layers.Flatten(),
-        layers.Dense(128, activation="relu", use_bias=True),
-        layers.Dropout(0.5),
-        layers.Dense(64, activation="relu", use_bias=True),
-        layers.Dense(32, activation=tf.keras.activations.swish, use_bias=True),
-        layers.Dense(num_classes, activation="softmax"),
+        layers.Dense(264, use_bias=True),
+        layers.BatchNormalization(),
+        layers.LeakyReLU(alpha=0.1),
+        layers.Dropout(0.3),  # Dropout adaptativo
+
+        layers.Dense(128, use_bias=True),
+        layers.BatchNormalization(),
+        layers.LeakyReLU(alpha=0.1),
+        layers.Dropout(0.2),
+
+        layers.Dense(64, use_bias=True),
+        layers.BatchNormalization(),
+        layers.LeakyReLU(alpha=0.1),
+
+        layers.Dense(1, activation="sigmoid"),  # Saída contínua entre 0 e 1
     ])
 
     model.compile(
-        loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.25, gamma=2.0), #testa loss = tfa.losses.SigmoidFocalCrossEntropy(alpha=0.25, gamma=2.0)
-        optimizer=tf.keras.optimizers.AdamW(learning_rate=0.001, weight_decay=1e-4),
-        metrics=['accuracy', Precision(name="precision"), Recall(name="recall")]
+        loss="mean_squared_error",  # Ajustado para regressão
+        optimizer=Nadam(learning_rate=0.001, beta_1=0.9, beta_2=0.999),
+        metrics=['mae', 'mse']
     )
 
     # Treinamento
-    batch_size = 2**10
-    epochs = 50
-    model.fit(
+    batch_size = min(2**10, x_train.shape[0])  # Ajusta batch_size ao tamanho do conjunto
+    epochs = 100
+
+    historico = model.fit(
         x_train, y_train,
         batch_size=batch_size,
         epochs=epochs,
-        validation_split=0.2
+        validation_split=0.2,
+        verbose=1
     )
 
     # Avaliação
-    score = model.evaluate(x_test, y_test, verbose=0)
-    print(f"Test loss: {score[0]:.4f}")
-    print(f"Test accuracy: {score[1]:.4f}")
-    print(f"Precision: {score[2]:.4f}")
-    print(f"Recall: {score[3]:.4f}")
+    score = model.evaluate(x_test, y_test, verbose=1)
+    print(f"Test MSE: {score[1]:.4f}")
+    print(f"Test MAE: {score[0]:.4f}")
+
+    # Salvando modelo, pesos e histórico
+    if salvar:
+        model.save(modelo_path)  # Salva no novo formato .keras
+        model.save_weights(pesos_path)  # Salva os pesos corretamente com a extensão .weights.h5
+
+        with open(historico_path, "w") as f:
+            json.dump(historico.history, f)
+
+        print("Modelo, pesos e histórico salvos com sucesso!")
 
     return model
 
-def ponderar_lista(lista, base=1.5):
+
+
+def ponderar_lista(lista):
     """
     Realiza uma ponderação dos elementos da lista com pesos exponenciais crescentes.
 
@@ -291,14 +342,11 @@ def ponderar_lista(lista, base=1.5):
     if n == 0:
         raise ValueError("A lista não pode estar vazia.")
 
-    # Calcular pesos exponenciais
-    pesos = [base ** (n - i) for i in range(n)]
-
     # Calcular soma ponderada e total de pesos
-    soma_ponderada = sum(elemento * peso for elemento, peso in zip(lista, pesos))
-    total_pesos = sum(pesos)
+    soma_ponderada = sum(lista)
+    total_pesos = n
     
-    qrange = 1 / n
+    qrange = 0.55
 
     # Retornar 1 se média ponderada >= 0.5, senão 0
     return 1 if soma_ponderada / total_pesos >= qrange else 0
@@ -316,48 +364,83 @@ media_parray, acerto01 = [], []
 
 acerto2, acerto3, core1 = 0,0,0
 
-modelos = [None]*5000
 recurso1, recurso2 = [None]*5000, [None]*5000
 
 array_geral = np.zeros(6, dtype=float)
 df1 = pd.DataFrame({'lautgh1': np.zeros(60, dtype = int), 'lautgh2': np.zeros(60, dtype = int)})
+modelos, acumu, atrasado = [None]*50, [0]*50, [0]*60
 
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
+
+contagem = 0
+
+array_contagem = []
+
+limite_i = 360
+contagem2 = 5
 
 while i <= 210000:
     print(24*'---')
     #print(len(media_parray))
     if len(media_parray) < 59:
-        m = 0
+        m1 = 0
         core1 = 0
     else:
-        m = media_parray[len(media_parray) - 60]
+        m1 = media_parray[len(media_parray) - 60]
+        core1 = i % 60
 
-    print(f'Número da Entrada - {i} | Acuracia_{core1 + 1}: {round(m,4)}')
+    print(f'Número da Entrada - {i} | Acuracia_{core1}: {round(m1,4)}')
     
     array2s, array2n, odd = coletarodd(i, inteiro, data, array2s, array2n)
+    modificar_ag(odd)
     if odd == 0:
         break
 
-    if i >= 301:
+    if i >= (limite_i + 1):
         print(24*"-'-")
         
-        array_geral = placargeral(resultado, odd, array_geral)
-        media_parray = placar60(df1, i, media_parray, resultado, odd)
+        array_geral = placargeral(resultado1, odd, array_geral)
+        media_parray = placar60(df1, core1, media_parray, resultado1, odd)
         
-        if i % 60 == 0:
+        if core1 == 0:
             core11 = 60
         else:
             core11 = core1
+            
         print(f'Acuracia modelo Geral: {round(array_geral[0],4)} | Acuracia_{core11}: {round(media_parray[-1],4)} \nPrecisao modelo Geral: {round(array_geral[1],4)}')
+        
+        print(24*"-'-")
+        if resultado1 == 1:
+            if odd >= 2:
+                trick1 = 1
+            else:
+                trick1 = 0
+            
+            if resultado1 == trick1:
+                contagem = contagem + 1
+            else:
+                contagem = contagem - 1
+        print(24*'-')    
+        print(f'Contagem: {contagem} | T. Data: {len(data)}')
+        array_contagem.append(contagem)
+        if  contagem >= 5 or contagem <= -5:
+            print("ATENÇÃO ...")
         print(24*"-'-")
 
-    if i >= 300 and (i % 60) == 0:
+
+    if i >= limite_i and (i % 60) == 0:
         print('***'*20)
         print(f'Carregando dados ...')
         info = []
-        cronor = (i + 600) // 5
-        lista = [name for name in range(60, cronor, 60)]
+        #cronor = (i + 300) // 5
+        lista = [60, 120]
+
+        if len(lista) >= (len(modelos) - 25):
+            print(f'T. Lista: {len(lista)} | T. Mod. Real: {len(modelos)} | T. Mod. Ajustado: {len(modelos)}')
+            cronor1 = [None]*50
+            modelos = modelos.extend(cronor1)
+            acumu = acumu.extend(cronor1)
+
         for click in lista:
             k0 = i % click
             if k0 == 0:
@@ -371,19 +454,29 @@ while i <= 210000:
             m, n = matrix1n.shape
             print(f'Matrix_{click}: {[matrix1n.shape, matrix1s.shape]} | Indice: {matrix1n.shape[1]} | Posicao: {posicao0}')
             models = reden(array1,array3, m, n)
+        
             modelos[posicao0] = models
-            print(f'Treinamento {click} realizado com sucesso ...  \n')
+            
+            print(f'Treinamento {click} realizado com sucesso ...')
         print('***'*20)
 
 
-    if i >= 300:
+    if i >= limite_i:
         y_pred1 = lista_predicao(len(modelos), modelos, array2s)
-        resultado = ponderar_lista(y_pred1)
+        resultado1 = ponderar_lista(y_pred1)
+                
         print(24*'*-')
-        print(f'Proxima Entrada: {resultado}')
+        print(f'Predição da Entrada: {resultado1}')
         print(24*'*-')
-
-
+    
     i += 1
 
 
+# Criando DataFrames
+data_final = pd.DataFrame({"Contagem": array_contagem})
+#data_acuracia = pd.DataFrame({"Acuracia": array_acuracia})
+
+# Escrevendo ambos no mesmo arquivo, mas em sheets diferentes
+with pd.ExcelWriter('order.xlsx', engine='xlsxwriter') as writer:
+    data_final.to_excel(writer, sheet_name='Contagem', index=False)
+#    data_acuracia.to_excel(writer, sheet_name='Acuracia', index=False)
