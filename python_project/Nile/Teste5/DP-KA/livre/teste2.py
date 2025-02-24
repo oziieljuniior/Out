@@ -261,14 +261,14 @@ def reden(array1, array3, m, n):
     ])
 
     model.compile(
-        loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.7, gamma=2.0),
+        loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.2, gamma=2.0),
         #loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.25, gamma=2.0), #testa loss = tfa.losses.SigmoidFocalCrossEntropy(alpha=0.25, gamma=2.0)
         optimizer=tf.keras.optimizers.AdamW(learning_rate=0.001, weight_decay=1e-4),
         metrics=['accuracy', Precision(name="precision"), Recall(name="recall")]
     )
 
     # Treinamento
-    class_weight = {0: 1.0, 1: 2.0}  # Classe 1 tem peso maior
+    class_weight = {0: 2.0, 1: 1.0}  # Classe 1 tem peso maior
     batch_size = 2**10
     epochs = 50
     model.fit(
