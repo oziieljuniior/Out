@@ -1,4 +1,4 @@
-![logo](/home/ozielramos/Documentos/Out/images/Logo/logo1.png "Out")
+![](images/Logo/logo1.jpg "Out")
 
 ---
 
