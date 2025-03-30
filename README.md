@@ -1,3 +1,7 @@
+![logo](/home/ozielramos/Documentos/Out/images/Logo/logo1.png "Out")
+
+---
+
 # Out
 [PROJETO EM DESENVOLVIMENTO](https://github.com/oziieljuniior/Out/tree/main/python_project/Echoes)
 ## Como o código funciona
@@ -10,8 +14,9 @@ Informações como o jogo funciona, acesse:
 [Últimas Atualizações](https://github.com/oziieljuniior/Out/blob/main/notes/update_27_07.md)
 
 ## Resumo da Opera:
-No final, tudo se resume em como você lida com a média móvel. Isto é possível apenas por causa de duas caracteristicas.
-A primeira, se passa pela geração de número pseudo aleatórios(NPA).
+No final, tudo se resume à forma como você manipula a média móvel, algo viável graças a duas características essenciais.  
 
-Quando estamos trabalhando com NPA visualizamos as caracteríticas intrisicas das médias móveis. Pois as médias vão ter uma convergência uniforme a partir de uma certa quantidade de entradas.
+A primeira está relacionada à geração de números pseudoaleatórios (NPA).  
+
+Ao trabalhar com NPAs, é possível identificar as características intrínsecas das médias móveis, pois elas tendem a convergir de maneira uniforme à medida que o número de entradas aumenta. Essa convergência está diretamente ligada ao grau de entropia da sequência: quanto menor a entropia, mais previsível é o comportamento da média móvel; quanto maior, mais instável e difícil de prever.
 
