@@ -1,3 +1,6 @@
+isabellafogo7@gmail.com
+
+
 (venv) darkcover@Laptop:~/Documentos/Out/python_project/PainGaming/DP$ python3 main.py 
 2025-01-30 21:45:27.438941: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.
 2025-01-30 21:45:27.448841: I external/local_xla/xla/tsl/cuda/cudart_stub.cc:32] Could not find cuda drivers on your machine, GPU will not be used.

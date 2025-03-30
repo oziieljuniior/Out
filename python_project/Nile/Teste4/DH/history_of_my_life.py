@@ -2,11 +2,14 @@ import pandas as pd
 import numpy as np
 
 from sklearn.model_selection import train_test_split
-
-from tensorflow import keras
 from tensorflow.keras.metrics import Precision, Recall
+from tensorflow import keras
 from tensorflow.keras import layers
+import tensorflow as tf
 from tensorflow.keras.optimizers import Nadam
+import tensorflow_addons as tfa
+#activation = tf.keras.activations.elu
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 import skfuzzy as fuzz
 
@@ -17,24 +20,65 @@ import warnings
 # Configs
 warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.set_option('display.max_columns', None)
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 
 ## Funções
 
-def placar60(df1, core1, media_parray, resultado, odd):
+def calculate_means(array4):
+    """
+    Calcula a média dos elementos de array4 em janelas deslizantes de 59 elementos.
+
+    Args:
+        array4 (list): Lista de inteiros (0 ou 1).
+
+    Returns:
+        list: Lista com a média dos elementos em janelas de 59 elementos.
+    """
+    array6 = []
+    array7 = []
+    for i in range(len(array4) - 1):
+        array6.append(array4[i])
+        if i >= 59:
+            order = float(np.mean(array6))
+            array7.append(order)
+    
+    return array7
+
+def calculate_orders(array4):
+        """
+        Calcula a soma dos elementos de array4 em janelas deslizantes de 59 elementos.
+
+        Args:
+            array4 (list): Lista de inteiros (0 ou 1).
+
+        Returns:
+            list: Lista com a soma dos elementos em janelas de 59 elementos.
+        """
+        # Calcular a soma dos elementos em janelas de 59 elementos
+        array5 = []
+        for i in range(len(array4) - 1):
+            if i >= 59:
+                order = sum(array4[i - 59: i])
+                array5.append(order)
+        return array5
+
+def placar60(df1, i, media_parray, resultado, odd):
     """
     Função que organizar o placar das 60 entradas.
     Args:
         df1 (pd.DataFrame): DataFrame responsavel por armazenar as somas de cada entrada.
-        core1 (int): Valor inteiro não-negativo crescente ciclico. Responsável por controlar a posição dos dados.
+        i (int): Valor inteiro não-negativo crescente. Responsável por controlar a posição dos dados.
         media_parray (array): Array responsavel por armazenar a acuracia de cada entrada.
         resultado (int): Valor interio(0 ou 1) gerado pela função ponderar lista com a entrada anterior.
         odd (float): Valor real com duas casas decimais. Ele é determinado pela entrada dos dados, ou usuário.
     Returns:
         array: Array contendo as variaveis df1 e mediap_array atualizadas, também retorna a acuracia atualizada.
     """
-
+    core1 = i % 60
     if resultado == 1:
-        if odd >= 2:
+        if odd >= 3:
             df1.iloc[core1,:] += 1
             medida_pontual = df1.iloc[core1, 0] / df1.iloc[core1, 1]
         else:
@@ -53,27 +97,36 @@ def placar60(df1, core1, media_parray, resultado, odd):
 
 def fuzzy_classification(odd):
     """
-    Implementação da lógica fuzzy para classificar as odds
+    Implementação da lógica fuzzy para classificar as odds no intervalo de 1 a 6.
     """
-    odd_range = np.arange(1, 4.1, 0.1)
+    odd_range = np.arange(1, 6.1, 0.1)
     
-    # Conjuntos fuzzy
+    # Conjuntos fuzzy ajustados para cobrir todo o intervalo de 1 a 6
     baixo = fuzz.trimf(odd_range, [1, 1, 2])
-    medio = fuzz.trimf(odd_range, [1.5, 2.5, 3.5])
-    alto = fuzz.trimf(odd_range, [2.5, 4, 4])
+    medio = fuzz.trimf(odd_range, [1.5, 3, 4.5])
+    alto = fuzz.trimf(odd_range, [3.5, 5, 6])
+    muito_alto = fuzz.trimf(odd_range, [4.5, 6, 6])
     
     # Graus de pertinência
     pert_baixo = fuzz.interp_membership(odd_range, baixo, odd)
     pert_medio = fuzz.interp_membership(odd_range, medio, odd)
     pert_alto = fuzz.interp_membership(odd_range, alto, odd)
+    pert_muito_alto = fuzz.interp_membership(odd_range, muito_alto, odd)
     
-    # Classificação
-    if pert_alto > pert_medio and pert_alto > pert_baixo:
+    # Classificação baseada nos graus de pertinência
+    max_pert = max(pert_baixo, pert_medio, pert_alto, pert_muito_alto)
+    
+    if max_pert == 0:
+        return 0  # Nenhuma confiança
+    
+    if max_pert == pert_muito_alto:
         return 1  # Alta confiança na subida
-    elif pert_medio > pert_baixo:
-        return 0.5  # Média confiança
+    elif max_pert == pert_alto:
+        return 0.75  # Confiança moderada-alta
+    elif max_pert == pert_medio:
+        return 0.5  # Confiança média
     else:
-        return 0  # Baixa confiança
+        return 0.25  # Baixa confiança
 
 def coletarodd(i, inteiro, data, array2s, array2n):
     """
@@ -95,7 +148,7 @@ def coletarodd(i, inteiro, data, array2s, array2n):
     if i <= inteiro:
         #odd = float(data['Odd'][i])
         odd = float(data['Entrada'][i].replace(",",'.'))
-        if odd == 0:
+        if odd <= 1:
             odd = 1
         print(f'Entrada: {odd}')
     else:
@@ -103,13 +156,15 @@ def coletarodd(i, inteiro, data, array2s, array2n):
 
     if odd == 0:
         return array2s, array2n, odd
-    if odd >= 4:
-        odd = 4
-
-    array2s.append(odd)
-    corte2 = fuzzy_classification(odd)  # Aplicando lógica fuzzy
-    array2n.append(corte2)
-
+    if odd >= 6:
+        odd = 6
+    if odd >= 3:
+        array2n.append(1)
+    else:
+        array2n.append(0)
+    corte1 = fuzzy_classification(odd)
+    array2s.append(corte1)
+    
     return array2s, array2n, odd
 
 
@@ -152,7 +207,7 @@ def placargeral(resultado, odd, array_geral):
     name = resultado
 
     if name == 1:
-        if odd >= 2:
+        if odd >= 3:
             count = 1
             if count == name:
                 array_geral[2] += 1
@@ -163,7 +218,7 @@ def placargeral(resultado, odd, array_geral):
             array_geral[4] += 1
             array_geral[5] += 1
     else:
-        if odd < 2:
+        if odd < 3:
             count = 0
             if count == name:
                 array_geral[3] += 1
@@ -179,7 +234,7 @@ def placargeral(resultado, odd, array_geral):
 
     return array_geral
 
-def lista_predicao(t, modelos, array1):
+def lista_predicao(i, t, modelos, array1, array2):
     """
     Gera uma lista com possíveis predições.
     Args:
@@ -194,20 +249,21 @@ def lista_predicao(t, modelos, array1):
         if modelos[sk] is not None:
             posicao = 60*sk + 60
             print(sk, posicao)
-            matriz1s = matriz(posicao,array1)
+            matriz1s, matriz1n, posicao0 = tranforsmar_final_matriz(posicao,array1, array2)
 
-            x_new = np.array(matriz1s[-1,1:])
+            x_new = np.array(matriz1s[-1,3:])
             x_new = x_new.astype("float32")
             x_new = np.expand_dims(x_new, -1)
-            x_new = np.reshape(x_new, (-1, ((matriz1s.shape[1])-1), 1, 1))
+            x_new = np.reshape(x_new, (-1, (matriz1s.shape[1] - 3), 1, 1))
 
             predictions = modelos[sk].predict(x_new)
 
             y_pred = np.argmax(predictions, axis=1)
             y_pred1.append(y_pred[0])
+    print(y_pred1)
     return y_pred1
 
-def reden(array1, array3, m, n):
+def reden(array1, array2):
     """
     Função para treinar uma rede neural usando as entradas e saídas fornecidas.
 
@@ -221,14 +277,15 @@ def reden(array1, array3, m, n):
         keras.Model: Modelo treinado.
     """
     # Dividindo os dados em treino e teste
-    X = np.array(array3)
-    y = np.array(array1)
+    X = np.array(array1)
+    y = np.array(array2)
+    n = X.shape[1]
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
     # Ajustando dimensões para entrada no modelo
     x_train = np.expand_dims(x_train, -1).astype("float32")
     x_test = np.expand_dims(x_test, -1).astype("float32")
-    input_shape = (n - 1, 1)  # Formato esperado de entrada
+    input_shape = (n, 1)  # Formato esperado de entrada
 
     # Convertendo saídas para categóricas
     num_classes = 2
@@ -239,32 +296,33 @@ def reden(array1, array3, m, n):
     model = keras.Sequential([
         keras.Input(shape=input_shape),
         layers.Flatten(),
-        layers.Dense(264, activation="relu", use_bias=True),
-        layers.Dropout(0.3),
         layers.Dense(128, activation="relu", use_bias=True),
+        layers.Dropout(0.5),
         layers.Dense(64, activation="relu", use_bias=True),
-
-
-
-        #layers.Dropout(0.5),
+        layers.Dense(32, activation=tf.keras.activations.swish, use_bias=True),
         layers.Dense(num_classes, activation="softmax"),
     ])
-    #model.layers[-1].bias.assign([1]*64),
+
+    # Compilação do modelo
     model.compile(
-        loss="binary_crossentropy",
-        #optimizer="adam",
-        optimizer=Nadam(learning_rate=0.001, beta_1 = 0.9, beta_2 = 0.999),
+        loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.5, gamma=2.0),
+        optimizer=tf.keras.optimizers.AdamW(learning_rate=0.001, weight_decay=1e-4),
         metrics=['accuracy', Precision(name="precision"), Recall(name="recall")]
     )
 
+    # Callbacks
+    early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+    model_checkpoint = ModelCheckpoint('best_model.keras', monitor='val_loss', save_best_only=True)
+
     # Treinamento
     batch_size = 2**10
-    epochs = 50
+    epochs = 100
     model.fit(
         x_train, y_train,
         batch_size=batch_size,
         epochs=epochs,
-        validation_split=0.2
+        validation_split=0.2,
+        callbacks=[early_stopping, model_checkpoint]
     )
 
     # Avaliação
@@ -274,7 +332,7 @@ def reden(array1, array3, m, n):
     print(f"Precision: {score[2]:.4f}")
     print(f"Recall: {score[3]:.4f}")
 
-    return [model, score[2]]
+    return model
 
 def ponderar_lista(lista, base=1.75):
     """
@@ -297,10 +355,52 @@ def ponderar_lista(lista, base=1.75):
     # Calcular soma ponderada e total de pesos
     soma_ponderada = sum(elemento * peso for elemento, peso in zip(lista, pesos))
     total_pesos = sum(pesos)
+    
+    qrange = 1 / n
 
     # Retornar 1 se média ponderada >= 0.5, senão 0
-    return 1 if soma_ponderada / total_pesos >= 0.5 else 0
+    return 1 if soma_ponderada / total_pesos >= qrange else 0
 
+
+def tranforsmar_final_matriz(click, array1s, array1n):
+    """
+        Reponsavel por carregar matriz final. Idealmente elaborado
+        para comportar outras variáveis de entrada.
+        Args:
+            click (int): Valor inteiro não-negativo. Entrada 
+                que controla o loop principal. É um valor cumulativo.
+            array1s (np.array): Array com entradas vetorizadas float.
+            array1n (np.array): Array com entradas vetorizadas int.
+        Returns:
+            np.array: Matriz final.
+    """
+    n1 = len(array1n) - 61
+    print(n1)
+    arrayacertos60 = calculate_orders(array1n)
+    matrizacertos60 = matriz(click, arrayacertos60[1:])
+    arraymediamovel = calculate_means(array1n)
+    matrizmediamovel = matriz(click, arraymediamovel[1:])
+    print(len(array1s[1:]), len(array1n[1:]))
+    matrix1s, matrix1n = matriz(click, array1s[1:]), matriz(click, array1n[1:])
+    matrix1s, matrix1n = matrix1s[60:,:], matrix1n[60:,:]
+
+    print(matrix1n.shape, matrix1s.shape, matrizacertos60.shape, matrizmediamovel.shape)
+    posicao0 = int((click // 60) - 1)
+
+    # Criar DataFrames separando cada coluna
+    df_x1 = pd.DataFrame(matrizacertos60, columns=[f'X1_{i}' for i in range(matrizacertos60.shape[1])])
+    df_x2 = pd.DataFrame(matrizmediamovel, columns=[f'X2_{i}' for i in range(matrizmediamovel.shape[1])])
+    df_x3 = pd.DataFrame(matrix1s, columns=[f'X3_{i}' for i in range(matrix1s.shape[1])])
+
+    # Juntar todas as colunas
+    X_df = pd.concat([df_x1, df_x2, df_x3], axis=1)
+
+    # Transformar para valores NumPy
+    matrix1s = X_df.values
+
+    print(matrix1s.shape, matrix1n.shape)  # Saída: (60, 24)
+
+    return matrix1s, matrix1n, posicao0
 
 ## Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
@@ -314,90 +414,102 @@ media_parray, acerto01 = [], []
 
 acerto2, acerto3, core1 = 0,0,0
 
+modelos = [None]*5000
+data_matrizes = [None]*5000
 recurso1, recurso2 = [None]*5000, [None]*5000
 
 array_geral = np.zeros(6, dtype=float)
 df1 = pd.DataFrame({'lautgh1': np.zeros(60, dtype = int), 'lautgh2': np.zeros(60, dtype = int)})
-modelos, acumu, atrasado = [None]*50, [0]*50, [0]*60
 
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
+
+data_matriz_float = []
+data_matriz_int = []
+data_array_float = []
+data_array_int = []
+array_geral_float = []
+data_acuracia_geral = []
+data_precisao_geral = []
 
 while i <= 210000:
     print(24*'---')
     #print(len(media_parray))
     if len(media_parray) < 59:
-        m1 = 0
+        m = 0
         core1 = 0
     else:
-        m1 = media_parray[len(media_parray) - 60]
-        core1 = i % 60
+        m = media_parray[len(media_parray) - 60]
 
-    print(f'Número da Entrada - {i} | Acuracia_{core1 + 1}: {round(m1,4)}')
+    print(f'Número da Entrada - {i} | Acuracia_{core1 + 1}: {round(m,4)}')
     
     array2s, array2n, odd = coletarodd(i, inteiro, data, array2s, array2n)
+    array_geral_float.append(float)
     if odd == 0:
         break
 
-    if i >= 301:
+    if i >= 361:
         print(24*"-'-")
         
-        array_geral = placargeral(resultado1, odd, array_geral)
-        media_parray = placar60(df1, core1, media_parray, resultado1, odd)
+        array_geral = placargeral(resultado, odd, array_geral)
+        media_parray = placar60(df1, i, media_parray, resultado, odd)
         
-        if core1 == 0:
+        if i % 60 == 0:
             core11 = 60
         else:
             core11 = core1
         print(f'Acuracia modelo Geral: {round(array_geral[0],4)} | Acuracia_{core11}: {round(media_parray[-1],4)} \nPrecisao modelo Geral: {round(array_geral[1],4)}')
         print(24*"-'-")
+        data_acuracia_geral.append(array_geral[0]), data_precisao_geral.append(array_geral[1])
+        print(24*"-'-")
 
-    if i >= 300 and (i % 60) == 0:
+    if i >= 360 and (i % 60) == 0:
         print('***'*20)
         print(f'Carregando dados ...')
         info = []
         cronor = (i + 300) // 5
         lista = [name for name in range(60, cronor, 60)]
-
-        if len(lista) >= (len(modelos) - 25):
-            print(f'T. Lista: {len(lista)} | T. Mod. Real: {len(modelos)} | T. Mod. Ajustado: {len(modelos)}')
-            cronor1 = [None]*50
-            modelos = modelos.extend(cronor1)
-            acumu = acumu.extend(cronor1)
+        tier = True
 
         for click in lista:
             k0 = i % click
-            if k0 == 0:
+            k1 = (i - 60) % click
+            if k0 == 0 and k1 == 0:
                 info.append(click)
         print(f'{12*"*-"} \nPosições que devem ser carregadas: {info} \n{12*"*-"}')
+
         for click in info:
             print(f'Treinamento para {click}')
-            matrix1s, matrix1n = matriz(click, array2s), matriz(click, array2n)
-            posicao0 = int((click / 60) - 1)
-            array1, array3 = matrix1n[:,-1], matrix1s[:,:-1]
-            m, n = matrix1n.shape
-            print(f'Matrix_{click}: {[matrix1n.shape, matrix1s.shape]} | Indice: {matrix1n.shape[1]} | Posicao: {posicao0}')
-            models = reden(array1,array3, m, n)
-            
-            if i >= 420:
-                if acumu[posicao0] < models[1]:
-                    modelos[posicao0] = models[0]
-                    acumu[posicao0] = models[1]
-                    print('REDE NEURAL POSICIONAL ATUALIZADA...')
-            else:
-                modelos[posicao0] = models[0]
-                acumu[posicao0] = models[1]
-            print(f'Treinamento {click} realizado com sucesso ... {acumu[posicao0]} \n')
+            matriz_final_float, matriz_final_int, posicao0 = tranforsmar_final_matriz(click, array2s, array2n)
+            print(f'Matrix_{click}: {[matriz_final_float.shape, matriz_final_int.shape]} | Posicao: {posicao0}')
+            data_matriz_float.append(matriz_final_float), data_matriz_int.append(matriz_final_int)
+            n = matriz_final_float.shape[1]
+            array1, array2 = matriz_final_float[:,:(n - 3)], matriz_final_int[:,-1]
+            models = reden(array1, array2)
+            modelos[posicao0] = models
+            #data_matrizes[posicao0] = matriz_final_float
+            print(f'Treinamento {click} realizado com sucesso ...  \n')
         print('***'*20)
 
+    if i >= 360:
+        core2 = i % 60
+        y_pred1 = lista_predicao(i, len(modelos), modelos, array2s, array2n)
+        resultado = ponderar_lista(y_pred1)
+        print(24*'*-')
+        print(f'Proxima Entrada: {resultado}')
+        print(24*'*-')
 
-    if i >= 300:
-        y_pred1 = lista_predicao(len(modelos), modelos, array2s)
-        resultado1 = ponderar_lista(y_pred1)
-                
-        print(24*'*-')
-        print(f'Predição da Entrada: {resultado1}')
-        print(24*'*-')
-    
+
     i += 1
+
+print(f'Ordenandos os dados ...')
+
+data_array_float = np.array(array2s)
+data_array_int = np.array(array2n)
+data_acuracia_precisao = pd.DataFrame({'Acuracia': data_acuracia_geral, 'Precisao': data_precisao_geral})
+data_acuracia_precisao.to_csv('/home/darkcover/Documentos/Out/dados/DoIt/Order3.csv', index=False)
+
+data_final = pd.DataFrame({'Entrada': data_array_float, 'Resultado': data_array_int})
+data_final.to_csv('/home/darkcover/Documentos/Out/dados/DoIt/Order4.csv', index=False)
+
 
 
