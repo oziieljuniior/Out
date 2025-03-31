@@ -13,6 +13,8 @@ Informações como o jogo funciona, acesse:
 
 [Últimas Atualizações](https://github.com/oziieljuniior/Out/blob/main/notes/update_27_07.md)
 
+[Ideias Futuras](https://github.com/oziieljuniior/Out/blob/main/Abordagem_inteligente.md)
+
 ## Resumo da Opera:
 No final, tudo se resume à forma como você manipula a média móvel, algo viável graças a duas características essenciais.  
 
