@@ -1,1 +1,0 @@
-/home/ozielramos/Documentos/Out/dados/odds_200k.csv
