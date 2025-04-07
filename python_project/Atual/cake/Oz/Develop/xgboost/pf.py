@@ -1,7 +1,8 @@
 import sys
-sys.path.append("/home/ozielramos/Documentos/Out/python_project/cake/Oz/Modulos")
+sys.path.append("/home/ozielramos/Documentos/Out/python_project/Atual/cake/Oz/Modulos")
 from Arquivos  import FileSelector# Importa a classe FileSelector do módulo Arquivos
 import MathMo
+import Odds
 
 # Importando bibliotecas
 import pandas as pd
@@ -93,96 +94,6 @@ def placar60(df1, i, media_parray, resultado, odd):
     media_parray.append(medida_pontual)
 
     return media_parray
-
-def fuzzy_classification(odd):
-    """
-    Implementação da lógica fuzzy para classificar as odds no intervalo de 1 a 8.
-    
-    Args:
-        odd (float): Valor da odd no intervalo de 1 a 8
-        
-    Returns:
-        float: Valor de confiança entre 0 (nenhuma confiança) e 1 (alta confiança)
-    """
-    odd_range = np.arange(1, 8.1, 0.1)  # Intervalo de 1 a 8 com passo 0.1
-    
-    # Conjuntos fuzzy ajustados para o novo intervalo
-    muito_baixo = fuzz.trimf(odd_range, [1, 1, 2.5])
-    baixo = fuzz.trimf(odd_range, [1.5, 3, 4.5])
-    medio = fuzz.trimf(odd_range, [3.5, 5, 6.5])
-    alto = fuzz.trimf(odd_range, [5.5, 7, 8])
-    muito_alto = fuzz.trimf(odd_range, [7, 8, 8])
-    
-    # Graus de pertinência
-    pert_muito_baixo = fuzz.interp_membership(odd_range, muito_baixo, odd)
-    pert_baixo = fuzz.interp_membership(odd_range, baixo, odd)
-    pert_medio = fuzz.interp_membership(odd_range, medio, odd)
-    pert_alto = fuzz.interp_membership(odd_range, alto, odd)
-    pert_muito_alto = fuzz.interp_membership(odd_range, muito_alto, odd)
-    
-    # Classificação baseada nos graus de pertinência
-    max_pert = max(pert_muito_baixo, pert_baixo, pert_medio, pert_alto, pert_muito_alto)
-    
-    if max_pert == 0:
-        return 0  # Nenhuma confiança
-    
-    if max_pert == pert_muito_alto:
-        return 1.0  # Máxima confiança
-    elif max_pert == pert_alto:
-        return 0.8  # Confiança muito alta
-    elif max_pert == pert_medio:
-        return 0.6  # Confiança média
-    elif max_pert == pert_baixo:
-        return 0.4  # Confiança baixa
-    elif max_pert == pert_muito_baixo:
-        return 0.2  # Muito baixa confiança
-    else:
-        return 0.0  # Sem classificação
-
-def coletarodd(i, inteiro, data, array2s, array2n, alavanca=True):
-    """
-    Função que coleta e organiza as entradas iniciais do banco de dados.
-    Args:
-        i (int): Valor inteiro não-negativo. Entrada que controla o loop principal. É um valor cumulativo.
-        inteiro (int): Valor inteiro não-negativo. Entrada que determina até aonde os dados devem ser carregados automaticamente, através de um banco de dados.
-        data (pd.DataFrame): Variável carregada inicialmente para treinamento/desenvolvimento. Do tipo data frame.   #FIXWARNING2
-        array2s (np.array): Array cumulativo que carrega as entradas reais com duas casas decimais.
-        array2n (np.array): Array cumulativo que carrega as entredas inteiras(0 ou 1).
-        alanvanca (bool): Variável booleana que determina se a entrada é automática ou manual.   #FIXWARNING1
-    Returns:
-        np.array: Array cumulativo que carrega as entradas reais com duas casas decimais.
-        np.array: Array cumulativo que carrega as entredas inteiras(0 ou 1).
-        float: Valor real com duas casas decimais. Ele é determinado pela entrada dos dados, ou usuário.
-    """
-
-#FIXWARNING1: O formato da data de entrada pode ser mudado? Atualmente está em .csv
-
-    if i <= inteiro:
-        if alavanca == True:
-            odd = float(data['Entrada'][i].replace(",",'.'))
-        else:
-            odd = data['Entrada'][i] 
-
-        if odd == 0:
-            odd = 1
-        print(f'Entrada: {odd}')
-    else:
-        odd = float(input("Entrada -> ").replace(",",'.'))
-
-    if odd == 0:
-        return array2s, array2n, odd
-    if odd >= 8:
-        odd = 8
-    
-    corte1 = fuzzy_classification(odd)  # Aplicando lógica fuzzy
-    array2s.append(corte1)
-    if odd >= 4:
-        corte2 = 1
-    else:
-        corte2 = 0    
-    array2n.append(corte2)
-
-    return array2s, array2n, odd
 
 def matriz(num_linhas, array):
     """
@@ -387,6 +298,8 @@ data_acuracia_geral = []
 data_precisao_geral = []
 pred_acumulada = []
 
+processor1 = Odds.FuzzyOddsProcessor()
+
 while i <= 210000:
     print(24*'---')
     #print(len(media_parray))
@@ -398,7 +311,7 @@ while i <= 210000:
 
     print(f'Número da Entrada - {i} | Acuracia_{core1 + 1}: {round(m,4)}')
     
-    array2s, array2n, odd = coletarodd(i, inteiro, data, array2s, array2n)
+    array2s, array2n, odd = processor1.coletar_odd(i, inteiro, data, array2s, array2n)
     array_geral_float.append(float)
     if odd == 0:
         break
@@ -440,7 +353,7 @@ while i <= 210000:
             n = matriz_final_float.shape[1]
             array1, array2 = matriz_final_float[:,:(n - 3)], matriz_final_int[:,-1]
             #chamada2
-            mk = MathMo.RedeNeuralXGBoost(learning_rate=0.01, n_estimators=300)
+            mk = MathMo.RedeNeuralXGBoost(learning_rate=0.05, n_estimators=500)
             models = mk.treinar(array1, array2)
             mk.avaliar()
             modelos[posicao0] = models
@@ -473,6 +386,3 @@ order1.to_csv(file_path2, index=False)
 
 data_final = pd.DataFrame({'Entrada': data_array_float, 'Resultado': data_array_int})
 data_final.to_csv(file_path3, index=False)
-
-
-
