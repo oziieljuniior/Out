@@ -1,0 +1,223 @@
+<h1 id="parte-1">Parte 1</h1>
+<p>Aqui está uma função em Python que faz a ponderação dos elementos de
+uma lista e retorna 0 ou 1, com pesos que aumentam conforme percorremos
+a lista:</p>
+<h3 id="explicação">Explicação</h3>
+<ol type="1">
+<li><strong>Pesos Crescentes</strong>: Os pesos são definidos como uma
+sequência crescente, começando de 1 até o tamanho da lista.</li>
+<li><strong>Soma Ponderada</strong>: Cada elemento da lista é
+multiplicado pelo seu respectivo peso, e a soma ponderada é
+calculada.</li>
+<li><strong>Total de Pesos</strong>: É a soma dos pesos da lista.</li>
+<li><strong>Resultado</strong>: A média ponderada é comparada a 0.5. Se
+for maior ou igual, retorna 1; caso contrário, retorna 0.</li>
+</ol>
+<p>Essa abordagem permite dar mais importância aos elementos mais
+próximos do final da lista, pois eles possuem pesos maiores.</p>
+<h1 id="trash1.py">TRASH1.PY</h1>
+<h1 id="parte-2">PARTE 2</h1>
+<p>Nesse cenário, onde a lista representa resultados de previsões e as
+últimas colunas possuem maior poder preditivo, uma abordagem que leve em
+conta a <strong>importância decrescente</strong> ao longo das colunas é
+mais apropriada. Existem algumas estratégias que podem ser ideais para
+isso:</p>
+<hr />
+<h3 id="função-linear-de-pesos-crescentes">1. <strong>Função Linear de
+Pesos Crescentes</strong></h3>
+<ul>
+<li><strong>Descrição</strong>: Atribuir pesos lineares crescentes, como
+já foi implementado. Isso é simples e pode ser um bom ponto de
+partida.</li>
+<li><strong>Ideal para</strong>: Dados onde as últimas colunas têm
+importância crescente, mas de maneira moderada e uniforme.</li>
+</ul>
+<hr />
+<h3 id="função-exponencial-de-pesos">2. <strong>Função Exponencial de
+Pesos</strong></h3>
+<ul>
+<li><strong>Descrição</strong>: Aplicar uma função exponencial para
+aumentar os pesos de forma mais agressiva para as últimas colunas.</li>
+<li><strong>Fórmula</strong>: ( peso[i] = a^i ), onde ( a &gt; 1 ).</li>
+<li><strong>Exemplo</strong>: Para ( a = 1.2 ) em uma lista de 5
+elementos: ([1.0, 1.2, 1.44, 1.73, 2.07]).</li>
+<li><strong>Ideal para</strong>: Cenários onde as últimas colunas são
+significativamente mais importantes.</li>
+</ul>
+<hr />
+<h3 id="função-logarítmica">3. <strong>Função Logarítmica</strong></h3>
+<ul>
+<li><strong>Descrição</strong>: Usar pesos baseados em uma função
+logarítmica para criar uma curva suave e dar menos ênfase às colunas
+iniciais, sem aumentar tão agressivamente os pesos das últimas.</li>
+<li><strong>Fórmula</strong>: ( peso[i] = (i + 1) ).</li>
+<li><strong>Exemplo</strong>: Para uma lista de 5 elementos: ([0, 0.69,
+1.1, 1.38, 1.61]).</li>
+<li><strong>Ideal para</strong>: Dados onde a diferença de importância
+entre as colunas é gradual.</li>
+</ul>
+<hr />
+<h3 id="baseada-em-correlação">4. <strong>Baseada em
+Correlação</strong></h3>
+<ul>
+<li><strong>Descrição</strong>: Ajustar os pesos com base na correlação
+de cada coluna com os resultados reais (se disponível).</li>
+<li><strong>Passo</strong>:
+<ol type="1">
+<li>Calcule a correlação entre cada coluna e o valor alvo (resultado
+esperado).</li>
+<li>Normalize os valores de correlação para utilizá-los como pesos.</li>
+</ol></li>
+<li><strong>Ideal para</strong>: Dados históricos que permitem avaliação
+de desempenho preditivo por coluna.</li>
+</ul>
+<hr />
+<h3 id="função-personalizada">5. <strong>Função
+Personalizada</strong></h3>
+<ul>
+<li><strong>Descrição</strong>: Criar uma combinação linear ou não
+linear baseada em experimentação.</li>
+<li><strong>Exemplo</strong>: Somar múltiplas funções de ponderação,
+como uma combinação linear entre pesos exponenciais e pesos
+lineares.</li>
+<li><strong>Ideal para</strong>: Cenários onde o impacto da ponderação
+varia conforme características específicas dos dados.</li>
+</ul>
+<hr />
+<h3 id="sugestão-de-implementação">Sugestão de Implementação</h3>
+<p>A seguir está um exemplo usando a <strong>função exponencial</strong>
+como peso:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ponderar_lista_avancada(lista, base<span class="op">=</span><span class="fl">1.2</span>):</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Realiza uma ponderação dos elementos da lista com pesos exponenciais crescentes.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">        lista (list): Lista de inteiros contendo apenas 0 e 1.</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">        base (float): Base da função exponencial. Deve ser maior que 1.</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">        int: Resultado ponderado, 0 ou 1.</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="bu">len</span>(lista)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">&quot;A lista não pode estar vazia.&quot;</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calcular pesos exponenciais</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    pesos <span class="op">=</span> [base <span class="op">**</span> i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calcular soma ponderada e total de pesos</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    soma_ponderada <span class="op">=</span> <span class="bu">sum</span>(elemento <span class="op">*</span> peso <span class="cf">for</span> elemento, peso <span class="kw">in</span> <span class="bu">zip</span>(lista, pesos))</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    total_pesos <span class="op">=</span> <span class="bu">sum</span>(pesos)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Retornar 1 se média ponderada &gt;= 0.5, senão 0</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="cf">if</span> soma_ponderada <span class="op">/</span> total_pesos <span class="op">&gt;=</span> <span class="fl">0.5</span> <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Exemplo</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>lista_exemplo <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>]</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>resultado <span class="op">=</span> ponderar_lista_avancada(lista_exemplo, base<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Resultado ponderado: </span><span class="sc">{</span>resultado<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<p>Essa abordagem é ajustável e permite testar diferentes bases para
+observar o impacto nos resultados.</p>
+<hr />
+<h3 id="recomendação">Recomendação</h3>
+<p>Se você já tem um histórico de desempenho ou correlação entre colunas
+e resultados, uma <strong>função baseada em correlação</strong> seria a
+mais ideal. Caso contrário, comece com pesos exponenciais ou lineares e
+faça ajustes conforme necessário, validando os resultados com métricas
+apropriadas (ex.: precisão, recall, F1-score).</p>
+<h1 id="trash2.py">TRASH2.PY</h1>
+<h1 id="parte-3">PARTE 3</h1>
+<p>Se a lista possui essa característica — a primeira coluna com o maior
+peso e as colunas seguintes com pesos crescentes até a última, que tem o
+segundo maior peso — podemos implementar uma abordagem que distribua os
+pesos de forma personalizada. Nesse caso:</p>
+<ol type="1">
+<li><strong>Primeira coluna</strong>: Terá o maior peso.</li>
+<li><strong>Última coluna</strong>: Terá o segundo maior peso.</li>
+<li><strong>Colunas intermediárias</strong>: Os pesos aumentam
+linearmente ou com uma função específica para criar uma progressão entre
+a primeira e a última coluna.</li>
+</ol>
+<p>Aqui está um exemplo de implementação em Python:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ponderar_lista_personalizada(lista):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Realiza uma ponderação dos elementos da lista, atribuindo o maior peso à primeira coluna,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">    o segundo maior peso à última coluna, e pesos crescentes às colunas intermediárias.</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">        lista (list): Lista de inteiros contendo apenas 0 e 1.</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">        int: Resultado ponderado, 0 ou 1.</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="bu">len</span>(lista)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">&quot;A lista não pode estar vazia.&quot;</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Configurar pesos</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        pesos <span class="op">=</span> [<span class="dv">1</span>]  <span class="co"># Caso especial de lista com um único elemento</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        maior_peso <span class="op">=</span> n  <span class="co"># Maior peso para a primeira coluna</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        segundo_maior_peso <span class="op">=</span> n <span class="op">-</span> <span class="dv">1</span>  <span class="co"># Segundo maior peso para a última coluna</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Pesos intermediários crescentes</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        pesos_intermediarios <span class="op">=</span> <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">2</span>, segundo_maior_peso <span class="op">+</span> <span class="dv">1</span>))</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Compor a lista completa de pesos</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        pesos <span class="op">=</span> [maior_peso] <span class="op">+</span> pesos_intermediarios <span class="op">+</span> [segundo_maior_peso]</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calcular soma ponderada e total de pesos</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    soma_ponderada <span class="op">=</span> <span class="bu">sum</span>(elemento <span class="op">*</span> peso <span class="cf">for</span> elemento, peso <span class="kw">in</span> <span class="bu">zip</span>(lista, pesos))</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    total_pesos <span class="op">=</span> <span class="bu">sum</span>(pesos)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Determinar o valor ponderado</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    resultado <span class="op">=</span> soma_ponderada <span class="op">/</span> total_pesos</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Retornar 1 se média ponderada &gt;= 0.5, senão 0</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="cf">if</span> resultado <span class="op">&gt;=</span> <span class="fl">0.5</span> <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Exemplo de uso</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>lista_exemplo <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>]</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>resultado <span class="op">=</span> ponderar_lista_personalizada(lista_exemplo)</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Resultado ponderado: </span><span class="sc">{</span>resultado<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<hr />
+<h3 id="explicação-1"><strong>Explicação</strong></h3>
+<ol type="1">
+<li><strong>Pesos</strong>:
+<ul>
+<li>Atribuímos o maior peso (( n )) à primeira coluna.</li>
+<li>Atribuímos o segundo maior peso (( n-1 )) à última coluna.</li>
+<li>As colunas intermediárias recebem pesos crescentes em uma progressão
+simples.</li>
+</ul></li>
+<li><strong>Casos Especiais</strong>:
+<ul>
+<li>Quando a lista tem apenas uma coluna, seu peso será ( 1 ).</li>
+</ul></li>
+<li><strong>Média Ponderada</strong>:
+<ul>
+<li>A média ponderada é calculada com base nos pesos atribuídos.</li>
+<li>O resultado é decidido comparando a média ponderada com ( 0.5
+).</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="exemplo"><strong>Exemplo</strong></h3>
+<p>Para a lista <code>[0, 1, 0, 1, 1]</code>: - Pesos:
+<code>[5, 2, 3, 4, 4]</code> (5 para a primeira coluna, 4 para a última,
+e valores crescentes entre elas). - Soma ponderada: ( 0 + 1 + 0 + 1 + 1
+= 10 ). - Total de pesos: ( 5 + 2 + 3 + 4 + 4 = 18 ). - Média ponderada:
+( 10 / 18 ), resultado = <strong>1</strong>.</p>
+<hr />
+<h3 id="vantagens"><strong>Vantagens</strong></h3>
+<ul>
+<li>Adapta-se à característica descrita (primeira coluna mais importante
+e última coluna como segunda mais importante).</li>
+<li>Fácil de ajustar conforme necessário para diferentes progressões de
+pesos.</li>
+</ul>

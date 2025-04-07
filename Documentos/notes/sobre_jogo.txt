@@ -1,0 +1,28 @@
+Sobre o Jogo:
+Fase 1
+Sim, eu consigo entender esse código. Ele parece ser um jogo que envolve a geração de entradas e a tomada de decisões com base nessas entradas e em suas médias.
+
+Aqui está uma descrição detalhada do que o código faz:
+
+O código começa importando as bibliotecas necessárias: pandas e numpy.
+Em seguida, ele inicializa algumas variáveis. A variável i é usada para controlar as entradas do jogo. A variável lista_entradas é usada para armazenar todas as entradas geradas. As variáveis apostar, contagem e level são usadas para controlar o estado do jogo.
+O código então cria um DataFrame pandas chamado data com algumas informações iniciais.
+O jogo começa com um loop while que continua até que i seja igual a zero. Dentro deste loop, o código solicita ao usuário para inserir a última entrada gerada.
+O código então verifica se a condição de aposta é verdadeira e se a entrada é maior que 1.5. Se for verdade, o código incrementa a contagem e verifica se a contagem chegou a 15. Se a contagem chegar a 15, o nível do jogador aumenta e a contagem é redefinida para zero.
+Se a condição de aposta for verdadeira e a entrada for menor ou igual a 1.5, o código decrementa a contagem em 2. Se a contagem for menor ou igual a -10, o nível do jogador é redefinido para 1 e a contagem é redefinida para zero.
+O código então adiciona a entrada à lista_entradas e atualiza o DataFrame data com as informações atuais do jogo.
+Se o número de entradas for maior ou igual a 5, o código começa a calcular as médias das últimas 5, 10, 20, 40, 80, 160, 320 e 640 entradas. Ele então verifica se qualquer uma dessas médias está abaixo de um certo limite. Se estiver, a condição de aposta é definida como verdadeira.
+Finalmente, o código imprime a lista_entradas e o DataFrame data, e salva o DataFrame em um arquivo CSV.
+Espero que isso ajude a entender o que o código está fazendo! Se você tiver mais perguntas, fique à vontade para perguntar.
+
+Fase 2
+Importação de bibliotecas: As bibliotecas pandas e numpy são importadas. Elas são usadas para manipulação de dados e operações matemáticas, respectivamente.
+Carregamento de dados: O script carrega um arquivo CSV chamado ‘odds_200k.csv’ em um DataFrame do pandas. Em seguida, ele remove uma coluna chamada ‘Unnamed: 0’ e renomeia a coluna ‘Odd_Categoria’ para ‘odd_saida’.
+Inicialização de variáveis: Várias variáveis são inicializadas, incluindo uma lista vazia chamada lista_entradas e várias variáveis de controle do jogo (apostar, contagem, level). Além disso, um DataFrame chamado data_final é criado com uma única linha de dados iniciais.
+Loop principal: O script então entra em um loop for que itera sobre cada linha do DataFrame data_inicial. Para cada linha, ele realiza várias operações, incluindo:
+Atualiza a variável i com o valor da coluna ‘odd_saida’ da linha atual.
+Verifica se a condição de aposta foi atendida e, em caso afirmativo, atualiza as variáveis de controle do jogo (acerto, contagem, level) de acordo.
+Adiciona o valor de i à lista_entradas.
+Se o tamanho da lista_entradas for maior ou igual a 6, ele adiciona uma nova linha ao DataFrame data_final com os valores atuais das variáveis de controle do jogo e as médias das últimas entradas.
+Se o tamanho da lista_entradas for maior ou igual a 5, ele calcula várias médias móveis das últimas entradas e verifica se alguma delas atende a determinadas condições. Se sim, ele define a variável apostar para 1; caso contrário, ele a define para 0.
+Salvando os resultados: Finalmente, o script imprime a lista_entradas e o DataFrame data_final, e salva o data_final em um arquivo CSV.
