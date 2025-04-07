@@ -1,142 +1,103 @@
 import numpy as np
-from typing import Tuple, List, Union
 
-class DataProcessor:
-    """
-    Classe para processamento de dados com operações em janelas deslizantes e transformação de matrizes.
+class MatrixTransformer:
+    def __init__(self):
+        pass
 
-    Atributos:
-        window_size (int): Tamanho da janela deslizante (padrão: 59).
-        click (int): Valor cumulativo para controle de transformação.
-    """
-
-    def __init__(self, window_size: int = 59, click: int = 60):
+    def calculate_means(self, array4):
         """
-        Inicializa o processador de dados.
+        Calcula a média dos elementos de array4 em janelas deslizantes de 59 elementos.
 
         Args:
-            window_size (int): Tamanho da janela deslizante (padrão: 59).
-            click (int): Valor base para transformação de matriz (padrão: 60).
-        """
-        self.window_size = window_size
-        self.click = click
-
-    def calculate_means(self, data: Union[List[int], np.ndarray]) -> np.ndarray:
-        """
-        Calcula médias móveis em janelas deslizantes.
-
-        Args:
-            data: Array de inteiros (0 ou 1).
+            array4 (list): Lista de inteiros (0 ou 1).
 
         Returns:
-            np.ndarray: Médias móveis calculadas.
+            list: Lista com a média dos elementos em janelas de 59 elementos.
         """
-        return np.array([
-            np.mean(data[i-self.window_size:i]) 
-            for i in range(self.window_size+1, len(data))
-        ])
+        array6 = []
+        array7 = []
+        for i in range(len(array4) - 1):
+            array6.append(array4[i])
+            if i >= 59:
+                order = float(np.mean(array6[-59:]))
+                array7.append(order)
+        return array7
 
-    def calculate_sums(self, data: Union[List[int], np.ndarray]) -> np.ndarray:
+    def calculate_orders(self, array4):
         """
-        Calcula somas móveis em janelas deslizantes.
+        Calcula a soma dos elementos de array4 em janelas deslizantes de 59 elementos.
 
         Args:
-            data: Array de inteiros (0 ou 1).
+            array4 (list): Lista de inteiros (0 ou 1).
 
         Returns:
-            np.ndarray: Somas móveis calculadas.
+            list: Lista com a soma dos elementos em janelas de 59 elementos.
         """
-        return np.array([
-            sum(data[i-self.window_size:i]) 
-            for i in range(self.window_size+1, len(data))
-        ])
+        array5 = []
+        for i in range(len(array4) - 1):
+            if i >= 59:
+                order = sum(array4[i - 59: i])
+                array5.append(order)
+        return array5
 
-    def _reshape_to_matrix(self, data: np.ndarray) -> np.ndarray:
+    def matriz(self, num_linhas, array):
         """
-        Redimensiona um array para matriz com linhas de tamanho 'click'.
+        Transforma um array unidimensional em uma matriz organizada por colunas.
 
         Args:
-            data: Array a ser redimensionado.
+            array (list ou np.array): Lista de números a serem organizados.
+            num_linhas (int): Número de linhas desejadas na matriz.
 
         Returns:
-            np.ndarray: Matriz resultante.
+            np.array: Matriz ordenada.
         """
-        return data.reshape(-1, self.click)
+        t = len(array)
+        if t % num_linhas != 0:
+            raise ValueError("O tamanho do array deve ser múltiplo do número de linhas.")
+        matriz = np.array(array).reshape(-1, num_linhas).T
+        return matriz
 
-    def _pad_data(self, data: np.ndarray) -> np.ndarray:
+    def tranforsmar_final_matriz(self, click, array1s, array1n):
         """
-        Preenche o array com dados aleatórios até atingir o tamanho adequado.
+        Responsável por carregar a matriz final com múltiplas variáveis.
 
         Args:
-            data: Array a ser preenchido.
+            click (int): Valor que controla a segmentação das amostras.
+            array1s (np.array): Array com entradas float (valores reais).
+            array1n (np.array): Array com entradas int (valores binários 0/1).
 
         Returns:
-            np.ndarray: Array preenchido.
+            tuple: Matriz de features, matriz de saída e posição final.
         """
-        while (len(data) - (self.window_size + 1)) % self.click != 0:
-            new_data = np.random.choice([1, 0], size=self.click, p=[0.3, 0.7])
-            data = np.concatenate((new_data, data))
-        return data
-
-    def transform_final_matrix(self, 
-                            array_float: np.ndarray, 
-                            array_int: np.ndarray) -> Tuple[np.ndarray, np.ndarray, int]:
-        """
-        Transforma os arrays de entrada na matriz final.
-
-        Args:
-            array_float: Array com entradas vetorizadas float.
-            array_int: Array com entradas vetorizadas int.
-
-        Returns:
-            Tuple contendo:
-                - Matriz de features (float)
-                - Matriz de labels (int)
-                - Posição de referência
-        """
-        # Verificação e preenchimento dos dados
-        if len(array_int) < self.window_size + 2:
-            raise ValueError(f"Array int deve ter pelo menos {self.window_size + 2} elementos")
+        n1 = len(array1n) - 61
+        print(f'Inicial n1: {n1}')
         
-        array_int = self._pad_data(array_int)
+        if n1 % click != 0:
+            while n1 % click != 0:
+                print(f'Ajustando: {(len(array1n) - 61)} % {click}')
+                novo_array = np.random.choice([1, 0], size=60, p=[0.3, 0.7])
+                array1n = np.concatenate((novo_array, array1n))
+                n1 = len(array1n) - 61
 
-        # Cálculos das métricas
-        moving_sums = self.calculate_sums(array_int)[1:]
-        moving_avgs = self.calculate_means(array_int)[1:]
+        arrayacertos60 = self.calculate_orders(array1n)
+        matrizacertos60 = self.matriz(click, arrayacertos60[1:])
+        
+        arraymediamovel = self.calculate_means(array1n)
+        matrizmediamovel = self.matriz(click, arraymediamovel[1:])
+        
+        matrix1s, matrix1n = self.matriz(click, array1s[1:]), self.matriz(click, array1n[1:])
+        matrix1s, matrix1n = matrix1s[:,1:], matrix1n[:,1:]
 
-        # Transformação em matrizes
-        sum_matrix = self._reshape_to_matrix(moving_sums)
-        avg_matrix = self._reshape_to_matrix(moving_avgs)
-        float_matrix = self._reshape_to_matrix(array_float[1:])
-        int_matrix = self._reshape_to_matrix(array_int[1:])
+        print("Shapes antes do empilhamento:")
+        print(matrix1n.shape, matrix1s.shape, matrizacertos60.shape, matrizmediamovel.shape)
 
-        # Remoção da primeira coluna (se necessário)
-        float_matrix = float_matrix[:, 1:]
-        int_matrix = int_matrix[:, 1:]
+        posicao0 = int((click // 60) - 1)
 
-        # Empilhamento das features
-        stacked_features = np.stack([float_matrix, sum_matrix, avg_matrix], axis=2)
-        final_features = stacked_features.reshape(stacked_features.shape[0], -1)
+        # Empilhar todas as matrizes no eixo 2
+        X_stack = np.stack([matrix1s, matrizacertos60, matrizmediamovel], axis=2)
+        matrix1s = X_stack.reshape(60, -1)  # Shape final para entrada no modelo
 
-        # Cálculo da posição de referência
-        ref_position = (self.click // self.window_size) - 1
+        print("Shapes finais:")
+        print(matrix1s.shape, matrix1n.shape)
 
-        return final_features, int_matrix, ref_position
-
-# Exemplo de uso
-if __name__ == "__main__":
-    # Dados de exemplo
-    np.random.seed(42)
-    float_data = np.random.rand(300)  # 300 valores float
-    int_data = np.random.randint(0, 2, 30)  # 300 valores 0 ou 1
-
-    # Processamento
-    processor = DataProcessor(window_size=59, click=60)
-    
-    try:
-        features, labels, ref_pos = processor.transform_final_matrix(float_data, int_data)
-        print("Matriz de features shape:", features.shape)
-        print("Matriz de labels shape:", labels.shape)
-        print("Posição de referência:", ref_pos)
-    except ValueError as e:
-        print(f"Erro: {e}")
+        return matrix1s, matrix1n, posicao0

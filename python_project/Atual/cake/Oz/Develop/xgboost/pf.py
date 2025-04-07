@@ -1,269 +1,14 @@
 import sys
 sys.path.append("/home/ozielramos/Documentos/Out/python_project/Atual/cake/Oz/Modulos")
-from Arquivos  import FileSelector# Importa a classe FileSelector do módulo Arquivos
-import MathMo
-import Odds
+from Arquivos  import FileSelector# Importa a classe FileSelector do módulo Arquivos # type: ignore
+import MathMo # type: ignore
+import Odds # type: ignore
+import Predicao # type: ignore
+import Placar # type: ignore
+import Matrizes # type: ignore
 
-# Importando bibliotecas
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-import xgboost as xgb
-from sklearn.metrics import accuracy_score, f1_score, roc_curve, auc
-
-import skfuzzy as fuzz
-
-# Libs
-import time
-import warnings
-
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report
-
-# Configs
-warnings.simplefilter(action='ignore', category=FutureWarning)
-pd.set_option('display.max_columns', None)
-
-## Funções
-def calculate_means(array4):
-    """
-    Calcula a média dos elementos de array4 em janelas deslizantes de 59 elementos.
-
-    Args:
-        array4 (list): Lista de inteiros (0 ou 1).
-
-    Returns:
-        list: Lista com a média dos elementos em janelas de 59 elementos.
-    """
-    array6 = []
-    array7 = []
-    for i in range(len(array4) - 1):
-        array6.append(array4[i])
-        if i >= 59:
-            order = float(np.mean(array6))
-            array7.append(order)
-    
-    return array7
-
-def calculate_orders(array4):
-        """
-        Calcula a soma dos elementos de array4 em janelas deslizantes de 59 elementos.
-
-        Args:
-            array4 (list): Lista de inteiros (0 ou 1).
-
-        Returns:
-            list: Lista com a soma dos elementos em janelas de 59 elementos.
-        """
-        # Calcular a soma dos elementos em janelas de 59 elementos
-        array5 = []
-        for i in range(len(array4) - 1):
-            if i >= 59:
-                order = sum(array4[i - 59: i])
-                array5.append(order)
-        return array5
-
-def placar60(df1, i, media_parray, resultado, odd):
-    """
-    Função que organizar o placar das 60 entradas.
-    Args:
-        df1 (pd.DataFrame): DataFrame responsavel por armazenar as somas de cada entrada.
-        i (int): Valor inteiro não-negativo crescente. Responsável por controlar a posição dos dados.
-        media_parray (array): Array responsavel por armazenar a acuracia de cada entrada.
-        resultado (int): Valor interio(0 ou 1) gerado pela função ponderar lista com a entrada anterior.
-        odd (float): Valor real com duas casas decimais. Ele é determinado pela entrada dos dados, ou usuário.
-    Returns:
-        array: Array contendo as variaveis df1 e mediap_array atualizadas, também retorna a acuracia atualizada.
-    """
-    core1 = i % 60
-    if resultado == 1:
-        if odd >= 4:
-            df1.iloc[core1,:] += 1
-            medida_pontual = df1.iloc[core1, 0] / df1.iloc[core1, 1]
-        else:
-            df1.iloc[core1,1] += 1
-            medida_pontual = df1.iloc[core1, 0] / df1.iloc[core1, 1]
-    else:
-        if len(media_parray)<59:
-            medida_pontual = 0
-        else:
-            medida_pontual = media_parray[len(media_parray) - 60]
-
-    media_parray.append(medida_pontual)
-
-    return media_parray
-
-def matriz(num_linhas, array):
-    """
-    Transforma um array unidimensional em uma matriz organizada por colunas.
-    
-    Args:
-        array (list ou np.array): Lista de números a serem organizados.
-        num_linhas (int): Número de linhas desejadas na matriz.
-
-    Returns:
-        np.array: Matriz ordenada.
-    """
-    t = len(array)
-    if t % num_linhas != 0:
-        raise ValueError("O tamanho do array deve ser múltiplo do número de linhas.")
-    
-    # Reshape para matriz (por linha) e depois transpõe para organizar por colunas
-    matriz = np.array(array).reshape(-1, num_linhas).T
-    
-    return matriz 
-
-def placargeral(resultado, odd, array_geral):
-    """
-    Função que realiza o gerenciamento da precisão e acurácia gerais.
-    Args:
-        resultado (int): Valor interio(0 ou 1) gerado pela função ponderar lista com a entrada anterior.
-        odd (float): Valor real com duas casas decimais. Ele é determinado pela entrada dos dados, ou usuário.
-        array_geral (np.array): O array contém algumas informações essenciais para o prosseguimento das entradas. -->["acuracia" (float): Valor real não-negativo. Responsável por acompanhar acerto 0,"precisao" (float): Valor real não-negativo. Responsavel por acompanhar acertos 0 e 1, "acerto"(int): Valor inteiro não-negativo. Essa variável é cumulativa com valor inicial igual a zero, ela é determinada a partir da entrada 301. Além disso, ela é responsável pela contagem de acertos da acurácia.   #FIXWARNING1, "acerto1" (int): Valor inteiro não-negativo. Essa variável é cumulativa com valor inicial igual a zero, ela é determinada a partir da entrada 301. . Além disso, ela é responsável pela contagem de acertos da precisão.   #FIXWARNING1, "j" (int): Valor inteiro não-negativo. Essa variável é cumulativa com valor inicial igual a zero, ela é determinada a partir da entrada 301. . Além disso, ela é responsável pela contagem geral da acurácia.   #FIXWARNING1, "j1" (int): j (int): Valor inteiro não-negativo. Essa variável é cumulativa com valor inicial igual a zero, ela é determinada a partir da entrada 301. . Além disso, ela é responsável pela contagem geral da precisão.   #FIXWARNING1 #FIXWARNING3
-    Returns:
-        np.array: Array contendo acurácia e precisão. Alem de conter acerto, acerto1, j e j1.
-    """
-
-#FIXWARNING1: Essa entrada é fixa ?
-#FIXWARNING3: Ajustar essa documentação.
-#array_geral = [acuracia, precisao, acerto, acerto1, j, j1]
-
-    name = resultado
-
-    if name == 1:
-        if odd >= 4:
-            count = 1
-            if count == name:
-                array_geral[2] += 1
-                array_geral[3] += 1
-                array_geral[4] += 1
-                array_geral[5] += 1
-        else:
-            array_geral[4] += 1
-            array_geral[5] += 1
-    else:
-        if odd < 4:
-            count = 0
-            if count == name:
-                array_geral[3] += 1
-                array_geral[5] += 1
-        else:
-            array_geral[5] += 1
-
-    if array_geral[4] != 0 and array_geral[5] != 0:
-        array_geral[0] = (array_geral[2] / array_geral[4]) * 100
-        array_geral[1] = (array_geral[3] / array_geral[5]) * 100
-    else:
-        array_geral[0], array_geral[1] = 0,0
-
-    return array_geral
-
-def lista_predicao(i, t, modelos, array1):
-    """
-    Gera uma lista com possíveis predições.
-    Args:
-        t (int): Quantidade de modelos contidos na lista original.
-        modelos (np.array): Array que contém modelos treinados.
-        array1 (np.array): Lista contendo os últimas matrizes.
-    Returns:
-        np.array: Array que contém a predição de cada modelo da lista original.
-    """
-    y_pred1 = []
-    for sk in range(0,t):
-        if modelos[sk] is not None:
-            posicao = 60*sk + 60
-            print(sk, posicao)
-            matriz1s = array1[sk]
-            trick2 = i % 60
-            if trick2 == 59:
-                order1 = 0
-            else:
-                order1 = trick2 + 1
-
-            x_new = np.array(matriz1s[order1,3:])
-            x_new = x_new.astype("float32")
-            x_new = x_new.reshape(1, -1)
-            print(x_new.shape)
-            predictions = modelos[sk].predict(x_new)
-
-            y_pred = np.argmax(predictions) if predictions.ndim > 1 else predictions
-            y_pred1.append(y_pred[0])
-    print(y_pred1)
-    return y_pred1
-
-
-
-def ponderar_lista(lista, base=1.25):
-    """
-    Realiza uma ponderação dos elementos da lista com pesos exponenciais crescentes.
-
-    Args:
-        lista (list): Lista de inteiros contendo apenas 0 e 1.
-        base (float): Base da função exponencial. Deve ser maior que 1.
-
-    Returns:
-        int: Resultado ponderado, 0 ou 1.
-    """
-    n = len(lista)
-    if n == 0:
-        raise ValueError("A lista não pode estar vazia.")
-
-    # Calcular pesos exponenciais
-    pesos = [base ** i for i in range(n)]
-
-    # Calcular soma ponderada e total de pesos
-    soma_ponderada = sum(elemento * peso for elemento, peso in zip(lista, pesos))
-    total_pesos = sum(pesos)
-    
-    qrange = 1 / n
-
-    # Retornar 1 se média ponderada >= 0.5, senão 0
-    return 1 if soma_ponderada / total_pesos >= qrange else 0
-
-def tranforsmar_final_matriz(click, array1s, array1n):
-    """
-        Reponsavel por carregar matriz final. Idealmente elaborado
-        para comportar outras variáveis de entrada.
-        Args:
-            click (int): Valor inteiro não-negativo. Entrada 
-                que controla o loop principal. É um valor cumulativo.
-            array1s (np.array): Array com entradas vetorizadas float.
-            array1n (np.array): Array com entradas vetorizadas int.
-        Returns:
-            np.array: Matriz final.
-    """
-    n1 = len(array1n) - 61
-    print(n1)
-    if n1 % click != 0:
-        while n1 != 0:
-            print(len(array1n) - 61, click)
-            # Gerar um array de 60 elementos com distribuição 30% de 1 e 70% de 0
-            novo_array = np.random.choice([1, 0], size=60, p=[0.3, 0.7])
-            # Concatenar os arrays
-            array1n = np.concatenate((novo_array, array1n))
-
-            if (len(array1n) - 61) % click == 0:
-                n1 == 1
-    arrayacertos60 = calculate_orders(array1n)
-    matrizacertos60 = matriz(click, arrayacertos60[1:])
-    arraymediamovel = calculate_means(array1n)
-    matrizmediamovel = matriz(click, arraymediamovel[1:])
-    print(len(array1s[1:]), len(array1n[1:]))
-    matrix1s, matrix1n = matriz(click, array1s[1:]), matriz(click, array1n[1:])
-    matrix1s, matrix1n = matrix1s[:,1:], matrix1n[:,1:]
-
-    print(matrix1n.shape, matrix1s.shape, matrizacertos60.shape, matrizmediamovel.shape)
-    posicao0 = int((click // 60) - 1)
-
-    # Empilhar as matrizes para ter um eixo extra (60, 8, 3)
-    X_stack = np.stack([matrix1s, matrizacertos60, matrizmediamovel], axis=2)  # Formato (60, 8, 3)
-    # Reorganizar para intercalar coluna por coluna
-    matrix1s = X_stack.reshape(60, -1)  # Agora está no formato (60, 24)
-    print(matrix1s.shape, matrix1n.shape)  # Saída: (60, 24)
-
-    return matrix1s, matrix1n, posicao0
 
 ## Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
@@ -299,6 +44,9 @@ data_precisao_geral = []
 pred_acumulada = []
 
 processor1 = Odds.FuzzyOddsProcessor()
+processor2 = Predicao.ModelPredictionHandler()
+processor3 = Placar.ScoreManager()
+processor4 = Matrizes.MatrixTransformer()
 
 while i <= 210000:
     print(24*'---')
@@ -319,8 +67,8 @@ while i <= 210000:
     if i >= 361:
         print(24*"-'-")
         
-        array_geral = placargeral(resultado, odd, array_geral)
-        media_parray = placar60(df1, i, media_parray, resultado, odd)
+        array_geral = processor3.placargeral(resultado, odd, array_geral)
+        media_parray = processor3.placar60(df1, i, media_parray, resultado, odd)
         
         if i % 60 == 0:
             core11 = 60
@@ -347,7 +95,7 @@ while i <= 210000:
 
         for click in info:
             print(f'Treinamento para {click}')
-            matriz_final_float, matriz_final_int, posicao0 = tranforsmar_final_matriz(click, array2s, array2n)
+            matriz_final_float, matriz_final_int, posicao0 = processor4.tranforsmar_final_matriz(click, array2s, array2n)
             print(f'Matrix_{click}: {[matriz_final_float.shape, matriz_final_int.shape]} | Posicao: {posicao0}')
             data_matriz_float.append(matriz_final_float), data_matriz_int.append(matriz_final_int)
             n = matriz_final_float.shape[1]
@@ -363,8 +111,8 @@ while i <= 210000:
 
     if i >= 360:
         core2 = i % 60
-        y_pred1 = lista_predicao(i,len(modelos), modelos, data_matrizes)
-        resultado = ponderar_lista(y_pred1)
+        y_pred1 = processor2.lista_predicao(i,len(modelos), modelos, data_matrizes)
+        resultado = processor2.ponderar_lista(y_pred1)
         pred_acumulada.append(resultado)
         print(24*'*-')
         print(f'Proxima Entrada: {resultado} | Geral: {sum(pred_acumulada)}')
