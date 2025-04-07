@@ -1,19 +1,19 @@
-![](images/Logo/logo1.jpg "Out")
+![](Imagens/Logo/logo1.jpg "Out")
 
 ---
 
 # Out
-[PROJETO EM DESENVOLVIMENTO](https://github.com/oziieljuniior/Out/tree/main/python_project/Echoes)
+[PROJETO EM DESENVOLVIMENTO](http://github.com/oziieljuniior/Out/tree/main/python_project/Atual/cake/Oz)
 ## Como o código funciona
 Informações como o jogo funciona, acesse:
 
-[Leia sobre o jogo](https://github.com/oziieljuniior/Out/blob/main/notes/sobre_jogo.md)
+[Leia sobre o jogo](https://github.com/oziieljuniior/Out/blob/main/Documentos/notes/sobre_jogo.md)
 
-[Coisas Passadas](https://github.com/oziieljuniior/Out/blob/main/notes/CoisasP.md)
+[Coisas Passadas](https://github.com/oziieljuniior/Out/blob/main/Documentos/notes/CoisasP.md)
 
-[Últimas Atualizações](https://github.com/oziieljuniior/Out/blob/main/notes/update_27_07.md)
+[Últimas Atualizações](https://github.com/oziieljuniior/Out/blob/Documentos/main/notes/update_27_07.md)
 
-[Ideias Futuras](https://github.com/oziieljuniior/Out/blob/main/Abordagem_inteligente.md)
+[Ideias Futuras](https://github.com/oziieljuniior/Out/blob/main/Documentos/Abordagem_inteligente.md)
 
 ## Resumo da Opera:
 No final, tudo se resume à forma como você manipula a média móvel, algo viável graças a duas características essenciais.  
