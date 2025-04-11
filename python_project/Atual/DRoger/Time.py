@@ -45,7 +45,6 @@ pred_acumulada = []
 
 processor1 = Odds.FuzzyOddsProcessor()
 processor2 = Predicao.ModelPredictionHandler()
-processor3 = Placar.ScoreManager()
 processor4 = Matrizes.MatrixTransformer()
 
 while i <= 210000:
@@ -67,6 +66,7 @@ while i <= 210000:
     if i >= 361:
         print(24*"-'-")
         
+        processor3 = Placar.ScoreManager()
         array_geral = processor3.placargeral(resultado, odd, array_geral)
         media_parray = processor3.placar60(df1, i, media_parray, resultado, odd)
         
