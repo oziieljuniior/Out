@@ -72,7 +72,7 @@ def placar60(df1, i, media_parray, resultado, odd):
     """
     core1 = i % 60
     if resultado == 1:
-        if odd >= 3:
+        if odd >= 4:
             df1.iloc[core1,:] += 1
             medida_pontual = df1.iloc[core1, 0] / df1.iloc[core1, 1]
         else:
@@ -90,15 +90,15 @@ def placar60(df1, i, media_parray, resultado, odd):
 
 def fuzzy_classification(odd):
     """
-    Implementação da lógica fuzzy para classificar as odds no intervalo de 1 a 6.
+    Implementação da lógica fuzzy para classificar as odds no intervalo de 1 a 8.
     """
-    odd_range = np.arange(1, 6.1, 0.1)
+    odd_range = np.arange(1, 8.1, 0.1)
     
-    # Conjuntos fuzzy ajustados para cobrir todo o intervalo de 1 a 6
-    baixo = fuzz.trimf(odd_range, [1, 1, 2])
-    medio = fuzz.trimf(odd_range, [1.5, 3, 4.5])
-    alto = fuzz.trimf(odd_range, [3.5, 5, 6])
-    muito_alto = fuzz.trimf(odd_range, [4.5, 6, 6])
+    # Conjuntos fuzzy ajustados para o intervalo de 1 a 8
+    baixo = fuzz.trimf(odd_range, [1, 1, 3])
+    medio = fuzz.trimf(odd_range, [2, 4, 6])
+    alto = fuzz.trimf(odd_range, [4.5, 6, 7.5])
+    muito_alto = fuzz.trimf(odd_range, [6, 8, 8])
     
     # Graus de pertinência
     pert_baixo = fuzz.interp_membership(odd_range, baixo, odd)
@@ -120,6 +120,7 @@ def fuzzy_classification(odd):
         return 0.5  # Confiança média
     else:
         return 0.25  # Baixa confiança
+
 
 def coletarodd(i, inteiro, data, array2s, array2n, alavanca=True):
     """
@@ -153,12 +154,12 @@ def coletarodd(i, inteiro, data, array2s, array2n, alavanca=True):
 
     if odd == 0:
         return array2s, array2n, odd
-    if odd >= 6:
-        odd = 6
+    if odd >= 8:
+        odd = 8
     
     corte1 = fuzzy_classification(odd)  # Aplicando lógica fuzzy
     array2s.append(corte1)
-    if odd >= 3:
+    if odd >= 4:
         corte2 = 1
     else:
         corte2 = 0    
@@ -205,7 +206,7 @@ def placargeral(resultado, odd, array_geral):
     name = resultado
 
     if name == 1:
-        if odd >= 3:
+        if odd >= 4:
             count = 1
             if count == name:
                 array_geral[2] += 1
@@ -216,7 +217,7 @@ def placargeral(resultado, odd, array_geral):
             array_geral[4] += 1
             array_geral[5] += 1
     else:
-        if odd < 3:
+        if odd < 4:
             count = 0
             if count == name:
                 array_geral[3] += 1
@@ -264,79 +265,100 @@ def lista_predicao(i, t, modelos, array1, array2):
     print(y_pred1)
     return y_pred1
 
-def reden(array1, array2):
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix, roc_curve, auc, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+import xgboost as xgb
+import numpy as np
+
+def reden(features, labels):
     """
-    Função para treinar uma rede neural usando as entradas e saídas fornecidas.
+    Treina uma rede baseada em XGBoost para dados binários desbalanceados.
 
     Args:
-        array1 (numpy.array): Saídas (rótulos) binárias (0 ou 1).
-        array3 (numpy.array): Entradas preditoras.
-        m (int): Número de amostras.
-        n (int): Número de características por amostra.
+        features (numpy.array): Matriz de entrada com características preditoras.
+        labels (numpy.array): Vetor de rótulos binários (0 ou 1), com proporção esperada de 0.70 (zeros) / 0.20 (uns), 
+                              considerando um erro de 0.10 (ambiguidade/ruído).
 
     Returns:
-        keras.Model: Modelo treinado.
+        xgb.XGBClassifier: Modelo treinado.
     """
-    X = array1
-    y = array2
-    # Dividir os dados em treino e teste
+    X = features
+    y = labels
+
+    # Divisão em treino e teste
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+    # Calcular pesos das classes para lidar com o desbalanceamento
+    from collections import Counter
+    class_counts = Counter(y_train)
+    total = len(y_train)
+    class_weights = {
+        0: total / (2 * class_counts[0]),
+        1: total / (2 * class_counts[1])
+    }
+
+    # Instanciando o modelo
     model = xgb.XGBClassifier(
-    objective='multi:softmax',
-    num_class=2,
-    eval_metric='mlogloss',
-    learning_rate=0.005,  # Reduzir para aprendizado mais estável
-    n_estimators=500,  # Mais árvores com taxa de aprendizado menor
-    max_depth=4,  # Evitar overfitting
-    subsample=0.7,  # Menos amostras por árvore para generalizar melhor
-    colsample_bytree=0.7,  # Seleciona menos features por árvore
-    gamma=0.2,  # Penaliza divisões irrelevantes
-    min_child_weight=5,  # Evita overfitting
-    reg_alpha=0.1,  # Regularização L1
-    reg_lambda=1.0,  # Regularização L2
-    random_state=42 
+        objective='binary:logistic',
+        eval_metric='logloss',
+        learning_rate=0.005,
+        n_estimators=500,
+        max_depth=4,
+        subsample=0.7,
+        colsample_bytree=0.7,
+        gamma=0.2,
+        min_child_weight=5,
+        reg_alpha=0.1,
+        reg_lambda=1.0,
+        scale_pos_weight=class_weights[1] / class_weights[0],  # Ajuste para classe minoritária
+        use_label_encoder=False,
+        random_state=42
     )
+
+    # Treinar modelo
     model.fit(X_train, y_train)
 
-    # Fazer previsões
+    # Previsões
     y_pred = model.predict(X_test)
+    y_pred_proba = model.predict_proba(X_test)[:, 1]
 
-    # Avaliar o modelo
+    # Avaliação
     accuracy = accuracy_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred, average='weighted')
 
     print(f'Acurácia do modelo: {accuracy:.4f}')
     print(f'F1-Score do modelo: {f1:.4f}')
 
+    # Importância dos atributos
     xgb.plot_importance(model)
+    plt.title('Importância das Features')
     plt.show()
 
+    # Matriz de confusão
     cm = confusion_matrix(y_test, y_pred)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
     disp.plot()
     plt.show()
 
+    # Relatório completo
     print(classification_report(y_test, y_pred))
 
-    # Calcular as probabilidades das classes
-    y_pred_proba = model.predict_proba(X_test)[:, 1]
-
-    # Calcular a curva ROC
+    # Curva ROC
     fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
     roc_auc = auc(fpr, tpr)
 
-    # Plotar a curva ROC
     plt.figure()
-    plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (area = {roc_auc:.2f})')
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'Área sob a curva (AUC) = {roc_auc:.2f}')
     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver Operating Characteristic (ROC) Curve')
+    plt.xlabel('Taxa de Falsos Positivos')
+    plt.ylabel('Taxa de Verdadeiros Positivos')
+    plt.title('Curva ROC')
     plt.legend(loc="lower right")
     plt.show()
 
     return model
+
 
 def ponderar_lista(lista, base=1.10):
     """
@@ -407,7 +429,8 @@ def tranforsmar_final_matriz(click, array1s, array1n):
 
 ## Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
-data = pd.read_csv('/home/darkcover/Documentos/Out/dados/Saidas/FUNCOES/DOUBLE - 17_09_s1.csv')
+#/home/darkcover/Documentos/Out/dados/Saidas/FUNCOES/DOUBLE - 17_09_s1.csv
+data = pd.read_csv('/home/ozielramos/Documentos/Out/Documentos/dados/Saidas/FUNCOES/DOUBLE - 17_09_s1.csv')
 
 array1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [], [], [], []
 
