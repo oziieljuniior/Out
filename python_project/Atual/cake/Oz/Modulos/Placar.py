@@ -25,19 +25,20 @@ class ScoreManager:
         """
         core1 = i % 60
         if resultado == 1:
-            if odd >= 4:
-                df1.iloc[core1, :] += 1
+            if odd >= 3:
+                df1.iloc[core1,:] += 1
                 medida_pontual = df1.iloc[core1, 0] / df1.iloc[core1, 1]
             else:
-                df1.iloc[core1, 1] += 1
+                df1.iloc[core1,1] += 1
                 medida_pontual = df1.iloc[core1, 0] / df1.iloc[core1, 1]
         else:
-            if len(media_parray) < 59:
+            if len(media_parray)<59:
                 medida_pontual = 0
             else:
-                medida_pontual = media_parray[-60]
+                medida_pontual = media_parray[len(media_parray) - 60]
 
         media_parray.append(medida_pontual)
+
         return media_parray
 
     def placargeral(self, resultado, odd, array_geral):
