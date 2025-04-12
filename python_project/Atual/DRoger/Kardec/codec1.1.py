@@ -232,6 +232,9 @@ def placargeral(resultado, odd, array_geral):
     else:
         array_geral[0], array_geral[1] = 0,0
 
+    if odd >= 3:
+        array_geral[7] += 1
+
     return array_geral
 
 def lista_predicao(i, t, modelos, array1, array2):
@@ -251,10 +254,10 @@ def lista_predicao(i, t, modelos, array1, array2):
             print(sk, posicao)
             matriz1s, matriz1n, posicao0 = tranforsmar_final_matriz(posicao,array1, array2)
 
-            x_new = np.array(matriz1s[-1,3:])
+            x_new = np.array(matriz1s[-1,1:])
             x_new = x_new.astype("float32")
             x_new = np.expand_dims(x_new, -1)
-            x_new = np.reshape(x_new, (-1, (matriz1s.shape[1] - 3), 1, 1))
+            x_new = np.reshape(x_new, (-1, (matriz1s.shape[1] - 1), 1, 1))
 
             predictions = modelos[sk].predict(x_new)
 
@@ -267,45 +270,58 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
-from sklearn.model_selection import train_test_split
 from sklearn.utils.class_weight import compute_class_weight
 from tensorflow.keras.metrics import Precision, Recall
 import tensorflow_addons as tfa
 
+# Classe personalizada de F1
+class F1Score(tf.keras.metrics.Metric):
+    def __init__(self, name='f1_score', **kwargs):
+        super(F1Score, self).__init__(name=name, **kwargs)
+        self.precision = Precision()
+        self.recall = Recall()
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        y_true = tf.argmax(y_true, axis=-1)
+        y_pred = tf.argmax(y_pred, axis=-1)
+        self.precision.update_state(y_true, y_pred, sample_weight)
+        self.recall.update_state(y_true, y_pred, sample_weight)
+
+    def result(self):
+        p = self.precision.result()
+        r = self.recall.result()
+        return 2 * ((p * r) / (p + r + tf.keras.backend.epsilon()))
+
+    def reset_states(self):
+        self.precision.reset_states()
+        self.recall.reset_states()
+
+# Função principal
 def reden(array1, array2):
     """
-    Função para treinar uma rede neural com foco em maximizar os acertos da classe 1
-    (considerando desbalanceamento e sequência temporal dos dados).
-    
-    Args:
-        array1 (numpy.array): Saídas (rótulos) binárias (0 ou 1).
-        array2 (numpy.array): Entradas preditoras.
-
-    Returns:
-        keras.Model: Modelo treinado.
+    Treina uma rede neural maximizando a detecção da classe 1, respeitando sequência e desbalanceamento.
     """
-    # Convertendo para arrays numpy
+    # Convertendo entradas
+    
     X = np.array(array1)
     y = np.array(array2)
-    print(X.shape, y.shape)
     n = X.shape[1]
 
-    # Divisão temporal: 70% treino, 30% teste
+    # Divisão temporal (respeita sequência)
     split_index = int(len(X) * 0.7)
     x_train, x_test = X[:split_index], X[split_index:]
     y_train, y_test = y[:split_index], y[split_index:]
 
-    # Ajustando dimensões
+    # Preparação dos dados
     x_train = np.expand_dims(x_train, -1).astype("float32")
     x_test = np.expand_dims(x_test, -1).astype("float32")
     input_shape = (n, 1)
 
-    # Convertendo saídas para categóricas
     num_classes = 2
     y_train_cat = keras.utils.to_categorical(y_train, num_classes)
     y_test_cat = keras.utils.to_categorical(y_test, num_classes)
 
-    # Definindo pesos de classe (opcional se usar focal loss com alpha)
+    # Pesos de classe para reforçar a classe 1
     class_weights = compute_class_weight(class_weight='balanced', classes=np.unique(y_train), y=y_train)
     class_weight_dict = {i: w for i, w in enumerate(class_weights)}
 
@@ -320,10 +336,16 @@ def reden(array1, array2):
         layers.Dense(num_classes, activation="softmax"),
     ])
 
+    # Compilação com Focal Loss e F1 personalizado
     model.compile(
-        loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.85, gamma=2.0),  # foca mais na classe 1
+        loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.85, gamma=2.0),
         optimizer=tf.keras.optimizers.AdamW(learning_rate=0.001, weight_decay=1e-4),
-        metrics=['accuracy', Precision(name="precision"), Recall(name="recall")]
+        metrics=[
+            'accuracy',
+            Precision(name="precision"),
+            Recall(name="recall"),
+            F1Score(name="f1_score")
+        ]
     )
 
     # Treinamento
@@ -332,15 +354,18 @@ def reden(array1, array2):
         batch_size=2**10,
         epochs=50,
         validation_split=0.2,
-        class_weight=class_weight_dict,  # mesmo com focal loss, reforça atenção à classe 1
+        class_weight=class_weight_dict,
+        verbose=2
     )
 
     # Avaliação
     score = model.evaluate(x_test, y_test_cat, verbose=0)
-    print(f"Test loss: {score[0]:.4f}")
-    print(f"Test accuracy: {score[1]:.4f}")
+    print(f"\n🔍 Resultados no Teste:")
+    print(f"Loss: {score[0]:.4f}")
+    print(f"Accuracy: {score[1]:.4f}")
     print(f"Precision: {score[2]:.4f}")
     print(f"Recall: {score[3]:.4f}")
+    print(f"F1 Score: {score[4]:.4f}")
 
     return model
 
@@ -398,15 +423,15 @@ def tranforsmar_final_matriz(click, array1s, array1n):
     posicao0 = int((click // 60) - 1)
 
     # Criar DataFrames separando cada coluna
-    df_x1 = pd.DataFrame(matrizacertos60, columns=[f'X1_{i}' for i in range(matrizacertos60.shape[1])])
-    df_x2 = pd.DataFrame(matrizmediamovel, columns=[f'X2_{i}' for i in range(matrizmediamovel.shape[1])])
-    df_x3 = pd.DataFrame(matrix1s, columns=[f'X3_{i}' for i in range(matrix1s.shape[1])])
+    #df_x1 = pd.DataFrame(matrizacertos60, columns=[f'X1_{i}' for i in range(matrizacertos60.shape[1])])
+    #df_x2 = pd.DataFrame(matrizmediamovel, columns=[f'X2_{i}' for i in range(matrizmediamovel.shape[1])])
+    #df_x3 = pd.DataFrame(matrix1s, columns=[f'X3_{i}' for i in range(matrix1s.shape[1])])
 
     # Juntar todas as colunas
-    X_df = pd.concat([df_x1, df_x2, df_x3], axis=1)
+    #X_df = pd.concat([df_x1, df_x2, df_x3], axis=1)
 
     # Transformar para valores NumPy
-    matrix1s = X_df.values
+    #matrix1s = X_df.values
 
     print(matrix1s.shape, matrix1n.shape)  # Saída: (60, 24)
 
@@ -448,7 +473,7 @@ while i <= 210000:
     else:
         m = media_parray[len(media_parray) - 60]
 
-    print(f'Número da Entrada - {i} | Acuracia_{core1 + 1}: {round(m,4)} | Contagem Geral: {array_geral[6]}')
+    print(f'Número da Entrada - {i} | Acuracia_{core1 + 1}: {round(m,4)} | Contagem Geral: {array_geral[6]} \nOrdem Natural: {array_geral[7]}')
     
     array2s, array2n, odd = coletarodd(i, inteiro, data, array2s, array2n)
     array_geral_float.append(float)
@@ -489,7 +514,7 @@ while i <= 210000:
             print(f'Matrix_{click}: {[matriz_final_float.shape, matriz_final_int.shape]} | Posicao: {posicao0}')
             data_matriz_float.append(matriz_final_float), data_matriz_int.append(matriz_final_int)
             n = matriz_final_float.shape[1]
-            array1, array2 = matriz_final_float[:,:(n - 3)], matriz_final_int[:,-1]
+            array1, array2 = matriz_final_float[:,:(n - 1)], matriz_final_int[:,-1]
             models = reden(array1, array2)
             modelos[posicao0] = models
             #data_matrizes[posicao0] = matriz_final_float

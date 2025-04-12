@@ -1,5 +1,9 @@
 ![](Imagens/Logo/logo1.jpg "Out")
+---
 
+# Issues
+* No código codec1_1.py, adicionar array de contagem de 1 geral. 
+* Testar e atualizar datas
 ---
 # Blog News[110425]
 ## Informações uteis
