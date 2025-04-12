@@ -3,7 +3,7 @@
 ---
 # Blog News[110425]
 ## Informações uteis
-* 
+* [Salvar todas as saídas do terminal](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils1.md)
 
 ---
 
