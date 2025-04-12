@@ -1,6 +1,11 @@
 ![](Imagens/Logo/logo1.jpg "Out")
 
 ---
+# Blog News[110425]
+## Informações uteis
+* 
+
+---
 
 # Out
 [PROJETO EM DESENVOLVIMENTO](http://github.com/oziieljuniior/Out/tree/main/python_project/Atual/cake/Oz)
