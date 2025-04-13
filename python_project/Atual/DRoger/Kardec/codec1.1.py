@@ -439,7 +439,7 @@ def tranforsmar_final_matriz(click, array1s, array1n):
 
 ## Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
-data = pd.read_csv('/home/ozielramos/Documentos/Out/Documentos/dados/Saidas/FUNCOES/DOUBLE - 17_09_s1.csv')
+data = pd.read_csv('/home/ozielramos/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_9 - game_teste3x3.csv')
 
 array1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [], [], [], []
 

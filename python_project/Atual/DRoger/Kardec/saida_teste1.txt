@@ -1,0 +1,1439 @@
+2025-04-13 15:55:20.699522: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
+2025-04-13 15:55:20.757140: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
+2025-04-13 15:55:22.573090: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+/home/ozielramos/.cache/pypoetry/virtualenvs/out-y310SVwF-py3.11/lib/python3.11/site-packages/tensorflow_addons/utils/tfa_eol_msg.py:23: UserWarning: 
+
+TensorFlow Addons (TFA) has ended development and introduction of new features.
+TFA has entered a minimal maintenance and release mode until a planned end of life in May 2024.
+Please modify downstream libraries to take dependencies from other repositories in our TensorFlow community (e.g. Keras, Keras-CV, and Keras-NLP). 
+
+For more information see: https://github.com/tensorflow/addons/issues/2807 
+
+  warnings.warn(
+Insera a entrada até onde o modelo deve ser carregado --> ------------------------------------------------------------------------
+Número da Entrada - 0 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.83
+------------------------------------------------------------------------
+Número da Entrada - 1 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.07
+------------------------------------------------------------------------
+Número da Entrada - 2 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 24.83
+------------------------------------------------------------------------
+Número da Entrada - 3 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 25.25
+------------------------------------------------------------------------
+Número da Entrada - 4 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 8.55
+------------------------------------------------------------------------
+Número da Entrada - 5 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.36
+------------------------------------------------------------------------
+Número da Entrada - 6 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.52
+------------------------------------------------------------------------
+Número da Entrada - 7 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.97
+------------------------------------------------------------------------
+Número da Entrada - 8 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.57
+------------------------------------------------------------------------
+Número da Entrada - 9 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.35
+------------------------------------------------------------------------
+Número da Entrada - 10 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.2
+------------------------------------------------------------------------
+Número da Entrada - 11 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.16
+------------------------------------------------------------------------
+Número da Entrada - 12 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.12
+------------------------------------------------------------------------
+Número da Entrada - 13 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.24
+------------------------------------------------------------------------
+Número da Entrada - 14 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.33
+------------------------------------------------------------------------
+Número da Entrada - 15 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.25
+------------------------------------------------------------------------
+Número da Entrada - 16 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 7.88
+------------------------------------------------------------------------
+Número da Entrada - 17 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 18 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.72
+------------------------------------------------------------------------
+Número da Entrada - 19 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.45
+------------------------------------------------------------------------
+Número da Entrada - 20 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 8.8
+------------------------------------------------------------------------
+Número da Entrada - 21 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.48
+------------------------------------------------------------------------
+Número da Entrada - 22 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.21
+------------------------------------------------------------------------
+Número da Entrada - 23 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 24 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.83
+------------------------------------------------------------------------
+Número da Entrada - 25 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 26 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.5
+------------------------------------------------------------------------
+Número da Entrada - 27 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 17.32
+------------------------------------------------------------------------
+Número da Entrada - 28 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.01
+------------------------------------------------------------------------
+Número da Entrada - 29 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.45
+------------------------------------------------------------------------
+Número da Entrada - 30 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.95
+------------------------------------------------------------------------
+Número da Entrada - 31 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.7
+------------------------------------------------------------------------
+Número da Entrada - 32 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.78
+------------------------------------------------------------------------
+Número da Entrada - 33 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.04
+------------------------------------------------------------------------
+Número da Entrada - 34 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.04
+------------------------------------------------------------------------
+Número da Entrada - 35 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 36 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.08
+------------------------------------------------------------------------
+Número da Entrada - 37 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 38 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.1
+------------------------------------------------------------------------
+Número da Entrada - 39 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 40 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.44
+------------------------------------------------------------------------
+Número da Entrada - 41 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.04
+------------------------------------------------------------------------
+Número da Entrada - 42 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 43 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.52
+------------------------------------------------------------------------
+Número da Entrada - 44 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.29
+------------------------------------------------------------------------
+Número da Entrada - 45 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.25
+------------------------------------------------------------------------
+Número da Entrada - 46 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.08
+------------------------------------------------------------------------
+Número da Entrada - 47 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 6.96
+------------------------------------------------------------------------
+Número da Entrada - 48 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.21
+------------------------------------------------------------------------
+Número da Entrada - 49 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.19
+------------------------------------------------------------------------
+Número da Entrada - 50 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.51
+------------------------------------------------------------------------
+Número da Entrada - 51 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.25
+------------------------------------------------------------------------
+Número da Entrada - 52 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.18
+------------------------------------------------------------------------
+Número da Entrada - 53 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.26
+------------------------------------------------------------------------
+Número da Entrada - 54 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.31
+------------------------------------------------------------------------
+Número da Entrada - 55 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.4
+------------------------------------------------------------------------
+Número da Entrada - 56 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.04
+------------------------------------------------------------------------
+Número da Entrada - 57 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.17
+------------------------------------------------------------------------
+Número da Entrada - 58 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.21
+------------------------------------------------------------------------
+Número da Entrada - 59 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.79
+------------------------------------------------------------------------
+Número da Entrada - 60 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 11.18
+------------------------------------------------------------------------
+Número da Entrada - 61 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 34.79
+------------------------------------------------------------------------
+Número da Entrada - 62 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 25.75
+------------------------------------------------------------------------
+Número da Entrada - 63 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.8
+------------------------------------------------------------------------
+Número da Entrada - 64 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.12
+------------------------------------------------------------------------
+Número da Entrada - 65 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.08
+------------------------------------------------------------------------
+Número da Entrada - 66 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 11.47
+------------------------------------------------------------------------
+Número da Entrada - 67 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.62
+------------------------------------------------------------------------
+Número da Entrada - 68 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.93
+------------------------------------------------------------------------
+Número da Entrada - 69 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.55
+------------------------------------------------------------------------
+Número da Entrada - 70 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.25
+------------------------------------------------------------------------
+Número da Entrada - 71 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 7.54
+------------------------------------------------------------------------
+Número da Entrada - 72 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.13
+------------------------------------------------------------------------
+Número da Entrada - 73 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 10.2
+------------------------------------------------------------------------
+Número da Entrada - 74 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.07
+------------------------------------------------------------------------
+Número da Entrada - 75 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.95
+------------------------------------------------------------------------
+Número da Entrada - 76 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.63
+------------------------------------------------------------------------
+Número da Entrada - 77 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 6.84
+------------------------------------------------------------------------
+Número da Entrada - 78 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.73
+------------------------------------------------------------------------
+Número da Entrada - 79 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.87
+------------------------------------------------------------------------
+Número da Entrada - 80 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.01
+------------------------------------------------------------------------
+Número da Entrada - 81 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 6.07
+------------------------------------------------------------------------
+Número da Entrada - 82 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.06
+------------------------------------------------------------------------
+Número da Entrada - 83 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 84 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.17
+------------------------------------------------------------------------
+Número da Entrada - 85 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.33
+------------------------------------------------------------------------
+Número da Entrada - 86 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.13
+------------------------------------------------------------------------
+Número da Entrada - 87 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 7.8
+------------------------------------------------------------------------
+Número da Entrada - 88 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.83
+------------------------------------------------------------------------
+Número da Entrada - 89 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 93.91
+------------------------------------------------------------------------
+Número da Entrada - 90 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.17
+------------------------------------------------------------------------
+Número da Entrada - 91 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.06
+------------------------------------------------------------------------
+Número da Entrada - 92 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.35
+------------------------------------------------------------------------
+Número da Entrada - 93 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.29
+------------------------------------------------------------------------
+Número da Entrada - 94 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.85
+------------------------------------------------------------------------
+Número da Entrada - 95 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 547.44
+------------------------------------------------------------------------
+Número da Entrada - 96 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.5
+------------------------------------------------------------------------
+Número da Entrada - 97 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.38
+------------------------------------------------------------------------
+Número da Entrada - 98 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 99 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.76
+------------------------------------------------------------------------
+Número da Entrada - 100 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.62
+------------------------------------------------------------------------
+Número da Entrada - 101 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 16.49
+------------------------------------------------------------------------
+Número da Entrada - 102 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.3
+------------------------------------------------------------------------
+Número da Entrada - 103 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.64
+------------------------------------------------------------------------
+Número da Entrada - 104 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.51
+------------------------------------------------------------------------
+Número da Entrada - 105 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.53
+------------------------------------------------------------------------
+Número da Entrada - 106 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.96
+------------------------------------------------------------------------
+Número da Entrada - 107 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.18
+------------------------------------------------------------------------
+Número da Entrada - 108 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 17.51
+------------------------------------------------------------------------
+Número da Entrada - 109 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 21.63
+------------------------------------------------------------------------
+Número da Entrada - 110 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 27.5
+------------------------------------------------------------------------
+Número da Entrada - 111 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.53
+------------------------------------------------------------------------
+Número da Entrada - 112 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 29.87
+------------------------------------------------------------------------
+Número da Entrada - 113 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.69
+------------------------------------------------------------------------
+Número da Entrada - 114 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.92
+------------------------------------------------------------------------
+Número da Entrada - 115 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.35
+------------------------------------------------------------------------
+Número da Entrada - 116 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.52
+------------------------------------------------------------------------
+Número da Entrada - 117 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 14.42
+------------------------------------------------------------------------
+Número da Entrada - 118 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.27
+------------------------------------------------------------------------
+Número da Entrada - 119 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.4
+------------------------------------------------------------------------
+Número da Entrada - 120 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.63
+------------------------------------------------------------------------
+Número da Entrada - 121 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 11.24
+------------------------------------------------------------------------
+Número da Entrada - 122 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.54
+------------------------------------------------------------------------
+Número da Entrada - 123 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.26
+------------------------------------------------------------------------
+Número da Entrada - 124 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 6.62
+------------------------------------------------------------------------
+Número da Entrada - 125 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 20.44
+------------------------------------------------------------------------
+Número da Entrada - 126 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.61
+------------------------------------------------------------------------
+Número da Entrada - 127 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.3
+------------------------------------------------------------------------
+Número da Entrada - 128 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.25
+------------------------------------------------------------------------
+Número da Entrada - 129 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.18
+------------------------------------------------------------------------
+Número da Entrada - 130 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.38
+------------------------------------------------------------------------
+Número da Entrada - 131 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.28
+------------------------------------------------------------------------
+Número da Entrada - 132 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.11
+------------------------------------------------------------------------
+Número da Entrada - 133 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.9
+------------------------------------------------------------------------
+Número da Entrada - 134 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.99
+------------------------------------------------------------------------
+Número da Entrada - 135 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.11
+------------------------------------------------------------------------
+Número da Entrada - 136 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.14
+------------------------------------------------------------------------
+Número da Entrada - 137 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 138 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 14.75
+------------------------------------------------------------------------
+Número da Entrada - 139 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.59
+------------------------------------------------------------------------
+Número da Entrada - 140 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.53
+------------------------------------------------------------------------
+Número da Entrada - 141 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.1
+------------------------------------------------------------------------
+Número da Entrada - 142 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 143 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.56
+------------------------------------------------------------------------
+Número da Entrada - 144 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.18
+------------------------------------------------------------------------
+Número da Entrada - 145 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 14.92
+------------------------------------------------------------------------
+Número da Entrada - 146 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.27
+------------------------------------------------------------------------
+Número da Entrada - 147 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.49
+------------------------------------------------------------------------
+Número da Entrada - 148 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 10.37
+------------------------------------------------------------------------
+Número da Entrada - 149 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.19
+------------------------------------------------------------------------
+Número da Entrada - 150 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 7.0
+------------------------------------------------------------------------
+Número da Entrada - 151 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.12
+------------------------------------------------------------------------
+Número da Entrada - 152 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.8
+------------------------------------------------------------------------
+Número da Entrada - 153 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.74
+------------------------------------------------------------------------
+Número da Entrada - 154 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.31
+------------------------------------------------------------------------
+Número da Entrada - 155 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.03
+------------------------------------------------------------------------
+Número da Entrada - 156 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.25
+------------------------------------------------------------------------
+Número da Entrada - 157 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.03
+------------------------------------------------------------------------
+Número da Entrada - 158 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 20.5
+------------------------------------------------------------------------
+Número da Entrada - 159 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.6
+------------------------------------------------------------------------
+Número da Entrada - 160 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 161 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.61
+------------------------------------------------------------------------
+Número da Entrada - 162 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.59
+------------------------------------------------------------------------
+Número da Entrada - 163 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.33
+------------------------------------------------------------------------
+Número da Entrada - 164 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.05
+------------------------------------------------------------------------
+Número da Entrada - 165 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 35.4
+------------------------------------------------------------------------
+Número da Entrada - 166 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.12
+------------------------------------------------------------------------
+Número da Entrada - 167 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 11.84
+------------------------------------------------------------------------
+Número da Entrada - 168 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 57.77
+------------------------------------------------------------------------
+Número da Entrada - 169 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 170 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.28
+------------------------------------------------------------------------
+Número da Entrada - 171 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.4
+------------------------------------------------------------------------
+Número da Entrada - 172 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.08
+------------------------------------------------------------------------
+Número da Entrada - 173 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.24
+------------------------------------------------------------------------
+Número da Entrada - 174 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.97
+------------------------------------------------------------------------
+Número da Entrada - 175 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.4
+------------------------------------------------------------------------
+Número da Entrada - 176 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.95
+------------------------------------------------------------------------
+Número da Entrada - 177 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.01
+------------------------------------------------------------------------
+Número da Entrada - 178 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 179 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.18
+------------------------------------------------------------------------
+Número da Entrada - 180 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.48
+------------------------------------------------------------------------
+Número da Entrada - 181 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.17
+------------------------------------------------------------------------
+Número da Entrada - 182 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.09
+------------------------------------------------------------------------
+Número da Entrada - 183 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.13
+------------------------------------------------------------------------
+Número da Entrada - 184 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.08
+------------------------------------------------------------------------
+Número da Entrada - 185 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.72
+------------------------------------------------------------------------
+Número da Entrada - 186 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 15.56
+------------------------------------------------------------------------
+Número da Entrada - 187 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.59
+------------------------------------------------------------------------
+Número da Entrada - 188 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.09
+------------------------------------------------------------------------
+Número da Entrada - 189 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.06
+------------------------------------------------------------------------
+Número da Entrada - 190 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.42
+------------------------------------------------------------------------
+Número da Entrada - 191 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.09
+------------------------------------------------------------------------
+Número da Entrada - 192 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 7.68
+------------------------------------------------------------------------
+Número da Entrada - 193 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.03
+------------------------------------------------------------------------
+Número da Entrada - 194 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.7
+------------------------------------------------------------------------
+Número da Entrada - 195 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.41
+------------------------------------------------------------------------
+Número da Entrada - 196 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 197 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 7.03
+------------------------------------------------------------------------
+Número da Entrada - 198 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.57
+------------------------------------------------------------------------
+Número da Entrada - 199 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.15
+------------------------------------------------------------------------
+Número da Entrada - 200 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.45
+------------------------------------------------------------------------
+Número da Entrada - 201 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.99
+------------------------------------------------------------------------
+Número da Entrada - 202 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.68
+------------------------------------------------------------------------
+Número da Entrada - 203 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.22
+------------------------------------------------------------------------
+Número da Entrada - 204 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.2
+------------------------------------------------------------------------
+Número da Entrada - 205 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.42
+------------------------------------------------------------------------
+Número da Entrada - 206 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.23
+------------------------------------------------------------------------
+Número da Entrada - 207 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.93
+------------------------------------------------------------------------
+Número da Entrada - 208 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.05
+------------------------------------------------------------------------
+Número da Entrada - 209 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 8.27
+------------------------------------------------------------------------
+Número da Entrada - 210 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.59
+------------------------------------------------------------------------
+Número da Entrada - 211 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.74
+------------------------------------------------------------------------
+Número da Entrada - 212 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.89
+------------------------------------------------------------------------
+Número da Entrada - 213 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 214 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.29
+------------------------------------------------------------------------
+Número da Entrada - 215 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.06
+------------------------------------------------------------------------
+Número da Entrada - 216 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.53
+------------------------------------------------------------------------
+Número da Entrada - 217 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.2
+------------------------------------------------------------------------
+Número da Entrada - 218 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.1
+------------------------------------------------------------------------
+Número da Entrada - 219 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.62
+------------------------------------------------------------------------
+Número da Entrada - 220 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.71
+------------------------------------------------------------------------
+Número da Entrada - 221 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 18.79
+------------------------------------------------------------------------
+Número da Entrada - 222 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 7.14
+------------------------------------------------------------------------
+Número da Entrada - 223 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.61
+------------------------------------------------------------------------
+Número da Entrada - 224 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.13
+------------------------------------------------------------------------
+Número da Entrada - 225 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 6.4
+------------------------------------------------------------------------
+Número da Entrada - 226 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.57
+------------------------------------------------------------------------
+Número da Entrada - 227 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.61
+------------------------------------------------------------------------
+Número da Entrada - 228 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.03
+------------------------------------------------------------------------
+Número da Entrada - 229 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.99
+------------------------------------------------------------------------
+Número da Entrada - 230 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.4
+------------------------------------------------------------------------
+Número da Entrada - 231 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.29
+------------------------------------------------------------------------
+Número da Entrada - 232 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.34
+------------------------------------------------------------------------
+Número da Entrada - 233 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.18
+------------------------------------------------------------------------
+Número da Entrada - 234 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.44
+------------------------------------------------------------------------
+Número da Entrada - 235 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.72
+------------------------------------------------------------------------
+Número da Entrada - 236 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.05
+------------------------------------------------------------------------
+Número da Entrada - 237 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.83
+------------------------------------------------------------------------
+Número da Entrada - 238 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.39
+------------------------------------------------------------------------
+Número da Entrada - 239 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.88
+------------------------------------------------------------------------
+Número da Entrada - 240 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 34.09
+------------------------------------------------------------------------
+Número da Entrada - 241 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.48
+------------------------------------------------------------------------
+Número da Entrada - 242 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.78
+------------------------------------------------------------------------
+Número da Entrada - 243 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.96
+------------------------------------------------------------------------
+Número da Entrada - 244 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.1
+------------------------------------------------------------------------
+Número da Entrada - 245 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.91
+------------------------------------------------------------------------
+Número da Entrada - 246 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.79
+------------------------------------------------------------------------
+Número da Entrada - 247 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.34
+------------------------------------------------------------------------
+Número da Entrada - 248 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.99
+------------------------------------------------------------------------
+Número da Entrada - 249 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.99
+------------------------------------------------------------------------
+Número da Entrada - 250 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.03
+------------------------------------------------------------------------
+Número da Entrada - 251 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.72
+------------------------------------------------------------------------
+Número da Entrada - 252 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 253 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 7.67
+------------------------------------------------------------------------
+Número da Entrada - 254 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.91
+------------------------------------------------------------------------
+Número da Entrada - 255 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.07
+------------------------------------------------------------------------
+Número da Entrada - 256 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.15
+------------------------------------------------------------------------
+Número da Entrada - 257 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.58
+------------------------------------------------------------------------
+Número da Entrada - 258 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.54
+------------------------------------------------------------------------
+Número da Entrada - 259 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.26
+------------------------------------------------------------------------
+Número da Entrada - 260 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.05
+------------------------------------------------------------------------
+Número da Entrada - 261 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.27
+------------------------------------------------------------------------
+Número da Entrada - 262 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.42
+------------------------------------------------------------------------
+Número da Entrada - 263 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.25
+------------------------------------------------------------------------
+Número da Entrada - 264 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 265 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.08
+------------------------------------------------------------------------
+Número da Entrada - 266 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.95
+------------------------------------------------------------------------
+Número da Entrada - 267 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 7.66
+------------------------------------------------------------------------
+Número da Entrada - 268 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 67.78
+------------------------------------------------------------------------
+Número da Entrada - 269 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.49
+------------------------------------------------------------------------
+Número da Entrada - 270 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 9.12
+------------------------------------------------------------------------
+Número da Entrada - 271 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 64.2
+------------------------------------------------------------------------
+Número da Entrada - 272 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 16.56
+------------------------------------------------------------------------
+Número da Entrada - 273 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.3
+------------------------------------------------------------------------
+Número da Entrada - 274 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.46
+------------------------------------------------------------------------
+Número da Entrada - 275 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.18
+------------------------------------------------------------------------
+Número da Entrada - 276 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.31
+------------------------------------------------------------------------
+Número da Entrada - 277 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.3
+------------------------------------------------------------------------
+Número da Entrada - 278 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.62
+------------------------------------------------------------------------
+Número da Entrada - 279 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.12
+------------------------------------------------------------------------
+Número da Entrada - 280 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.96
+------------------------------------------------------------------------
+Número da Entrada - 281 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 3.18
+------------------------------------------------------------------------
+Número da Entrada - 282 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.04
+------------------------------------------------------------------------
+Número da Entrada - 283 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.92
+------------------------------------------------------------------------
+Número da Entrada - 284 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.08
+------------------------------------------------------------------------
+Número da Entrada - 285 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.5
+------------------------------------------------------------------------
+Número da Entrada - 286 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.3
+------------------------------------------------------------------------
+Número da Entrada - 287 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.45
+------------------------------------------------------------------------
+Número da Entrada - 288 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.23
+------------------------------------------------------------------------
+Número da Entrada - 289 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 64.44
+------------------------------------------------------------------------
+Número da Entrada - 290 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.26
+------------------------------------------------------------------------
+Número da Entrada - 291 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.02
+------------------------------------------------------------------------
+Número da Entrada - 292 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.02
+------------------------------------------------------------------------
+Número da Entrada - 293 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 6.39
+------------------------------------------------------------------------
+Número da Entrada - 294 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 6.45
+------------------------------------------------------------------------
+Número da Entrada - 295 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.11
+------------------------------------------------------------------------
+Número da Entrada - 296 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.16
+------------------------------------------------------------------------
+Número da Entrada - 297 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.03
+------------------------------------------------------------------------
+Número da Entrada - 298 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.36
+------------------------------------------------------------------------
+Número da Entrada - 299 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 36.82
+------------------------------------------------------------------------
+Número da Entrada - 300 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.49
+------------------------------------------------------------------------
+Número da Entrada - 301 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.82
+------------------------------------------------------------------------
+Número da Entrada - 302 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.8
+------------------------------------------------------------------------
+Número da Entrada - 303 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.24
+------------------------------------------------------------------------
+Número da Entrada - 304 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.45
+------------------------------------------------------------------------
+Número da Entrada - 305 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.65
+------------------------------------------------------------------------
+Número da Entrada - 306 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.7
+------------------------------------------------------------------------
+Número da Entrada - 307 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.7
+------------------------------------------------------------------------
+Número da Entrada - 308 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.6
+------------------------------------------------------------------------
+Número da Entrada - 309 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 15.81
+------------------------------------------------------------------------
+Número da Entrada - 310 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.33
+------------------------------------------------------------------------
+Número da Entrada - 311 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.06
+------------------------------------------------------------------------
+Número da Entrada - 312 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.23
+------------------------------------------------------------------------
+Número da Entrada - 313 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.46
+------------------------------------------------------------------------
+Número da Entrada - 314 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.02
+------------------------------------------------------------------------
+Número da Entrada - 315 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.02
+------------------------------------------------------------------------
+Número da Entrada - 316 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.2
+------------------------------------------------------------------------
+Número da Entrada - 317 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.01
+------------------------------------------------------------------------
+Número da Entrada - 318 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.07
+------------------------------------------------------------------------
+Número da Entrada - 319 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.08
+------------------------------------------------------------------------
+Número da Entrada - 320 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.49
+------------------------------------------------------------------------
+Número da Entrada - 321 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 12.09
+------------------------------------------------------------------------
+Número da Entrada - 322 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 68.2
+------------------------------------------------------------------------
+Número da Entrada - 323 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.25
+------------------------------------------------------------------------
+Número da Entrada - 324 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.04
+------------------------------------------------------------------------
+Número da Entrada - 325 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.06
+------------------------------------------------------------------------
+Número da Entrada - 326 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 78.5
+------------------------------------------------------------------------
+Número da Entrada - 327 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.31
+------------------------------------------------------------------------
+Número da Entrada - 328 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.26
+------------------------------------------------------------------------
+Número da Entrada - 329 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.09
+------------------------------------------------------------------------
+Número da Entrada - 330 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.21
+------------------------------------------------------------------------
+Número da Entrada - 331 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.02
+------------------------------------------------------------------------
+Número da Entrada - 332 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.18
+------------------------------------------------------------------------
+Número da Entrada - 333 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.19
+------------------------------------------------------------------------
+Número da Entrada - 334 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 4.19
+------------------------------------------------------------------------
+Número da Entrada - 335 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.27
+------------------------------------------------------------------------
+Número da Entrada - 336 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.36
+------------------------------------------------------------------------
+Número da Entrada - 337 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.26
+------------------------------------------------------------------------
+Número da Entrada - 338 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 109.0
+------------------------------------------------------------------------
+Número da Entrada - 339 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 109.79
+------------------------------------------------------------------------
+Número da Entrada - 340 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 341 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 342 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.02
+------------------------------------------------------------------------
+Número da Entrada - 343 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 6.07
+------------------------------------------------------------------------
+Número da Entrada - 344 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 5.74
+------------------------------------------------------------------------
+Número da Entrada - 345 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 346 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.0
+------------------------------------------------------------------------
+Número da Entrada - 347 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 21.55
+------------------------------------------------------------------------
+Número da Entrada - 348 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 2.09
+------------------------------------------------------------------------
+Número da Entrada - 349 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.25
+------------------------------------------------------------------------
+Número da Entrada - 350 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada: 1.05
+------------------------------------------------------------------------
+Número da Entrada - 351 | Acuracia_1: 0 | Contagem Geral: 0.0 
+Ordem Natural: 0.0
+Entrada -> Ordenandos os dados ...
+Traceback (most recent call last):
+  File "/home/ozielramos/Documentos/Out/python_project/Atual/DRoger/Kardec/codec1.1.py", line 541, in <module>
+    data_final.to_csv('/home/darkcover/Documentos/Out/dados/DoIt/Order1.csv', index=False)
+  File "/home/ozielramos/.cache/pypoetry/virtualenvs/out-y310SVwF-py3.11/lib/python3.11/site-packages/pandas/util/_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ozielramos/.cache/pypoetry/virtualenvs/out-y310SVwF-py3.11/lib/python3.11/site-packages/pandas/core/generic.py", line 3967, in to_csv
+    return DataFrameRenderer(formatter).to_csv(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ozielramos/.cache/pypoetry/virtualenvs/out-y310SVwF-py3.11/lib/python3.11/site-packages/pandas/io/formats/format.py", line 1014, in to_csv
+    csv_formatter.save()
+  File "/home/ozielramos/.cache/pypoetry/virtualenvs/out-y310SVwF-py3.11/lib/python3.11/site-packages/pandas/io/formats/csvs.py", line 251, in save
+    with get_handle(
+         ^^^^^^^^^^^
+  File "/home/ozielramos/.cache/pypoetry/virtualenvs/out-y310SVwF-py3.11/lib/python3.11/site-packages/pandas/io/common.py", line 749, in get_handle
+    check_parent_directory(str(handle))
+  File "/home/ozielramos/.cache/pypoetry/virtualenvs/out-y310SVwF-py3.11/lib/python3.11/site-packages/pandas/io/common.py", line 616, in check_parent_directory
+    raise OSError(rf"Cannot save file into a non-existent directory: '{parent}'")
+OSError: Cannot save file into a non-existent directory: '/home/darkcover/Documentos/Out/dados/DoIt'
