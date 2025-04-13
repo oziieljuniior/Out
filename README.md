@@ -8,7 +8,9 @@
 # Blog News[130425]
 ## Informações uteis
 * [Trabalhando com Ambientes pythons - Intermediário](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2.md)
+* [Manual de uso Pyenv](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils3.md)
 * [Salvar todas as saídas do terminal](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils1.md)
+* [Manual de uso Pyenv](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils3.md)
 
 ---
 
