@@ -7,10 +7,11 @@
 ---
 # Blog News[130425]
 ## Informações uteis
-* [Trabalhando com Ambientes pythons - Intermediário](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2.md)
-* [Manual de uso Pyenv](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils3.md)
+* []()
+* [Trabalhando com Ambientes pythons - Intermediário - Parte 2](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2_2.md)
+* [Manual de uso Pyenv](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2_1.md)
+* [Trabalhando com Ambientes pythons - Intermediário - Parte 1](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2.md)
 * [Salvar todas as saídas do terminal](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils1.md)
-* [Manual de uso Pyenv](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils3.md)
 
 ---
 
