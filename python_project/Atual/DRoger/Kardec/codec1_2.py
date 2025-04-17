@@ -263,7 +263,7 @@ def lista_predicao(i, t, modelos, array1, array2):
 
 
             probs = modelos[sk].predict(x_new).flatten()
-            binario = aplicar_threshold_dinamico(probs, proporcao=0.3)
+            binario = [1 if probs[0] >= 0.5 else 0]
             y_pred1.append(binario[0])
 
     print(y_pred1)
@@ -342,7 +342,9 @@ def reden(array1, array2, proporcao_1=0.3):
         layers.Dense(64, activation="relu"),
         layers.Dropout(0.5),
         layers.Dense(32, activation="swish"),
-        layers.Dense(1, activation="sigmoid")
+        layers.Dense(1), 
+        layers.Activation("sigmoid")
+
     ])
 
     # Compilação

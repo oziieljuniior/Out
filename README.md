@@ -4,6 +4,7 @@
 # Issues
 * No código codec1_1.py, adicionar array de contagem de 1 geral. [LOCAL](https://github.com/oziieljuniior/Out/blob/main/python_project/Atual/DRoger/Kardec/codec1.1.py) 
 * Testar e atualizar datas. [LOCAL](https://github.com/oziieljuniior/Out/blob/main/Documentos/dados/Saidas/FUNCOES/DOUBLE%20-%2017_09_s1.csv)
+* No código codec1_2.py, ajustar predição para um array. [LOCAL](https://github.com/oziieljuniior/Out/blob/main/python_project/Atual/DRoger/Kardec/codec1_2.py) 
 ---
 # Blog News[130425]
 ## Informações uteis
