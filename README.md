@@ -16,7 +16,7 @@
 ---
 
 # Out
-[PROJETO EM DESENVOLVIMENTO](http://github.com/oziieljuniior/Out/tree/main/python_project/Atual/cake/Oz)
+[PROJETO EM DESENVOLVIMENTO](https://github.com/oziieljuniior/Out/blob/main/python_project/Atual/DRoger/Kardec/codec1.1.py)
 ## Como o código funciona
 Informações como o jogo funciona, acesse:
 
