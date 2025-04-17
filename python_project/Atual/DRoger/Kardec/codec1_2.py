@@ -1,3 +1,7 @@
+import sys
+sys.path.append("/home/ozielramos/Documentos/Out/python_project/Atual/cake/Oz/Modulos")
+from Arquivos  import FileSelector# Importa a classe FileSelector do módulo Arquivos # type: ignore
+
 import pandas as pd
 import numpy as np
 
@@ -253,16 +257,15 @@ def lista_predicao(i, t, modelos, array1, array2):
             posicao = 60*sk + 60
             print(sk, posicao)
             matriz1s, matriz1n, posicao0 = tranforsmar_final_matriz(posicao,array1, array2)
-            #x_train = np.expand_dims(x_train, -1).astype("float32")
-            x_new = np.array(matriz1s[-1,1:])
-            x_new = x_new.astype("float32")
-            x_new = np.expand_dims(x_new, -1)
-            #x_new = np.reshape(x_new, (-1, (matriz1s.shape[1] - 1), 1, 1))
+            x_new = np.array(matriz1s[-1,1:], dtype=np.float32)  # (n-1,)
+            x_new = np.expand_dims(x_new, -1)  # (n-1, 1)
+            x_new = np.expand_dims(x_new, 0)   # (1, n-1, 1)
 
-            predictions = modelos[sk].predict(x_new)
 
-            y_pred = np.argmax(predictions, axis=1)
-            y_pred1.append(y_pred[0])
+            probs = modelos[sk].predict(x_new).flatten()
+            binario = aplicar_threshold_dinamico(probs, proporcao=0.3)
+            y_pred1.append(binario[0])
+
     print(y_pred1)
     return y_pred1
 
@@ -461,7 +464,10 @@ def tranforsmar_final_matriz(click, array1s, array1n):
 
 ## Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
-data = pd.read_csv('/home/ozielramos/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_9 - game_teste3x4.csv')
+selector1 = FileSelector()
+file_path1 = selector1.open_file_dialog()
+
+data = pd.read_csv(file_path1)
 
 array1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [], [], [], []
 
