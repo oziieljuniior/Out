@@ -5,10 +5,14 @@
 * No código codec1_1.py, adicionar array de contagem de 1 geral. [LOCAL](https://github.com/oziieljuniior/Out/blob/main/python_project/Atual/DRoger/Kardec/codec1.1.py) 
 * Testar e atualizar datas. [LOCAL](https://github.com/oziieljuniior/Out/blob/main/Documentos/dados/Saidas/FUNCOES/DOUBLE%20-%2017_09_s1.csv)
 * No código codec1_2.py, ajustar predição para um array. [LOCAL](https://github.com/oziieljuniior/Out/blob/main/python_project/Atual/DRoger/Kardec/codec1_2.py) 
+
 ---
+
 # Blog News[130425]
+
 ## Informações uteis
 * []()
+* [Trabalhando com Ambientes pythons - Avançado](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2_3.md)
 * [Trabalhando com Ambientes pythons - Intermediário - Parte 2](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2_2.md)
 * [Manual de uso Pyenv](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2_1.md)
 * [Trabalhando com Ambientes pythons - Intermediário - Parte 1](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2.md)
@@ -17,8 +21,11 @@
 ---
 
 # Out
+
 [PROJETO EM DESENVOLVIMENTO](https://github.com/oziieljuniior/Out/blob/main/python_project/Atual/DRoger/Kardec/codec1.1.py)
+
 ## Como o código funciona
+
 Informações como o jogo funciona, acesse:
 
 [Leia sobre o jogo](https://github.com/oziieljuniior/Out/blob/main/Documentos/notes/sobre_jogo.md)
@@ -30,6 +37,7 @@ Informações como o jogo funciona, acesse:
 [Ideias Futuras](https://github.com/oziieljuniior/Out/tree/main/python_project/Atual/DRoger)
 
 ## Resumo da Opera:
+
 No final, tudo se resume à forma como você manipula a média móvel, algo viável graças a duas características essenciais.  
 
 A primeira está relacionada à geração de números pseudoaleatórios (NPA).  

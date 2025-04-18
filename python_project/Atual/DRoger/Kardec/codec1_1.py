@@ -6,10 +6,8 @@ from tensorflow.keras.metrics import Precision, Recall
 from tensorflow import keras
 from tensorflow.keras import layers
 import tensorflow as tf
-from tensorflow.keras.optimizers import Nadam
 import tensorflow_addons as tfa
 #activation = tf.keras.activations.elu
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 import skfuzzy as fuzz
 
@@ -17,15 +15,12 @@ import skfuzzy as fuzz
 import time
 import warnings
 
+
 # Configs
 warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.set_option('display.max_columns', None)
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
 
 ## Funções
-
 def calculate_means(array4):
     """
     Calcula a média dos elementos de array4 em janelas deslizantes de 59 elementos.
@@ -94,7 +89,6 @@ def placar60(df1, i, media_parray, resultado, odd):
 
     return media_parray
 
-
 def fuzzy_classification(odd):
     """
     Implementação da lógica fuzzy para classificar as odds no intervalo de 1 a 6.
@@ -128,7 +122,7 @@ def fuzzy_classification(odd):
     else:
         return 0.25  # Baixa confiança
 
-def coletarodd(i, inteiro, data, array2s, array2n):
+def coletarodd(i, inteiro, data, array2s, array2n, alavanca=True):
     """
     Função que coleta e organiza as entradas iniciais do banco de dados.
     Args:
@@ -137,6 +131,7 @@ def coletarodd(i, inteiro, data, array2s, array2n):
         data (pd.DataFrame): Variável carregada inicialmente para treinamento/desenvolvimento. Do tipo data frame.   #FIXWARNING2
         array2s (np.array): Array cumulativo que carrega as entradas reais com duas casas decimais.
         array2n (np.array): Array cumulativo que carrega as entredas inteiras(0 ou 1).
+        alanvanca (bool): Variável booleana que determina se a entrada é automática ou manual.   #FIXWARNING1
     Returns:
         np.array: Array cumulativo que carrega as entradas reais com duas casas decimais.
         np.array: Array cumulativo que carrega as entredas inteiras(0 ou 1).
@@ -146,9 +141,12 @@ def coletarodd(i, inteiro, data, array2s, array2n):
 #FIXWARNING1: O formato da data de entrada pode ser mudado? Atualmente está em .csv
 
     if i <= inteiro:
-        #odd = float(data['Odd'][i])
-        odd = float(data['Entrada'][i].replace(",",'.'))
-        if odd <= 1:
+        if alavanca == True:
+            odd = float(data['Entrada'][i].replace(",",'.'))
+        else:
+            odd = data['Entrada'][i] 
+
+        if odd == 0:
             odd = 1
         print(f'Entrada: {odd}')
     else:
@@ -158,15 +156,16 @@ def coletarodd(i, inteiro, data, array2s, array2n):
         return array2s, array2n, odd
     if odd >= 6:
         odd = 6
-    if odd >= 3:
-        array2n.append(1)
-    else:
-        array2n.append(0)
-    corte1 = fuzzy_classification(odd)
-    array2s.append(corte1)
     
-    return array2s, array2n, odd
+    corte1 = fuzzy_classification(odd)  # Aplicando lógica fuzzy
+    array2s.append(corte1)
+    if odd >= 3:
+        corte2 = 1
+    else:
+        corte2 = 0    
+    array2n.append(corte2)
 
+    return array2s, array2n, odd
 
 def matriz(num_colunas, array1):
     """
@@ -207,6 +206,7 @@ def placargeral(resultado, odd, array_geral):
     name = resultado
 
     if name == 1:
+        array_geral[6] += 1
         if odd >= 3:
             count = 1
             if count == name:
@@ -232,6 +232,9 @@ def placargeral(resultado, odd, array_geral):
     else:
         array_geral[0], array_geral[1] = 0,0
 
+    if odd >= 3:
+        array_geral[7] += 1
+
     return array_geral
 
 def lista_predicao(i, t, modelos, array1, array2):
@@ -251,10 +254,10 @@ def lista_predicao(i, t, modelos, array1, array2):
             print(sk, posicao)
             matriz1s, matriz1n, posicao0 = tranforsmar_final_matriz(posicao,array1, array2)
 
-            x_new = np.array(matriz1s[-1,3:])
+            x_new = np.array(matriz1s[-1,1:])
             x_new = x_new.astype("float32")
             x_new = np.expand_dims(x_new, -1)
-            x_new = np.reshape(x_new, (-1, (matriz1s.shape[1] - 3), 1, 1))
+            x_new = np.reshape(x_new, (-1, (matriz1s.shape[1] - 1), 1, 1))
 
             predictions = modelos[sk].predict(x_new)
 
@@ -263,78 +266,111 @@ def lista_predicao(i, t, modelos, array1, array2):
     print(y_pred1)
     return y_pred1
 
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+from sklearn.utils.class_weight import compute_class_weight
+from tensorflow.keras.metrics import Precision, Recall
+import tensorflow_addons as tfa
+
+# Classe personalizada de F1
+class F1Score(tf.keras.metrics.Metric):
+    def __init__(self, name='f1_score', **kwargs):
+        super(F1Score, self).__init__(name=name, **kwargs)
+        self.precision = Precision()
+        self.recall = Recall()
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        y_true = tf.argmax(y_true, axis=-1)
+        y_pred = tf.argmax(y_pred, axis=-1)
+        self.precision.update_state(y_true, y_pred, sample_weight)
+        self.recall.update_state(y_true, y_pred, sample_weight)
+
+    def result(self):
+        p = self.precision.result()
+        r = self.recall.result()
+        return 2 * ((p * r) / (p + r + tf.keras.backend.epsilon()))
+
+    def reset_states(self):
+        self.precision.reset_states()
+        self.recall.reset_states()
+
+# Função principal
 def reden(array1, array2):
     """
-    Função para treinar uma rede neural usando as entradas e saídas fornecidas.
-
-    Args:
-        array1 (numpy.array): Saídas (rótulos) binárias (0 ou 1).
-        array3 (numpy.array): Entradas preditoras.
-        m (int): Número de amostras.
-        n (int): Número de características por amostra.
-
-    Returns:
-        keras.Model: Modelo treinado.
+    Treina uma rede neural maximizando a detecção da classe 1, respeitando sequência e desbalanceamento.
     """
-    # Dividindo os dados em treino e teste
+    # Convertendo entradas
+    
     X = np.array(array1)
     y = np.array(array2)
     n = X.shape[1]
-    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-    # Ajustando dimensões para entrada no modelo
+    # Divisão temporal (respeita sequência)
+    split_index = int(len(X) * 0.7)
+    x_train, x_test = X[:split_index], X[split_index:]
+    y_train, y_test = y[:split_index], y[split_index:]
+
+    # Preparação dos dados
     x_train = np.expand_dims(x_train, -1).astype("float32")
     x_test = np.expand_dims(x_test, -1).astype("float32")
-    input_shape = (n, 1)  # Formato esperado de entrada
+    input_shape = (n, 1)
 
-    # Convertendo saídas para categóricas
     num_classes = 2
-    y_train = keras.utils.to_categorical(y_train, num_classes)
-    y_test = keras.utils.to_categorical(y_test, num_classes)
+    y_train_cat = keras.utils.to_categorical(y_train, num_classes)
+    y_test_cat = keras.utils.to_categorical(y_test, num_classes)
 
-    # Definição do modelo
+    # Pesos de classe para reforçar a classe 1
+    class_weights = compute_class_weight(class_weight='balanced', classes=np.unique(y_train), y=y_train)
+    class_weight_dict = {i: w for i, w in enumerate(class_weights)}
+
+    # Modelo
     model = keras.Sequential([
         keras.Input(shape=input_shape),
         layers.Flatten(),
-        layers.Dense(128, activation="relu", use_bias=True),
+        layers.Dense(128, activation="relu"),
         layers.Dropout(0.5),
-        layers.Dense(64, activation="relu", use_bias=True),
-        layers.Dense(32, activation=tf.keras.activations.swish, use_bias=True),
+        layers.Dense(64, activation="relu"),
+        layers.Dense(32, activation=tf.keras.activations.swish),
         layers.Dense(num_classes, activation="softmax"),
     ])
 
-    # Compilação do modelo
+    # Compilação com Focal Loss e F1 personalizado
     model.compile(
-        loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.5, gamma=2.0),
+        loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.85, gamma=2.0),
         optimizer=tf.keras.optimizers.AdamW(learning_rate=0.001, weight_decay=1e-4),
-        metrics=['accuracy', Precision(name="precision"), Recall(name="recall")]
+        metrics=[
+            'accuracy',
+            Precision(name="precision"),
+            Recall(name="recall"),
+            F1Score(name="f1_score")
+        ]
     )
 
-    # Callbacks
-    early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
-    model_checkpoint = ModelCheckpoint('best_model.keras', monitor='val_loss', save_best_only=True)
-
     # Treinamento
-    batch_size = 2**10
-    epochs = 100
     model.fit(
-        x_train, y_train,
-        batch_size=batch_size,
-        epochs=epochs,
+        x_train, y_train_cat,
+        batch_size=2**10,
+        epochs=50,
         validation_split=0.2,
-        callbacks=[early_stopping, model_checkpoint]
+        class_weight=class_weight_dict,
+        verbose=2
     )
 
     # Avaliação
-    score = model.evaluate(x_test, y_test, verbose=0)
-    print(f"Test loss: {score[0]:.4f}")
-    print(f"Test accuracy: {score[1]:.4f}")
+    score = model.evaluate(x_test, y_test_cat, verbose=0)
+    print(f"\n🔍 Resultados no Teste:")
+    print(f"Loss: {score[0]:.4f}")
+    print(f"Accuracy: {score[1]:.4f}")
     print(f"Precision: {score[2]:.4f}")
     print(f"Recall: {score[3]:.4f}")
+    print(f"F1 Score: {score[4]:.4f}")
 
     return model
 
-def ponderar_lista(lista, base=1.75):
+
+def ponderar_lista(lista, base=1.10):
     """
     Realiza uma ponderação dos elementos da lista com pesos exponenciais crescentes.
 
@@ -350,7 +386,7 @@ def ponderar_lista(lista, base=1.75):
         raise ValueError("A lista não pode estar vazia.")
 
     # Calcular pesos exponenciais
-    pesos = [base ** (n-i) for i in range(n)]
+    pesos = [base ** (n - i) for i in range(n)]
 
     # Calcular soma ponderada e total de pesos
     soma_ponderada = sum(elemento * peso for elemento, peso in zip(lista, pesos))
@@ -360,7 +396,6 @@ def ponderar_lista(lista, base=1.75):
 
     # Retornar 1 se média ponderada >= 0.5, senão 0
     return 1 if soma_ponderada / total_pesos >= qrange else 0
-
 
 def tranforsmar_final_matriz(click, array1s, array1n):
     """
@@ -388,15 +423,15 @@ def tranforsmar_final_matriz(click, array1s, array1n):
     posicao0 = int((click // 60) - 1)
 
     # Criar DataFrames separando cada coluna
-    df_x1 = pd.DataFrame(matrizacertos60, columns=[f'X1_{i}' for i in range(matrizacertos60.shape[1])])
-    df_x2 = pd.DataFrame(matrizmediamovel, columns=[f'X2_{i}' for i in range(matrizmediamovel.shape[1])])
-    df_x3 = pd.DataFrame(matrix1s, columns=[f'X3_{i}' for i in range(matrix1s.shape[1])])
+    #df_x1 = pd.DataFrame(matrizacertos60, columns=[f'X1_{i}' for i in range(matrizacertos60.shape[1])])
+    #df_x2 = pd.DataFrame(matrizmediamovel, columns=[f'X2_{i}' for i in range(matrizmediamovel.shape[1])])
+    #df_x3 = pd.DataFrame(matrix1s, columns=[f'X3_{i}' for i in range(matrix1s.shape[1])])
 
     # Juntar todas as colunas
-    X_df = pd.concat([df_x1, df_x2, df_x3], axis=1)
+    #X_df = pd.concat([df_x1, df_x2, df_x3], axis=1)
 
     # Transformar para valores NumPy
-    matrix1s = X_df.values
+    #matrix1s = X_df.values
 
     print(matrix1s.shape, matrix1n.shape)  # Saída: (60, 24)
 
@@ -404,7 +439,7 @@ def tranforsmar_final_matriz(click, array1s, array1n):
 
 ## Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
-data = pd.read_csv('/home/darkcover/Documentos/Out/dados/Saidas/FUNCOES/DOUBLE - 17_09_s1.csv')
+data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x1.csv')
 
 array1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [], [], [], []
 
@@ -418,7 +453,7 @@ modelos = [None]*5000
 data_matrizes = [None]*5000
 recurso1, recurso2 = [None]*5000, [None]*5000
 
-array_geral = np.zeros(6, dtype=float)
+array_geral = np.zeros(10, dtype=float)
 df1 = pd.DataFrame({'lautgh1': np.zeros(60, dtype = int), 'lautgh2': np.zeros(60, dtype = int)})
 
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
@@ -428,8 +463,6 @@ data_matriz_int = []
 data_array_float = []
 data_array_int = []
 array_geral_float = []
-data_acuracia_geral = []
-data_precisao_geral = []
 
 while i <= 210000:
     print(24*'---')
@@ -440,7 +473,7 @@ while i <= 210000:
     else:
         m = media_parray[len(media_parray) - 60]
 
-    print(f'Número da Entrada - {i} | Acuracia_{core1 + 1}: {round(m,4)}')
+    print(f'Número da Entrada - {i} | Acuracia_{core1 + 1}: {round(m,4)} | Contagem Geral: {array_geral[6]} \nOrdem Natural: {array_geral[7]}')
     
     array2s, array2n, odd = coletarodd(i, inteiro, data, array2s, array2n)
     array_geral_float.append(float)
@@ -458,8 +491,6 @@ while i <= 210000:
         else:
             core11 = core1
         print(f'Acuracia modelo Geral: {round(array_geral[0],4)} | Acuracia_{core11}: {round(media_parray[-1],4)} \nPrecisao modelo Geral: {round(array_geral[1],4)}')
-        print(24*"-'-")
-        data_acuracia_geral.append(array_geral[0]), data_precisao_geral.append(array_geral[1])
         print(24*"-'-")
 
     if i >= 360 and (i % 60) == 0:
@@ -483,7 +514,7 @@ while i <= 210000:
             print(f'Matrix_{click}: {[matriz_final_float.shape, matriz_final_int.shape]} | Posicao: {posicao0}')
             data_matriz_float.append(matriz_final_float), data_matriz_int.append(matriz_final_int)
             n = matriz_final_float.shape[1]
-            array1, array2 = matriz_final_float[:,:(n - 3)], matriz_final_int[:,-1]
+            array1, array2 = matriz_final_float[:,:(n - 1)], matriz_final_int[:,-1]
             models = reden(array1, array2)
             modelos[posicao0] = models
             #data_matrizes[posicao0] = matriz_final_float
@@ -505,11 +536,9 @@ print(f'Ordenandos os dados ...')
 
 data_array_float = np.array(array2s)
 data_array_int = np.array(array2n)
-data_acuracia_precisao = pd.DataFrame({'Acuracia': data_acuracia_geral, 'Precisao': data_precisao_geral})
-data_acuracia_precisao.to_csv('/home/darkcover/Documentos/Out/dados/DoIt/Order3.csv', index=False)
 
 data_final = pd.DataFrame({'Entrada': data_array_float, 'Resultado': data_array_int})
-data_final.to_csv('/home/darkcover/Documentos/Out/dados/DoIt/Order4.csv', index=False)
+data_final.to_csv('/home/darkcover/Documentos/Out/Documentos/dados/DoIt/Order1.csv', index=False)
 
 
 

@@ -1,16 +1,13 @@
-[project]
+[tool.poetry]
 name = "out"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "Oziel Junior ",email = "58310583+oziieljuniior@users.noreply.github.com"}
-]
+description = "Análise e predição de eventos binários desbalanceados com janelas temporais e arquitetura customizada. Com uso de lógica fuzzy para interpretar padrões em dados temporais e avaliação de aleatoriedade e compressibilidade em sequências"
+authors = ["Oziel Junior <58310583+oziieljuniior@users.noreply.github.com>"]
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = [
-]
-
+dependencies = []
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
