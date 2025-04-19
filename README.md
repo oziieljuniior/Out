@@ -65,7 +65,7 @@ pyenv local 3.10.17
 
 poetry env use $(pyenv which python)
 poetry install
-
+```
 
 ## Como o código funciona
 
