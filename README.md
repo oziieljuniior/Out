@@ -21,9 +21,51 @@
 
 ---
 
-# Out
+# OUT
 
 [PROJETO EM DESENVOLVIMENTO](https://github.com/oziieljuniior/Out/blob/main/python_project/Atual/DRoger/Kardec/codec1_1.py)
+
+Análise e predição de eventos binários desbalanceados com janelas temporais e arquitetura customizada.  
+Inclui o uso de lógica fuzzy para interpretar padrões em dados temporais e avaliação de aleatoriedade e compressibilidade em sequências.
+
+---
+
+## 📦 Tecnologias & Dependências Principais
+
+- **Python**: 3.10 (gerenciado com `pyenv`)
+- **Poetry**: gerenciamento de ambiente e dependências
+- **TensorFlow**: `2.15.0`
+- **TensorFlow Addons**: `0.23.0` (⚠️ em modo EOL até maio de 2024)
+- **Bibliotecas auxiliares**:
+  - NumPy, Pandas, Scikit-learn, Seaborn, Matplotlib, Scikit-Fuzzy, entre outras (instaladas conforme necessidade)
+
+---
+
+## ⚠️ Aviso importante
+
+> O projeto **depende de funcionalidades específicas do TensorFlow Addons**, que foi descontinuado e entra em fim de vida (EOL) em **maio de 2024**.  
+> A manutenção do ambiente depende da permanência em versões compatíveis do TensorFlow (até 2.15) e Python (até 3.11).  
+> Futuras versões de TensorFlow e TFA não são garantidas como compatíveis.
+
+---
+
+## 🛠️ Ambiente recomendado
+
+- **Python**: `3.10.x`
+- **Poetry**: `>=2.1.0`
+- **TensorFlow**: `2.15.0`
+- **TensorFlow Addons**: `0.23.0`
+
+Instalação típica com Poetry:
+
+```bash
+pyenv install 3.10.17
+pyenv virtualenv 3.10.17 out-py310
+pyenv local 3.10.17
+
+poetry env use $(pyenv which python)
+poetry install
+
 
 ## Como o código funciona
 
@@ -36,12 +78,4 @@ Informações como o jogo funciona, acesse:
 [Últimas Atualizações](https://github.com/oziieljuniior/Out/blob/Documentos/main/notes/update_27_07.md)
 
 [Ideias Futuras](https://github.com/oziieljuniior/Out/tree/main/python_project/Atual/DRoger)
-
-## Resumo da Opera:
-
-No final, tudo se resume à forma como você manipula a média móvel, algo viável graças a duas características essenciais.  
-
-A primeira está relacionada à geração de números pseudoaleatórios (NPA).  
-
-Ao trabalhar com NPAs, é possível identificar as características intrínsecas das médias móveis, pois elas tendem a convergir de maneira uniforme à medida que o número de entradas aumenta. Essa convergência está diretamente ligada ao grau de entropia da sequência: quanto menor a entropia, mais previsível é o comportamento da média móvel; quanto maior, mais instável e difícil de prever.
 
