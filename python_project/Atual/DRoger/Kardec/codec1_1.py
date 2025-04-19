@@ -439,7 +439,7 @@ def tranforsmar_final_matriz(click, array1s, array1n):
 
 ## Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
-data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x1.csv')
+data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x2.csv')
 
 array1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [], [], [], []
 
@@ -480,7 +480,7 @@ while i <= 210000:
     if odd == 0:
         break
 
-    if i >= 361:
+    if i >= 361 and inteiro <= i:
         print(24*"-'-")
         
         array_geral = placargeral(resultado, odd, array_geral)
@@ -493,7 +493,7 @@ while i <= 210000:
         print(f'Acuracia modelo Geral: {round(array_geral[0],4)} | Acuracia_{core11}: {round(media_parray[-1],4)} \nPrecisao modelo Geral: {round(array_geral[1],4)}')
         print(24*"-'-")
 
-    if i >= 360 and (i % 60) == 0:
+    if i >= 360 and (i % 60) == 0 and inteiro <= i:
         print('***'*20)
         print(f'Carregando dados ...')
         info = []
@@ -521,7 +521,7 @@ while i <= 210000:
             print(f'Treinamento {click} realizado com sucesso ...  \n')
         print('***'*20)
 
-    if i >= 360:
+    if i >= 360 and inteiro <= i:
         core2 = i % 60
         y_pred1 = lista_predicao(i, len(modelos), modelos, array2s, array2n)
         resultado = ponderar_lista(y_pred1)

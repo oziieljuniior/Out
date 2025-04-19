@@ -12,6 +12,7 @@
 
 ## Informações uteis
 * []()
+* [Manual de Instalação Warp](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils3.md)
 * [Trabalhando com Ambientes pythons - Avançado](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2_3.md)
 * [Trabalhando com Ambientes pythons - Intermediário - Parte 2](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2_2.md)
 * [Manual de uso Pyenv](https://github.com/oziieljuniior/Out/blob/main/Blog/infoutils2_1.md)
@@ -22,7 +23,7 @@
 
 # Out
 
-[PROJETO EM DESENVOLVIMENTO](https://github.com/oziieljuniior/Out/blob/main/python_project/Atual/DRoger/Kardec/codec1.1.py)
+[PROJETO EM DESENVOLVIMENTO](https://github.com/oziieljuniior/Out/blob/main/python_project/Atual/DRoger/Kardec/codec1_1.py)
 
 ## Como o código funciona
 
