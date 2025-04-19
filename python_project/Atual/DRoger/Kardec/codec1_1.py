@@ -1,24 +1,22 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 import pandas as pd
 import numpy as np
 
-from sklearn.model_selection import train_test_split
-from tensorflow.keras.metrics import Precision, Recall
+import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
-import tensorflow as tf
+from sklearn.utils.class_weight import compute_class_weight
+from tensorflow.keras.metrics import Precision, Recall
 import tensorflow_addons as tfa
-#activation = tf.keras.activations.elu
 
 import skfuzzy as fuzz
 
 # Libs
 import time
-import warnings
 
-
-# Configs
-warnings.simplefilter(action='ignore', category=FutureWarning)
-pd.set_option('display.max_columns', None)
 
 ## Funções
 def calculate_means(array4):
@@ -266,15 +264,7 @@ def lista_predicao(i, t, modelos, array1, array2):
     print(y_pred1)
     return y_pred1
 
-import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-from sklearn.utils.class_weight import compute_class_weight
-from tensorflow.keras.metrics import Precision, Recall
-import tensorflow_addons as tfa
-
-# Classe personalizada de F1
+# Classe personalizada de F1 Score
 class F1Score(tf.keras.metrics.Metric):
     def __init__(self, name='f1_score', **kwargs):
         super(F1Score, self).__init__(name=name, **kwargs)

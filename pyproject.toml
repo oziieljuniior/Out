@@ -4,8 +4,12 @@ version = "0.1.0"
 description = "Análise e predição de eventos binários desbalanceados com janelas temporais e arquitetura customizada. Com uso de lógica fuzzy para interpretar padrões em dados temporais e avaliação de aleatoriedade e compressibilidade em sequências"
 authors = ["Oziel Junior <58310583+oziieljuniior@users.noreply.github.com>"]
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = []
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+tensorflow = "2.15.0"
+tensorflow-addons = "0.23.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
