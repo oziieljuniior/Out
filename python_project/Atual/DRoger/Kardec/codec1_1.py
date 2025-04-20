@@ -429,7 +429,7 @@ def tranforsmar_final_matriz(click, array1s, array1n):
 
 ## Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
-data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x2.csv')
+data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x3.csv')
 
 array1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [], [], [], []
 
@@ -470,7 +470,7 @@ while i <= 210000:
     if odd == 0:
         break
 
-    if i >= 361 and inteiro <= i:
+    if i >= 361 and inteiro:
         print(24*"-'-")
         
         array_geral = placargeral(resultado, odd, array_geral)
@@ -483,35 +483,54 @@ while i <= 210000:
         print(f'Acuracia modelo Geral: {round(array_geral[0],4)} | Acuracia_{core11}: {round(media_parray[-1],4)} \nPrecisao modelo Geral: {round(array_geral[1],4)}')
         print(24*"-'-")
 
-    if i >= 360 and (i % 60) == 0 and inteiro <= i:
-        print('***'*20)
-        print(f'Carregando dados ...')
-        info = []
-        cronor = (i + 300) // 5
-        lista = [name for name in range(60, cronor, 60)]
-        tier = True
+    if i >= 360 and (i % 60) == 0:
+        ajuste1 = 0
+        while ajuste1 == 0:
+            print('***'*20)
+            print(f'Carregando dados ...')
+            info = []
+            cronor = (i + 300) // 5
+            lista = [name for name in range(60, cronor, 60)]
+            tier = True
 
-        for click in lista:
-            k0 = i % click
-            k1 = (i - 60) % click
-            if k0 == 0 and k1 == 0:
-                info.append(click)
-        print(f'{12*"*-"} \nPosições que devem ser carregadas: {info} \n{12*"*-"}')
+            for click in lista:
+                k0 = i % click
+                k1 = (i - 60) % click
+                if k0 == 0 and k1 == 0:
+                    info.append(click)
+            print(f'{12*"*-"} \nPosições que devem ser carregadas: {info} \n{12*"*-"}')
 
-        for click in info:
-            print(f'Treinamento para {click}')
-            matriz_final_float, matriz_final_int, posicao0 = tranforsmar_final_matriz(click, array2s, array2n)
-            print(f'Matrix_{click}: {[matriz_final_float.shape, matriz_final_int.shape]} | Posicao: {posicao0}')
-            data_matriz_float.append(matriz_final_float), data_matriz_int.append(matriz_final_int)
-            n = matriz_final_float.shape[1]
-            array1, array2 = matriz_final_float[:,:(n - 1)], matriz_final_int[:,-1]
-            models = reden(array1, array2)
-            modelos[posicao0] = models
-            #data_matrizes[posicao0] = matriz_final_float
-            print(f'Treinamento {click} realizado com sucesso ...  \n')
-        print('***'*20)
+            for click in info:
+                print(f'Treinamento para {click}')
+                matriz_final_float, matriz_final_int, posicao0 = tranforsmar_final_matriz(click, array2s, array2n)
+                #Ajuste posição para adicionar mais modelos para predição
+                posicao0 = (i // 60) - 6
+                print(f'Matrix_{click}: {[matriz_final_float.shape, matriz_final_int.shape]} | Posicao: {posicao0}')
+                data_matriz_float.append(matriz_final_float), data_matriz_int.append(matriz_final_int)
+                n = matriz_final_float.shape[1]
+                array1, array2 = matriz_final_float[:,:(n - 1)], matriz_final_int[:,-1]
+                tf.keras.backend.clear_session()  # <-- Adicione aqui para limpar sessão antes do novo modelo
+                models = reden(array1, array2)
 
-    if i >= 360 and inteiro <= i:
+                modelos[posicao0] = models
+                #data_matrizes[posicao0] = matriz_final_float
+                print(f'Treinamento {click} realizado com sucesso ...  \n')
+            print('***'*20)
+            print("Continuar o treinamento? (s/n)")
+            resposta = input().strip().lower()
+            if resposta == 's':
+                ajuste1 = 0
+            elif resposta == 'n':
+                ajuste1 = 1
+            else:
+                print("Resposta inválida. Por favor, insira 's' ou 'n'.")
+            print(24*'---')
+            print(f'***'*20)
+            print(f'*** Treinamento concluído com sucesso! ***')
+            print(f'***'*20)
+            
+
+    if i >= 360:
         core2 = i % 60
         y_pred1 = lista_predicao(i, len(modelos), modelos, array2s, array2n)
         resultado = ponderar_lista(y_pred1)
