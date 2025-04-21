@@ -256,6 +256,7 @@ def lista_predicao(i, t, modelos, array1, array2):
             x_new = x_new.astype("float32")
             x_new = np.expand_dims(x_new, -1)
             x_new = np.reshape(x_new, (-1, (matriz1s.shape[1] - 1), 1, 1))
+            
 
             predictions = modelos[sk].predict(x_new)
 
@@ -429,7 +430,7 @@ def tranforsmar_final_matriz(click, array1s, array1n):
 
 ## Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
-data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x3.csv')
+data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x1.csv')
 
 array1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [], [], [], []
 
@@ -503,13 +504,12 @@ while i <= 210000:
             for click in info:
                 print(f'Treinamento para {click}')
                 matriz_final_float, matriz_final_int, posicao0 = tranforsmar_final_matriz(click, array2s, array2n)
-                #Ajuste posição para adicionar mais modelos para predição
-                posicao0 = (i // 60) - 6
+                ##Ajuste posição para adicionar mais modelos para predição
+                #posicao0 = (i // 60) - 6
                 print(f'Matrix_{click}: {[matriz_final_float.shape, matriz_final_int.shape]} | Posicao: {posicao0}')
                 data_matriz_float.append(matriz_final_float), data_matriz_int.append(matriz_final_int)
                 n = matriz_final_float.shape[1]
                 array1, array2 = matriz_final_float[:,:(n - 1)], matriz_final_int[:,-1]
-                tf.keras.backend.clear_session()  # <-- Adicione aqui para limpar sessão antes do novo modelo
                 models = reden(array1, array2)
 
                 modelos[posicao0] = models
@@ -517,7 +517,7 @@ while i <= 210000:
                 print(f'Treinamento {click} realizado com sucesso ...  \n')
             print('***'*20)
             print("Continuar o treinamento? (s/n)")
-            resposta = input().strip().lower()
+            resposta = input('> ').strip().lower()
             if resposta == 's':
                 ajuste1 = 0
             elif resposta == 'n':
