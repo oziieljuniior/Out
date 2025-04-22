@@ -80,7 +80,7 @@ def placar60(df1, i, media_parray, resultado, odd):
     Returns:
         array: Array contendo as variaveis df1 e mediap_array atualizadas, também retorna a acuracia atualizada.
     """
-    core1 = i % 30
+    core1 = i % 60
     if resultado == 1:
         if odd >= 3:
             df1.iloc[core1,:] += 1
@@ -89,10 +89,10 @@ def placar60(df1, i, media_parray, resultado, odd):
             df1.iloc[core1,1] += 1
             medida_pontual = df1.iloc[core1, 0] / df1.iloc[core1, 1]
     else:
-        if len(media_parray)<29:
+        if len(media_parray)<59:
             medida_pontual = 0
         else:
-            medida_pontual = media_parray[len(media_parray) - 30]
+            medida_pontual = media_parray[len(media_parray) - 60]
 
     media_parray.append(medida_pontual)
 
@@ -221,7 +221,7 @@ def lista_predicao(i, modelos, array1, array2, array2s1):
     
 #   y_pred = np.argmax(predictions, axis=1)
     y_proba = predictions[:,1]  # Probabilidade da classe 1
-    threshold = 0.21  # ou menor
+    threshold = 0.2  # ou menor
     y_pred = (y_proba > threshold).astype(int)
 
     print(y_pred)
@@ -249,23 +249,26 @@ class F1Score(tf.keras.metrics.Metric):
         self.precision.reset_states()
         self.recall.reset_states()
 
-# Função principal
-def reden(array1, array2):
+def reden(array1, array2, reset=False, modelo_path="modelo_acumulado.keras"):
     """
-    Treina uma rede neural maximizando a detecção da classe 1, respeitando sequência e desbalanceamento.
+    Treina ou continua treinamento de uma rede neural maximizando a detecção da classe 1.
+
+    Args:
+        array1 (np.ndarray): Matriz de entrada.
+        array2 (np.ndarray): Vetor de saída (0 ou 1).
+        reset (bool): Se True, reinicia o modelo do zero mesmo que exista um salvo.
+        modelo_path (str): Caminho onde salvar/carregar o modelo acumulado.
+    Returns:
+        model: Modelo treinado.
     """
-    # Convertendo entradas
-    
     X = np.array(array1)
     y = np.array(array2)
     n = X.shape[1]
 
-    # Divisão temporal (respeita sequência)
     split_index = int(len(X) * 0.7)
     x_train, x_test = X[:split_index], X[split_index:]
     y_train, y_test = y[:split_index], y[split_index:]
 
-    # Preparação dos dados
     x_train = np.expand_dims(x_train, -1).astype("float32")
     x_test = np.expand_dims(x_test, -1).astype("float32")
     input_shape = (n, 1)
@@ -274,39 +277,41 @@ def reden(array1, array2):
     y_train_cat = keras.utils.to_categorical(y_train, num_classes)
     y_test_cat = keras.utils.to_categorical(y_test, num_classes)
 
-    # Pesos de classe para reforçar a classe 1
     class_weights = compute_class_weight(class_weight='balanced', classes=np.unique(y_train), y=y_train)
     class_weight_dict = {i: w for i, w in enumerate(class_weights)}
 
-    # Modelo
-    model = keras.Sequential([
-    keras.Input(shape=input_shape),
-    layers.Conv1D(32, kernel_size=3, activation="relu"),
-    layers.MaxPooling1D(pool_size=2),
-    layers.Flatten(),
-    layers.Dense(64, activation="relu"),
-    layers.Dense(32, activation="swish"),
-    layers.Dense(num_classes, activation="softmax"),
-    ])
+    # Verifica se já existe modelo salvo e se não queremos resetar
+    if not reset and os.path.exists(modelo_path):
+        print("🔄 Carregando modelo existente...")
+        model = keras.models.load_model(modelo_path, custom_objects={'F1Score': F1Score})
+    else:
+        print("🚀 Criando novo modelo...")
+        model = keras.Sequential([
+            keras.Input(shape=input_shape),
+            layers.Conv1D(32, kernel_size=3, activation="relu"),
+            layers.MaxPooling1D(pool_size=2),
+            layers.Flatten(),
+            layers.Dense(64, activation="relu"),
+            layers.Dense(32, activation="swish"),
+            layers.Dense(num_classes, activation="softmax"),
+        ])
 
+        model.compile(
+            loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.85, gamma=2.0),
+            optimizer=tf.keras.optimizers.AdamW(learning_rate=0.001, weight_decay=1e-4),
+            metrics=[
+                'accuracy',
+                Precision(name="precision"),
+                Recall(name="recall"),
+                F1Score(name="f1_score")
+            ]
+        )
 
-    # Compilação com Focal Loss e F1 personalizado
-    model.compile(
-        loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.85, gamma=2.0),
-        optimizer=tf.keras.optimizers.AdamW(learning_rate=0.001, weight_decay=1e-4),
-        metrics=[
-            'accuracy',
-            Precision(name="precision"),
-            Recall(name="recall"),
-            F1Score(name="f1_score")
-        ]
-    )
-
-    # Treinamento
+    # Treinamento leve se acumulando, forte se novo
     model.fit(
         x_train, y_train_cat,
         batch_size=2**10,
-        epochs=50,
+        epochs=10 if not reset else 50,
         validation_split=0.2,
         class_weight=class_weight_dict,
         verbose=2
@@ -321,7 +326,21 @@ def reden(array1, array2):
     print(f"Recall: {score[3]:.4f}")
     print(f"F1 Score: {score[4]:.4f}")
 
+    # Salva o modelo atualizado
+    model.save(modelo_path)
+    print(f"📦 Modelo salvo em {modelo_path}")
+
+    # Retorna também as métricas
+    return model, {
+        "accuracy": float(score[1]),
+        "precision": float(score[2]),
+        "recall": float(score[3]),
+        "f1_score": float(score[4]),
+    }
+
+
     return model
+
 
 def tranforsmar_final_matriz(array1s, array1n, array2s1):
     """
@@ -336,7 +355,7 @@ def tranforsmar_final_matriz(array1s, array1n, array2s1):
             np.array: Matriz final.
     """
     print(len(array1s[1:]), len(array1n[1:]), len(array2s1[1:]))
-    matrix1s, matrix1n, matrix1s1 = matriz(30, array1s[1:]), matriz(30, array1n[1:]), matriz(30, array2s1[1:])
+    matrix1s, matrix1n, matrix1s1 = matriz(60, array1s[1:]), matriz(60, array1n[1:]), matriz(60, array2s1[1:])
     
     print(matrix1n.shape, matrix1s.shape, matrix1s1.shape)
     
@@ -357,7 +376,7 @@ def tranforsmar_final_matriz(array1s, array1n, array2s1):
 
 ## Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
-data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x3.csv')
+data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x4.csv')
 
 array1, array2s1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [], [], [], [], []
 
@@ -381,16 +400,18 @@ data_matriz_int = []
 data_array_float = []
 data_array_int = []
 array_geral_float = []
+historico_janelas = []
+
 
 while i <= 210000:
     print(24*'---')
     #print(len(media_parray))
-    if len(media_parray) < 29:
+    if len(media_parray) < 59:
         m = 0
         core1 = 0
     else:
-        m = media_parray[len(media_parray) - 30]
-        core1 = i % 30
+        m = media_parray[len(media_parray) - 60]
+        core1 = i % 60
 
     print(f'Número da Entrada - {i} | Acuracia_{core1}: {round(m,4)} | Contagem Geral: {array_geral[6]} \nOrdem Natural: {array_geral[7]}')
     
@@ -405,14 +426,14 @@ while i <= 210000:
         array_geral = placargeral(resultado, odd, array_geral)
         media_parray = placar60(df1, i, media_parray, resultado, odd)
         
-        if i % 30 == 0:
-            core11 = 30
+        if i % 60 == 0:
+            core11 = 60
         else:
             core11 = core1
         print(f'Acuracia modelo Geral: {round(array_geral[0],4)} | Acuracia_{core11}: {round(media_parray[-1],4)} \nPrecisao modelo Geral: {round(array_geral[1],4)}')
         print(24*"-'-")
 
-    if i >= 360 and (i % 30) == 0:
+    if i >= 360 and (i % 60) == 0:
         ajuste1 = 0
         while ajuste1 == 0:    
             print('***'*20)
@@ -423,11 +444,22 @@ while i <= 210000:
             
             n = matriz_final_float.shape[1]
             array1, array2 = matriz_final_float[:,:(n - 3)], matriz_final_int[:,-1]
-            models = reden(array1, array2)
+            models, metricas = reden(array1, array2, reset=True)
+            historico_janelas.append({
+                "janela": i,
+                "acuracia": metricas["accuracy"],
+                "precisao": metricas["precision"],
+                "recall": metricas["recall"],
+                "f1": metricas["f1_score"]
+            })
+
 
             print('***'*20)
             print("Continuar o treinamento? (s/n)")
-            resposta = input('> ').strip().lower()
+            if i <= inteiro:
+                resposta = 'n'
+            else:
+                resposta = input('> ').strip().lower()
             if resposta == 's':
                 ajuste1 = 0
             elif resposta == 'n':
@@ -448,5 +480,22 @@ while i <= 210000:
 
     i += 1
 
+df_historico = pd.DataFrame(historico_janelas)
+df_historico.to_csv("historico_janelas.csv", index=False)
+print("📈 Histórico de desempenho salvo em 'historico_janelas.csv'")
 
+import matplotlib.pyplot as plt
+
+def plotar_historico(df_historico):
+    plt.figure(figsize=(12, 6))
+    for coluna in ["acuracia", "precisao", "recall", "f1"]:
+        plt.plot(df_historico["janela"], df_historico[coluna], label=coluna)
+    plt.legend()
+    plt.title("📊 Evolução das Métricas por Janela")
+    plt.xlabel("Janela (posição da entrada)")
+    plt.ylabel("Valor da Métrica")
+    plt.grid(True)
+    plt.show()
+
+plotar_historico(df_historico)
 

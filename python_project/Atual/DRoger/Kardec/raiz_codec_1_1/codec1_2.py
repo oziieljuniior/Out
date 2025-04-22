@@ -80,7 +80,7 @@ def placar60(df1, i, media_parray, resultado, odd):
     Returns:
         array: Array contendo as variaveis df1 e mediap_array atualizadas, também retorna a acuracia atualizada.
     """
-    core1 = i % 30
+    core1 = i % 120
     if resultado == 1:
         if odd >= 3:
             df1.iloc[core1,:] += 1
@@ -89,10 +89,10 @@ def placar60(df1, i, media_parray, resultado, odd):
             df1.iloc[core1,1] += 1
             medida_pontual = df1.iloc[core1, 0] / df1.iloc[core1, 1]
     else:
-        if len(media_parray)<29:
+        if len(media_parray)<119:
             medida_pontual = 0
         else:
-            medida_pontual = media_parray[len(media_parray) - 30]
+            medida_pontual = media_parray[len(media_parray) - 120]
 
     media_parray.append(medida_pontual)
 
@@ -118,9 +118,11 @@ def coletarodd(i, inteiro, data, array2s, array2n, array2s1, alavanca=True):
 
     if i <= inteiro:
         if alavanca == True:
-            odd = float(data['Entrada'][i].replace(",",'.'))
+            #odd = float(data['Entrada'][i].replace(",",'.'))
+            odd = float(data['Odd'][i])
         else:
-            odd = data['Entrada'][i] 
+            odd = float(data['Odd'][i])
+            #odd = data['Entrada'][i] 
 
         if odd == 0:
             odd = 1
@@ -221,7 +223,7 @@ def lista_predicao(i, modelos, array1, array2, array2s1):
     
 #   y_pred = np.argmax(predictions, axis=1)
     y_proba = predictions[:,1]  # Probabilidade da classe 1
-    threshold = 0.2  # ou menor
+    threshold = 0.45  # ou menor
     y_pred = (y_proba > threshold).astype(int)
 
     print(y_pred)
@@ -355,7 +357,7 @@ def tranforsmar_final_matriz(array1s, array1n, array2s1):
             np.array: Matriz final.
     """
     print(len(array1s[1:]), len(array1n[1:]), len(array2s1[1:]))
-    matrix1s, matrix1n, matrix1s1 = matriz(30, array1s[1:]), matriz(30, array1n[1:]), matriz(30, array2s1[1:])
+    matrix1s, matrix1n, matrix1s1 = matriz(120, array1s[1:]), matriz(120, array1n[1:]), matriz(120, array2s1[1:])
     
     print(matrix1n.shape, matrix1s.shape, matrix1s1.shape)
     
@@ -375,8 +377,10 @@ def tranforsmar_final_matriz(array1s, array1n, array2s1):
     return matrix1s, matrix1n
 
 ## Carregar data
+#'/home/darkcover/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x4.csv'
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
-data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/DRoger/Kardec/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x3.csv')
+path_file = '/home/darkcover/Documentos/Out/Documentos/dados/odds_200k.csv'
+data = pd.read_csv(path_file)
 
 array1, array2s1, array2s, array2n, array3n, array3s, matrix1s, matrix1n = [], [], [], [], [], [], [], []
 
@@ -391,7 +395,7 @@ data_matrizes = [None]*5000
 recurso1, recurso2 = [None]*5000, [None]*5000
 
 array_geral = np.zeros(10, dtype=float)
-df1 = pd.DataFrame({'lautgh1': np.zeros(60, dtype = int), 'lautgh2': np.zeros(60, dtype = int)})
+df1 = pd.DataFrame({'lautgh1': np.zeros(120, dtype = int), 'lautgh2': np.zeros(120, dtype = int)})
 
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
 
@@ -406,12 +410,12 @@ historico_janelas = []
 while i <= 210000:
     print(24*'---')
     #print(len(media_parray))
-    if len(media_parray) < 29:
+    if len(media_parray) < 119:
         m = 0
         core1 = 0
     else:
-        m = media_parray[len(media_parray) - 30]
-        core1 = i % 30
+        m = media_parray[len(media_parray) - 120]
+        core1 = i % 120
 
     print(f'Número da Entrada - {i} | Acuracia_{core1}: {round(m,4)} | Contagem Geral: {array_geral[6]} \nOrdem Natural: {array_geral[7]}')
     
@@ -426,14 +430,14 @@ while i <= 210000:
         array_geral = placargeral(resultado, odd, array_geral)
         media_parray = placar60(df1, i, media_parray, resultado, odd)
         
-        if i % 30 == 0:
-            core11 = 30
+        if i % 120 == 0:
+            core11 = 120
         else:
             core11 = core1
         print(f'Acuracia modelo Geral: {round(array_geral[0],4)} | Acuracia_{core11}: {round(media_parray[-1],4)} \nPrecisao modelo Geral: {round(array_geral[1],4)}')
         print(24*"-'-")
 
-    if i >= 360 and (i % 30) == 0:
+    if i >= 360 and (i % 120) == 0:
         ajuste1 = 0
         while ajuste1 == 0:    
             print('***'*20)
