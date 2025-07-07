@@ -217,9 +217,13 @@ class AjustesOdds:
         # Concatenar as matrizes de características normais
         x4 = np.concatenate((matrizbinario[:,:-1], matrizmbinario, matrizdpbinario, matrizebinario, matrizabinario, matrizcbinario), axis=1)
         #print(f'Matriz binario: {x4.shape}')
-
+        
         matrizX_final = np.concatenate((x1, x2, x3, x4), axis=1)
-        matrizy_final = np.array(matrizbinario[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario como y
+
+        array1binario1 = [0 if odd >= 3 else 1 for odd in array1]
+        matrizbinario1 = self.matriz(120, array1binario1)
+        
+        matrizy_final = np.array(matrizbinario1[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario como y
 
         return matrizX_final, matrizy_final
 

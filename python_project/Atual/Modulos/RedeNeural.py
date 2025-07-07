@@ -62,7 +62,7 @@ class Modelos:
                 layers.Dense(2, activation="softmax")
             ])
             model.compile(
-                loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.9, gamma=2.0),
+                loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.2, gamma=2.0),
                 optimizer=tf.keras.optimizers.AdamW(learning_rate=1e-3, weight_decay=1e-4),
                 metrics=[
                     "accuracy",
@@ -73,7 +73,7 @@ class Modelos:
 
         model.fit(
             x_train, y_train_cat,
-            batch_size=512,
+            batch_size=1024,
             epochs=30 if not reset else 50,
             validation_split=0.2,
             class_weight=class_weight_dict,
@@ -101,10 +101,9 @@ class Modelos:
         }
 
     @staticmethod
-    def prever(array1, modelo_path="modelo_acumulado.keras", taxa_esperada=0.3):
+    def prever(array1, modelo_path="modelo_acumulado.keras", threshold=0.5):
         """
-        Realiza predição sobre várias entradas com threshold dinâmico baseado na taxa esperada de classe 1.
-        Ex: Para 60 entradas e taxa 0.3 → marca como 1 os 18 maiores valores.
+        Realiza predição com base nas últimas 60 entradas.
         """
         if not os.path.exists(modelo_path):
             raise FileNotFoundError(f"Modelo não encontrado em: {modelo_path}")
@@ -112,18 +111,8 @@ class Modelos:
         model = keras.models.load_model(modelo_path)
         ajustador = AjustesOdds(array1)
         X_pred = ajustador.transformar_entrada_predicao(array1)
+        y_proba = model.predict(X_pred)[0][1]
+        y_pred = int(y_proba > threshold)
 
-        y_probas = model.predict(X_pred)[:, 1]  # Probabilidade da classe 1
-
-        # Threshold dinâmico: seleciona os top-k maiores
-        qtd_1s = int(len(y_probas) * taxa_esperada)
-        indices_top_k = np.argsort(y_probas)[-qtd_1s:]
-        y_pred = np.zeros_like(y_probas, dtype=int)
-        y_pred[indices_top_k] = 1
-
-        print(f"📊 Taxa esperada: {taxa_esperada:.2f} → Previsto {np.sum(y_pred)} valores como 1.")
-        print(f"ℹ️ Valores previstos (parcial):\n{y_pred[:10]}")
-        print(f"ℹ️ Probabilidades (parcial):\n{y_probas[:10]}")
-
-        return y_pred, y_probas
-
+        print(f"📈 Probabilidade classe 1: {y_proba:.4f}")
+        return y_pred, y_proba
