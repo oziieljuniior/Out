@@ -116,7 +116,7 @@ class AjustesOdds:
 
         #array1normal
         array1 = np.clip(np.array(array1, dtype=np.float32), 1.0, 6.0).tolist()
-        matriznormal = self.matriz(60, array1)
+        matriznormal = self.matriz(120, array1)
         ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
         arraymnormal, arraydpnormal, arrayanormal, arraycnormal = [], [], [], []
         for i in range(matriznormal.shape[0]):
@@ -135,7 +135,7 @@ class AjustesOdds:
         matrizcnormal = np.array(arraycnormal).reshape(-1,1) #Matriz Curtose valores
         # Concatenar as matrizes de características normais
         x1 = np.concatenate((matriznormal[:,:-1], matrizmnormal, matrizdpnormal, matrizanormal, matrizcnormal), axis=1)
-        print(f'Matriz normal: {x1.shape}')
+        #print(f'Matriz normal: {x1.shape}')
 
         #array1marjorado
         array1marjorado = []
@@ -146,7 +146,7 @@ class AjustesOdds:
                 array1marjorado.append(4.0)
             else:
                 array1marjorado.append(array1[i])
-        matrizmarjorado = self.matriz(60, array1marjorado)
+        matrizmarjorado = self.matriz(120, array1marjorado)
         ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
         arraymmarjorado, arraydpmarjorado, arrayamarjorado, arraycmarjorado = [], [], [], []
         for i in range(matrizmarjorado.shape[0]):
@@ -165,11 +165,11 @@ class AjustesOdds:
         matrizcmarjorado = np.array(arraycmarjorado).reshape(-1,1) #Matriz Curtose valores
         # Concatenar as matrizes de características normais
         x2 = np.concatenate((matrizmarjorado[:,:-1], matrizmmarjorado, matrizdpmarjorado, matrizamarjorado, matrizcmarjorado), axis=1)
-        print(f'Matriz Marjorada: {x2.shape}')
+        #print(f'Matriz Marjorada: {x2.shape}')
 
         #array1fuzzy
         array1fuzzy = [self.fuzzy_classification(odd) for odd in array1]
-        matrizfuzzy = self.matriz(60, array1fuzzy)
+        matrizfuzzy = self.matriz(120, array1fuzzy)
         ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
         arraymfuzzy, arraydpfuzzy, arrayafuzzy, arraycfuzzy = [], [], [], []
         for i in range(matrizfuzzy.shape[0]):
@@ -188,11 +188,11 @@ class AjustesOdds:
         matrizcfuzzy = np.array(arraycfuzzy).reshape(-1,1) #Matriz Curtose valores
         # Concatenar as matrizes de características normais
         x3 = np.concatenate((matrizfuzzy[:,:-1], matrizmfuzzy, matrizdpfuzzy, matrizafuzzy, matrizcfuzzy), axis=1)
-        print(f'Matriz fuzzy: {x3.shape}')
+        #print(f'Matriz fuzzy: {x3.shape}')
 
         #array1binario
         array1binario = [1 if odd >= 3 else 0 for odd in array1]
-        matrizbinario = self.matriz(60, array1binario)
+        matrizbinario = self.matriz(120, array1binario)
         ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
         arraymbinario, arraydpbinario, arrayebinario, arrayabinario, arraycbinario = [], [], [], [], []
         for i in range(matrizbinario.shape[0]):
@@ -216,7 +216,7 @@ class AjustesOdds:
         matrizcbinario = np.array(arraycbinario).reshape(-1,1) #Matriz Curtose valores
         # Concatenar as matrizes de características normais
         x4 = np.concatenate((matrizbinario[:,:-1], matrizmbinario, matrizdpbinario, matrizebinario, matrizabinario, matrizcbinario), axis=1)
-        print(f'Matriz binario: {x4.shape}')
+        #print(f'Matriz binario: {x4.shape}')
 
         matrizX_final = np.concatenate((x1, x2, x3, x4), axis=1)
         matrizy_final = np.array(matrizbinario[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario como y
@@ -226,16 +226,16 @@ class AjustesOdds:
     def transformar_entrada_predicao(self, array1):
         """
         Prepara a estrutura de entrada para predição com .predict().
-        Assume que array1 contém as últimas 60 entradas (59 anteriores + 1 atual).
+        Assume que array1 contém as últimas 120 entradas (119 anteriores + 1 atual).
         
         Returns:
             np.ndarray: Array com shape (1, n_features) pronto para model.predict().
         """
-        if len(array1) < 60:
-            raise ValueError("É necessário fornecer ao menos 60 entradas para predição.")
+        if len(array1) < 120:
+            raise ValueError("É necessário fornecer ao menos 120 entradas para predição.")
 
-        # Usa apenas os últimos 60 valores
-        array1 = array1[-59:]
+        # Usa apenas os últimos 120 valores
+        array1 = array1[-119:]
 
         #array1normal
         array1 = np.clip(np.array(array1, dtype=np.float32), 1.0, 6.0).tolist()
@@ -246,7 +246,7 @@ class AjustesOdds:
 
         # Concatenar as matrizes de características normais
         x1 = np.append(array1, [media, desvio, skewness, curtose])
-        print(f'Matriz normal: {x1.shape}')
+        #print(f'Matriz normal: {x1.shape}')
 
         #array1marjorado
         array1marjorado = []
@@ -263,7 +263,7 @@ class AjustesOdds:
         curtose = kurtosis(array1marjorado)
         # Concatenar as matrizes de características normais
         x2 = np.append(array1marjorado, [media, desvio, skewness, curtose])
-        print(f'Matriz Marjorada: {x2.shape}')
+        #print(f'Matriz Marjorada: {x2.shape}')
 
         #array1fuzzy
         array1fuzzy = [self.fuzzy_classification(odd) for odd in array1]
@@ -274,7 +274,7 @@ class AjustesOdds:
 
         # Concatenar as matrizes de características normais
         x3 = np.append(array1fuzzy, [media, desvio, skewness, curtose])
-        print(f'Matriz fuzzy: {x3.shape}')
+        #print(f'Matriz fuzzy: {x3.shape}')
 
         #array1binario
         array1binario = [1 if odd >= 3 else 0 for odd in array1]
@@ -288,7 +288,7 @@ class AjustesOdds:
 
         # Concatenar as matrizes de características normais
         x4 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        print(f'Matriz binario: {x4.shape}')
+        #print(f'Matriz binario: {x4.shape}')
 
         matrizX_final = np.concatenate((x1, x2, x3, x4), axis=0)
         

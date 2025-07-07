@@ -50,7 +50,7 @@ while i <= 210000:
 ######################################################
 
 ######## -> Treinamento da Rede Neural ###############
-    if i >= 240 and (i % 60) == 0:
+    if i >= 240 and (i % 120) == 0:
         print('***'*20)
         ##### -> Vetores de Entradas #################
         print(f'Carregando dados ...')
@@ -62,13 +62,13 @@ while i <= 210000:
         ##############################################
         ##### -> Treinamento da Rede Neural ##########
         i0 = 0
-        while i0 <= 3:
+        while i0 <= 10:
             models, metricas = Modelos.treinar_ou_retreinar(array1, array2, reset=True)
             print(f'Modelo treinado com sucesso! {metricas}')
-            if metricas['accuracy'] >= 0.45:
+            if metricas['accuracy'] >= 0.35 and metricas['f1_score'] >= 0.25:
                 print('Modelo atingiu precisão desejada, salvando modelo...')
                 models.save('modelo_acumulado.keras')
-                i0 = 4
+                i0 = 11
             i0 += 1
         ##############################################
 ######################################################

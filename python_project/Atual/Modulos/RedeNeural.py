@@ -8,6 +8,8 @@ from tensorflow.keras import layers
 from tensorflow.keras.metrics import Precision, Recall
 from sklearn.utils.class_weight import compute_class_weight
 import tensorflow_addons as tfa
+from sklearn.metrics import f1_score
+
 
 # Acesso aos módulos internos
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -16,28 +18,6 @@ from Modulos.Vetores import AjustesOdds
 from tensorflow.keras import backend as K
 from tensorflow.keras.saving import register_keras_serializable
 
-
-@register_keras_serializable()
-class F1Score(tf.keras.metrics.Metric):
-    def __init__(self, name='f1_score', **kwargs):
-        super().__init__(name=name, **kwargs)
-        self.precision = Precision()
-        self.recall = Recall()
-
-    def update_state(self, y_true, y_pred, sample_weight=None):
-        y_true = tf.argmax(y_true, axis=-1)
-        y_pred = tf.argmax(y_pred, axis=-1)
-        self.precision.update_state(y_true, y_pred, sample_weight)
-        self.recall.update_state(y_true, y_pred, sample_weight)
-
-    def result(self):
-        p = self.precision.result()
-        r = self.recall.result()
-        return 2 * ((p * r) / (p + r + K.epsilon()))
-
-    def reset_states(self):
-        self.precision.reset_states()
-        self.recall.reset_states()
 
 class Modelos:
     @staticmethod
@@ -87,15 +67,14 @@ class Modelos:
                 metrics=[
                     "accuracy",
                     Precision(name="precision"),
-                    Recall(name="recall"),
-                    F1Score()
+                    Recall(name="recall")
                 ]
             )
 
         model.fit(
             x_train, y_train_cat,
-            batch_size=1024,
-            epochs=10 if not reset else 50,
+            batch_size=512,
+            epochs=30 if not reset else 50,
             validation_split=0.2,
             class_weight=class_weight_dict,
             verbose=2
@@ -103,8 +82,13 @@ class Modelos:
 
         # Avaliação
         score = model.evaluate(x_test, y_test_cat, verbose=0)
+
+        y_true = np.argmax(y_test_cat, axis=-1)
+        y_pred = np.argmax(model.predict(x_test), axis=-1)
+        f1 = f1_score(y_true, y_pred)
+
         print(f"\n🔍 Avaliação:")
-        print(f"Loss: {score[0]:.4f}, Accuracy: {score[1]:.4f}, Precision: {score[2]:.4f}, Recall: {score[3]:.4f}, F1: {score[4]:.4f}")
+        print(f"Loss: {score[0]:.4f}, Accuracy: {score[1]:.4f}, Precision: {score[2]:.4f}, Recall: {score[3]:.4f}, F1: {f1:.4f}")
 
         model.save(modelo_path)
         print(f"✅ Modelo salvo em {modelo_path}")
@@ -113,22 +97,33 @@ class Modelos:
             "accuracy": float(score[1]),
             "precision": float(score[2]),
             "recall": float(score[3]),
-            "f1_score": float(score[4]),
+            "f1_score": float(f1),
         }
 
     @staticmethod
-    def prever(array1, modelo_path="modelo_acumulado.keras", threshold=0.5):
+    def prever(array1, modelo_path="modelo_acumulado.keras", taxa_esperada=0.3):
         """
-        Realiza predição com base nas últimas 60 entradas.
+        Realiza predição sobre várias entradas com threshold dinâmico baseado na taxa esperada de classe 1.
+        Ex: Para 60 entradas e taxa 0.3 → marca como 1 os 18 maiores valores.
         """
         if not os.path.exists(modelo_path):
             raise FileNotFoundError(f"Modelo não encontrado em: {modelo_path}")
 
-        model = keras.models.load_model(modelo_path, custom_objects={'F1Score': F1Score})
+        model = keras.models.load_model(modelo_path)
         ajustador = AjustesOdds(array1)
         X_pred = ajustador.transformar_entrada_predicao(array1)
-        y_proba = model.predict(X_pred)[0][1]
-        y_pred = int(y_proba > threshold)
 
-        print(f"📈 Probabilidade classe 1: {y_proba:.4f} → Classe prevista: {y_pred}")
-        return y_pred, y_proba
+        y_probas = model.predict(X_pred)[:, 1]  # Probabilidade da classe 1
+
+        # Threshold dinâmico: seleciona os top-k maiores
+        qtd_1s = int(len(y_probas) * taxa_esperada)
+        indices_top_k = np.argsort(y_probas)[-qtd_1s:]
+        y_pred = np.zeros_like(y_probas, dtype=int)
+        y_pred[indices_top_k] = 1
+
+        print(f"📊 Taxa esperada: {taxa_esperada:.2f} → Previsto {np.sum(y_pred)} valores como 1.")
+        print(f"ℹ️ Valores previstos (parcial):\n{y_pred[:10]}")
+        print(f"ℹ️ Probabilidades (parcial):\n{y_probas[:10]}")
+
+        return y_pred, y_probas
+
