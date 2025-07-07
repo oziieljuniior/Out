@@ -1,0 +1,134 @@
+import os
+import sys
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+from tensorflow.keras.metrics import Precision, Recall
+from sklearn.utils.class_weight import compute_class_weight
+import tensorflow_addons as tfa
+
+# Acesso aos módulos internos
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from Modulos.Vetores import AjustesOdds
+
+from tensorflow.keras import backend as K
+from tensorflow.keras.saving import register_keras_serializable
+
+
+@register_keras_serializable()
+class F1Score(tf.keras.metrics.Metric):
+    def __init__(self, name='f1_score', **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.precision = Precision()
+        self.recall = Recall()
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        y_true = tf.argmax(y_true, axis=-1)
+        y_pred = tf.argmax(y_pred, axis=-1)
+        self.precision.update_state(y_true, y_pred, sample_weight)
+        self.recall.update_state(y_true, y_pred, sample_weight)
+
+    def result(self):
+        p = self.precision.result()
+        r = self.recall.result()
+        return 2 * ((p * r) / (p + r + K.epsilon()))
+
+    def reset_states(self):
+        self.precision.reset_states()
+        self.recall.reset_states()
+
+class Modelos:
+    @staticmethod
+    def treinar_ou_retreinar(array1, array2, reset=False, modelo_path="modelo_acumulado.keras"):
+        """
+        Treina ou continua o treinamento de uma rede neural com entrada 2D.
+        """
+        X = np.array(array1)
+        y = np.ravel(array2).astype(int)
+        input_shape = (X.shape[1], 1)
+
+        x_train = np.expand_dims(X[:int(0.7 * len(X))], -1).astype("float32")
+        x_test = np.expand_dims(X[int(0.7 * len(X)):], -1).astype("float32")
+
+        y_train_cat = keras.utils.to_categorical(y[:len(x_train)], 2)
+        y_test_cat = keras.utils.to_categorical(y[len(x_train):], 2)
+
+        class_weights = compute_class_weight(class_weight='balanced', classes=np.unique(y), y=y)
+        class_weight_dict = {i: w for i, w in enumerate(class_weights)}
+
+        if not reset and os.path.exists(modelo_path):
+            print("🔄 Carregando modelo existente...")
+            model = keras.models.load_model(modelo_path, custom_objects={'F1Score': Modelos.F1Score()})
+        else:
+            print("🚀 Criando novo modelo...")
+            model = keras.Sequential([
+                keras.Input(shape=input_shape),
+                layers.Conv1D(32, kernel_size=3, activation="relu", padding="same"),
+                layers.BatchNormalization(),
+                layers.MaxPooling1D(pool_size=2),
+
+                layers.Conv1D(64, kernel_size=3, activation="relu", padding="same"),
+                layers.BatchNormalization(),
+                layers.MaxPooling1D(pool_size=2),
+
+                layers.LSTM(64, return_sequences=False),
+                layers.Dropout(0.3),
+
+                layers.Dense(32, activation="swish"),
+                layers.Dropout(0.2),
+
+                layers.Dense(2, activation="softmax")
+            ])
+            model.compile(
+                loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.9, gamma=2.0),
+                optimizer=tf.keras.optimizers.AdamW(learning_rate=1e-3, weight_decay=1e-4),
+                metrics=[
+                    "accuracy",
+                    Precision(name="precision"),
+                    Recall(name="recall"),
+                    F1Score()
+                ]
+            )
+
+        model.fit(
+            x_train, y_train_cat,
+            batch_size=1024,
+            epochs=10 if not reset else 50,
+            validation_split=0.2,
+            class_weight=class_weight_dict,
+            verbose=2
+        )
+
+        # Avaliação
+        score = model.evaluate(x_test, y_test_cat, verbose=0)
+        print(f"\n🔍 Avaliação:")
+        print(f"Loss: {score[0]:.4f}, Accuracy: {score[1]:.4f}, Precision: {score[2]:.4f}, Recall: {score[3]:.4f}, F1: {score[4]:.4f}")
+
+        model.save(modelo_path)
+        print(f"✅ Modelo salvo em {modelo_path}")
+
+        return model, {
+            "accuracy": float(score[1]),
+            "precision": float(score[2]),
+            "recall": float(score[3]),
+            "f1_score": float(score[4]),
+        }
+
+    @staticmethod
+    def prever(array1, modelo_path="modelo_acumulado.keras", threshold=0.5):
+        """
+        Realiza predição com base nas últimas 60 entradas.
+        """
+        if not os.path.exists(modelo_path):
+            raise FileNotFoundError(f"Modelo não encontrado em: {modelo_path}")
+
+        model = keras.models.load_model(modelo_path, custom_objects={'F1Score': F1Score})
+        ajustador = AjustesOdds(array1)
+        X_pred = ajustador.transformar_entrada_predicao(array1)
+        y_proba = model.predict(X_pred)[0][1]
+        y_pred = int(y_proba > threshold)
+
+        print(f"📈 Probabilidade classe 1: {y_proba:.4f} → Classe prevista: {y_pred}")
+        return y_pred, y_proba
