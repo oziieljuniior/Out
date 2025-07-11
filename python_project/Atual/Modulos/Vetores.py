@@ -4,6 +4,10 @@ import skfuzzy as fuzz
 from scipy.stats import entropy,skew, kurtosis
            
             
+## Coisas a Fazer
+# 1. Mudar a caracteristica para a entrada binária - 1 -> odd <= 3 ou 0 -> odd > 3
+# 2. Linha 147: Mudar a caracteristica da entrada, ela está incorreta. 2 -> odd <= 2, 4 odd >= 4, odd[i] caso contrário
+# 3. Inverter grau de classificação do número de pertinência fuzzy. Atualmente está invertido, o que é um erro. Pois os valores possuem uma frequência maior próximo do valor 1.
 
 
 
