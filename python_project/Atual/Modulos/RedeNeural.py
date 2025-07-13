@@ -45,24 +45,24 @@ class Modelos:
             print("🚀 Criando novo modelo...")
             model = keras.Sequential([
                 keras.Input(shape=input_shape),
-                layers.Conv1D(32, kernel_size=3, activation="relu", padding="same"),
-                layers.BatchNormalization(),
-                layers.MaxPooling1D(pool_size=2),
-
                 layers.Conv1D(64, kernel_size=3, activation="relu", padding="same"),
                 layers.BatchNormalization(),
                 layers.MaxPooling1D(pool_size=2),
 
-                layers.LSTM(64, return_sequences=False),
+                layers.Conv1D(128, kernel_size=3, activation="relu", padding="same"),
+                layers.BatchNormalization(),
+                layers.MaxPooling1D(pool_size=2),
+
+                layers.LSTM(128, return_sequences=False),
                 layers.Dropout(0.3),
 
-                layers.Dense(32, activation="swish"),
+                layers.Dense(64, activation="swish"),
                 layers.Dropout(0.2),
 
                 layers.Dense(2, activation="softmax")
             ])
             model.compile(
-                loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.2, gamma=2.0),
+                loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.1, gamma=2.0),
                 optimizer=tf.keras.optimizers.AdamW(learning_rate=1e-3, weight_decay=1e-4),
                 metrics=[
                     "accuracy",
@@ -73,7 +73,7 @@ class Modelos:
 
         model.fit(
             x_train, y_train_cat,
-            batch_size=1024,
+            batch_size=528,
             epochs=30 if not reset else 50,
             validation_split=0.2,
             class_weight=class_weight_dict,

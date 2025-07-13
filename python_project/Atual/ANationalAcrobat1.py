@@ -17,7 +17,9 @@ import time
     
 ### Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
-data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x1.csv')
+#/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv
+#/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x1.csv
+data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv')
 
 array1, i = [], 0
 
@@ -50,7 +52,7 @@ while i <= 210000:
 ######################################################
 
 ######## -> Treinamento da Rede Neural ###############
-    if i >= 240 and (i % 120) == 0:
+    if i >= 240 and (i % 60) == 0:
         print('***'*20)
         ##### -> Vetores de Entradas #################
         print(f'Carregando dados ...')
