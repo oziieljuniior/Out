@@ -4,10 +4,6 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from Modulos.Placares import Placar # Importando a classe Placar do módulo Placares
 from Modulos.Vetores import AjustesOdds
-#from Modulos.RedeNeural import Modelos
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import pandas as pd
 import numpy as np
@@ -35,6 +31,7 @@ inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> 
 ## Variáveis para salvar em um dataframe
 data_matriz_float, data_matriz_int, array_geral_float, historico_janelas = [], [], [], [] 
 
+datasave = pd.DataFrame({'Modelo N': [], 'Reportes Modelos': []})
 placar = Placar()  # Inicializando o placar
 vetores = AjustesOdds(array1)  # Inicializando a classe de ajustes de odds
 ### Produção
@@ -77,13 +74,17 @@ while i <= 210000:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         # 3. Modelo linear base (regressão logística)
-        logreg = LogisticRegression(max_iter=5000, C=1.0, random_state=42)
+        logreg = LogisticRegression(penalty='l2',
+                                                C=1.0,          # ajustar via grid
+                                                class_weight='balanced',
+                                                max_iter=2000,
+                                                random_state=42)
         logreg.fit(X_train, y_train)
         y_pred_lr = logreg.predict(X_test)
 
         print("Modelo Linear - Regressão Logística")
         print(classification_report(y_test, y_pred_lr))
-        
+    
         ##############################################
 ######################################################
             
