@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from Modulos.Placares import Placar # Importando a classe Placar do módulo Placares
 from Modulos.Vetores import AjustesOdds
-from Modulos.RedeNeural import Modelos
+#from Modulos.RedeNeural import Modelos
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
@@ -26,7 +26,7 @@ import time
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
 #/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv
 #/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x1.csv
-data = pd.read_csv('/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv')
+data = pd.read_csv('/home/darkcover01/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv')
 
 array1, i = [], 0
 
@@ -77,7 +77,7 @@ while i <= 210000:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         # 3. Modelo linear base (regressão logística)
-        logreg = LogisticRegression(max_iter=2000, random_state=42)
+        logreg = LogisticRegression(max_iter=5000, C=1.0, random_state=42)
         logreg.fit(X_train, y_train)
         y_pred_lr = logreg.predict(X_test)
 

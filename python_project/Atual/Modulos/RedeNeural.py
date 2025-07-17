@@ -7,7 +7,6 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.metrics import Precision, Recall
 from sklearn.utils.class_weight import compute_class_weight
-import tensorflow_addons as tfa
 from sklearn.metrics import f1_score
 
 
@@ -20,6 +19,17 @@ from tensorflow.keras.saving import register_keras_serializable
 
 
 class Modelos:
+    @staticmethod
+    def focal_loss(gamma=2., alpha=0.1):
+        def focal_loss_fixed(y_true, y_pred):
+            epsilon = tf.keras.backend.epsilon()
+            y_pred = tf.clip_by_value(y_pred, epsilon, 1. - epsilon)
+            cross_entropy = -y_true * tf.math.log(y_pred)
+            weight = alpha * tf.pow(1 - y_pred, gamma)
+            loss = weight * cross_entropy
+            return tf.reduce_mean(tf.reduce_sum(loss, axis=-1))
+        return focal_loss_fixed
+
     @staticmethod
     def treinar_ou_retreinar(array1, array2, reset=False, modelo_path="modelo_acumulado.keras"):
         """
@@ -62,7 +72,7 @@ class Modelos:
                 layers.Dense(2, activation="softmax")
             ])
             model.compile(
-                loss=tfa.losses.SigmoidFocalCrossEntropy(alpha=0.1, gamma=2.0),
+                loss= Modelos.focal_loss(alpha=0.1, gamma=2.0),
                 optimizer=tf.keras.optimizers.AdamW(learning_rate=1e-3, weight_decay=1e-4),
                 metrics=[
                     "accuracy",
@@ -116,3 +126,5 @@ class Modelos:
 
         print(f"📈 Probabilidade classe 1: {y_proba:.4f}")
         return y_pred, y_proba
+    
+    

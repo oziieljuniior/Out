@@ -164,7 +164,7 @@ class AjustesOdds:
             np.ndarray: Matriz ajustado para o tamanho especificado.
         """
         matrizbinario1 = array1
-        print(f'Matriz binario1: {matrizbinario1.shape}')
+        #print(f'Matriz binario1: {matrizbinario1.shape}')
         ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
         arraymbinario1, arraydpbinario1, arrayebinario1, arrayabinario1, arraycbinario1 = [], [], [], [], []
         for i in range(matrizbinario1.shape[0]):
