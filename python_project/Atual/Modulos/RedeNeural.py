@@ -83,7 +83,7 @@ class Modelos:
 
         model.fit(
             x_train, y_train_cat,
-            batch_size=528,
+            batch_size=1024,
             epochs=30 if not reset else 50,
             validation_split=0.2,
             class_weight=class_weight_dict,

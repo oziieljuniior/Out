@@ -20,6 +20,7 @@ import time
 #/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv
 #/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x1.csv
 #/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv
+#/home/darkcover01/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv
 data = pd.read_csv('/home/darkcover01/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv')
 
 array1, i = [], 0
@@ -68,7 +69,7 @@ while i <= 210000:
         while i0 <= 10:
             models, metricas = Modelos.treinar_ou_retreinar(array1, array2, reset=True)
             #print(f'Modelo treinado com sucesso! {metricas}')
-            if metricas['accuracy'] >= 0.60 and metricas['f1_score'] >= 0.70:
+            if metricas['f1_score'] != 0:
                 print('Modelo atingiu precisão desejada, salvando modelo...')
                 models.save('modelo_acumulado.keras')
                 i0 = 11
@@ -78,7 +79,7 @@ while i <= 210000:
             
     if i >= 240:
         #### -> Predição da Rede Neural ##############
-        y_pred, y_prob = Modelos.prever(arrayodd, threshold=0.7)  # array1 com no mínimo 120 elementos
+        y_pred, y_prob = models.predict(arrayodd)  # array1 com no mínimo 120 elementos
         order = 1 - y_prob
         if order >= 0.5:
             resultado = 1

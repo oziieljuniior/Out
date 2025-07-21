@@ -30,7 +30,7 @@ class AjustesOdds:
             if alavanca == True:
                 odd = float(data['Entrada'][i].replace(",",'.'))
             else:
-                odd = data['Entrada'][i] 
+                odd = data['Odd'][i] 
 
             if odd == 0:
                 odd = 1
@@ -208,7 +208,7 @@ class AjustesOdds:
 
         #array1normal
         array1 = np.clip(np.array(array1, dtype=np.float32), 1.0, 6.0).tolist()
-        matriznormal = self.matriz(60, array1)
+        matriznormal = self.matriz(120, array1)
         ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
         arraymnormal, arraydpnormal, arrayanormal, arraycnormal = [], [], [], []
         for i in range(matriznormal.shape[0]):
@@ -238,7 +238,7 @@ class AjustesOdds:
                 array1marjorado.append(4.0)
             else:
                 array1marjorado.append(array1[i])
-        matrizmarjorado = self.matriz(60, array1marjorado)
+        matrizmarjorado = self.matriz(120, array1marjorado)
         ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
         arraymmarjorado, arraydpmarjorado, arrayamarjorado, arraycmarjorado = [], [], [], []
         for i in range(matrizmarjorado.shape[0]):
@@ -264,7 +264,7 @@ class AjustesOdds:
         for odd in array1:
             value1, value2 = self.dual_fuzzy_classification_invertida(odd)
             array1fuzzy.append(value1), array1fcontinuo.append(value2)
-        matrizfuzzy = self.matriz(60, array1fuzzy)
+        matrizfuzzy = self.matriz(120, array1fuzzy)
         ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
         arraymfuzzy, arraydpfuzzy, arrayafuzzy, arraycfuzzy = [], [], [], []
         for i in range(matrizfuzzy.shape[0]):
@@ -286,7 +286,7 @@ class AjustesOdds:
         #print(f'Matriz fuzzy: {x3.shape}')
 
         # Continuação array fuzzy contínuo
-        matrizfcontinuo = self.matriz(60, array1fcontinuo)
+        matrizfcontinuo = self.matriz(120, array1fcontinuo)
         ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
         arraymfcontinuo, arraydpfcontinuo, arrayafcontinuo, arraycfcontinuo = [], [], [], []
         for i in range(matrizfcontinuo.shape[0]):
@@ -309,92 +309,93 @@ class AjustesOdds:
 
         #array1binario1
         array1binario0 = [0 if odd >= 3 else 1 for odd in array1]
-        matrizbinario0 = self.matriz(60, array1binario0)
+        matrizbinario0 = self.matriz(120, array1binario0)
 
         x5 = self.corteArrayBinario(matrizbinario0)
         #print(f'Matriz binario1: {x5.shape}')
         
         #array1binario1
         array1binario1 = [0 if odd >= 2 else 1 for odd in array1]
-        matrizbinario1 = self.matriz(60, array1binario1)
+        matrizbinario1 = self.matriz(120, array1binario1)
 
         x6 = self.corteArrayBinario(matrizbinario1)
         #print(f'Matriz binario1: {x6.shape}')
         
         #array1binario2
         array1binario2 = [0 if odd >= 4 else 1 for odd in array1]
-        matrizbinario2 = self.matriz(60, array1binario2)
+        matrizbinario2 = self.matriz(120, array1binario2)
 
         x7 = self.corteArrayBinario(matrizbinario2)
         #print(f'Matriz binario2: {x7.shape}')
         
         #array1binario3
         array1binario3 = [0 if odd >= 5 else 1 for odd in array1]
-        matrizbinario3 = self.matriz(60, array1binario3)
+        matrizbinario3 = self.matriz(120, array1binario3)
 
         x8 = self.corteArrayBinario(matrizbinario3)
         #print(f'Matriz binario2: {x8.shape}')
         
         #array1binario4
         array1binario4 = [0 if odd >= 1.5 else 1 for odd in array1]
-        matrizbinario4 = self.matriz(60, array1binario4)
+        matrizbinario4 = self.matriz(120, array1binario4)
 
         x9 = self.corteArrayBinario(matrizbinario4)
         #print(f'Matriz binario3: {x9.shape}')
 
         #array1binario5
         array1binario5 = [0 if odd >= 1.75 else 1 for odd in array1]
-        matrizbinario5 = self.matriz(60, array1binario5)
+        matrizbinario5 = self.matriz(120, array1binario5)
 
         x10 = self.corteArrayBinario(matrizbinario5)
         #print(f'Matriz binario3: {x9.shape}')
 
         #array1binario6
         array1binario6 = [0 if odd >= 2.25 else 1 for odd in array1]
-        matrizbinario6 = self.matriz(60, array1binario6)
+        matrizbinario6 = self.matriz(120, array1binario6)
 
         x11 = self.corteArrayBinario(matrizbinario6)
         #print(f'Matriz binario3: {x9.shape}')
 
         #array1binario7
         array1binario7 = [0 if odd >= 2.5 else 1 for odd in array1]
-        matrizbinario7 = self.matriz(60, array1binario7)
+        matrizbinario7 = self.matriz(120, array1binario7)
 
         x12 = self.corteArrayBinario(matrizbinario7)
         #print(f'Matriz binario3: {x9.shape}')
 
         #array1binario8
         array1binario8= [0 if odd >= 2.75 else 1 for odd in array1]
-        matrizbinario8 = self.matriz(60, array1binario8)
+        matrizbinario8 = self.matriz(120, array1binario8)
 
         x13 = self.corteArrayBinario(matrizbinario8)
         #print(f'Matriz binario3: {x9.shape}')
 
         #array1binario9
         array1binario9= [0 if odd >= 1.25 else 1 for odd in array1]
-        matrizbinario9 = self.matriz(60, array1binario9)
+        matrizbinario9 = self.matriz(120, array1binario9)
 
         x14 = self.corteArrayBinario(matrizbinario9)
         #print(f'Matriz binario3: {x9.shape}')
 
         #array1binario10
         array1binario10= [0 if odd >= 1.4 else 1 for odd in array1]
-        matrizbinario10 = self.matriz(60, array1binario10)
+        matrizbinario10 = self.matriz(120, array1binario10)
 
         x15 = self.corteArrayBinario(matrizbinario10)
         #print(f'Matriz binario3: {x9.shape}')
 
         #array1binario11
         array1binario11 = [0 if odd >= 1.6 else 1 for odd in array1]
-        matrizbinario11 = self.matriz(60, array1binario11)
+        matrizbinario11 = self.matriz(120, array1binario11)
 
         x16 = self.corteArrayBinario(matrizbinario11)
         #print(f'Matriz binario3: {x9.shape}')
         
+        
         matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16), axis=1)
 
         array1binario1 = [0 if odd >= 3 else 1 for odd in array1]
-        matrizbinario1 = self.matriz(60, array1binario1)
+        matrizbinario1 = self.matriz(120, array1binario1)
         
         matrizy_final = np.array(matrizbinario1[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario1 como y
 
@@ -403,16 +404,16 @@ class AjustesOdds:
     def transformar_entrada_predicao(self, array1):
         """
         Prepara a estrutura de entrada para predição com .predict().
-        Assume que array1 contém as últimas 60 entradas (59 anteriores + 1 atual).
+        Assume que array1 contém as últimas 120 entradas (119 anteriores + 1 atual).
         
         Returns:
             np.ndarray: Array com shape (1, n_features) pronto para model.predict().
         """
-        if len(array1) < 60:
-            raise ValueError("É necessário fornecer ao menos 60 entradas para predição.")
+        if len(array1) < 120:
+            raise ValueError("É necessário fornecer ao menos 120 entradas para predição.")
 
         # Usa apenas os últimos 120 valores
-        array1 = array1[-59:]
+        array1 = array1[-119:]
 
         #array1normal
         array1 = np.clip(np.array(array1, dtype=np.float32), 1.0, 6.0).tolist()
@@ -632,6 +633,7 @@ class AjustesOdds:
         # Concatenar as matrizes de características normais
         x16 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
         #print(f'Matriz binario: {x4.shape}')
+        
 
         matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16), axis=0)
         

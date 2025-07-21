@@ -17,7 +17,25 @@ import seaborn as sns
 
 import time
 
-    
+# --- 1) definir antes do while ---------------------------------
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+
+logreg = make_pipeline(
+    LogisticRegression(
+        max_iter=3000,             # começa “raso” para convergir rápido
+        warm_start=True,   
+        C=1.0,
+        class_weight="balanced",
+        random_state=42,
+        n_jobs=-1
+    )
+)
+
+# ---------------------------------------------------------------
+
+
 ### Carregar data
 #/content/drive/MyDrive/Out/dados/odds_200k.csv
 #/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv
@@ -73,11 +91,12 @@ while i <= 210000:
 
         # 2. Divisão treino/teste
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        logreg.fit(X_train, y_train)     # treinamento inicial
 
         # 3. Modelo linear base (regressão logística)
-        logreg = LogisticRegression(max_iter=3000, C=1.0,class_weight='balanced', random_state=42)
+        #logreg = LogisticRegression(max_iter=3000, C=1.0,class_weight='balanced', random_state=42)
         
-        logreg.fit(X_train, y_train)
+        #logreg.fit(X_train, y_train)
         y_pred_lr = logreg.predict(X_test)
         
         report = classification_report(y_test, y_pred_lr, output_dict=True)
