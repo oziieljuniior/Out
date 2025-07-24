@@ -207,7 +207,9 @@ class AjustesOdds:
         """
 
         #array1normal
+        array2 = np.array(array1, dtype=np.float32)  # Converte para lista se necessário
         array1 = np.clip(np.array(array1, dtype=np.float32), 1.0, 6.0).tolist()
+        print(len(array1), len(array2))
         matriznormal = self.matriz(120, array1)
         ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
         arraymnormal, arraydpnormal, arrayanormal, arraycnormal = [], [], [], []
@@ -391,8 +393,32 @@ class AjustesOdds:
         x16 = self.corteArrayBinario(matrizbinario11)
         #print(f'Matriz binario3: {x9.shape}')
         
+        arraydiretor1 = []
+        diretor = 1
+        for i in range(len(array2)):
+            if array2[i] > 10:
+                if diretor == 1:
+                    diretor = -1
+                else:
+                    diretor = 1
+            arraydiretor1.append(diretor)
+        matrizdiretor1 = self.matriz(120, arraydiretor1)
+        x17 = matrizdiretor1[:,:-1]
         
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16), axis=1)
+        arraydiretor2 = []
+        diretor1 = 1
+        for i in range(len(array2)):
+            if array2[i] == 1:
+                if diretor1 == 1:
+                    diretor1 = -1
+                else:
+                    diretor1 = 1
+            arraydiretor2.append(diretor1)
+        matrizdiretor2 = self.matriz(120, arraydiretor2)
+        x18 = matrizdiretor2[:,:-1]
+        
+        
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18), axis=1)
 
         array1binario1 = [0 if odd >= 3 else 1 for odd in array1]
         matrizbinario1 = self.matriz(120, array1binario1)
@@ -414,6 +440,7 @@ class AjustesOdds:
 
         # Usa apenas os últimos 120 valores
         array1 = array1[-119:]
+        array2 = array1
 
         #array1normal
         array1 = np.clip(np.array(array1, dtype=np.float32), 1.0, 6.0).tolist()
@@ -634,8 +661,30 @@ class AjustesOdds:
         x16 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
         #print(f'Matriz binario: {x4.shape}')
         
-
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16), axis=0)
+        arraydiretor = []
+        diretor1 = 1
+        for i in range(len(array2)):
+            if array2[i] >= 10:
+                if diretor1 == 1:
+                    diretor1 = -1
+                else:
+                    diretor1 = 1
+            arraydiretor.append(diretor1)
+        x17 = arraydiretor
+        
+        arraydiretor2 = []
+        diretor2 = 1
+        for i in range(len(array2)):
+            if array2[i] == 1:
+                if diretor2 == 1:
+                    diretor2 = -1
+                else:
+                    diretor2 = 1
+            arraydiretor2.append(diretor2)
+        x18 = arraydiretor2
+        
+        
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18), axis=0)
         
         # Retorna somente a última linha (única janela possível)
         return matrizX_final.reshape(1, -1)
