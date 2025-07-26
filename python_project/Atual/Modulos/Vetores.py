@@ -170,9 +170,9 @@ class AjustesOdds:
         for i in range(matrizbinario1.shape[0]):
             media = np.mean(matrizbinario1[i,:-1])
             desvio = np.std(matrizbinario1[i,:-1], ddof=1)  # ddof=1 para amostra
-            probas = np.bincount(matrizbinario1[i,:-1].astype(int), minlength=10)
-            probas = probas / probas.sum()
-            entropia = entropy(probas, base=2)
+            counts = np.bincount(matrizbinario1[i,:-1].astype(int), minlength=2)
+            probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+            entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
             skewness = skew(matrizbinario1[i,:-1])
             curtose = kurtosis(matrizbinario1[i,:-1])
 
@@ -398,7 +398,7 @@ class AjustesOdds:
         for i in range(len(array2)):
             if array2[i] > 10:
                 if diretor == 1:
-                    diretor = -1
+                    diretor = 0
                 else:
                     diretor = 1
             arraydiretor1.append(diretor)
@@ -410,15 +410,27 @@ class AjustesOdds:
         for i in range(len(array2)):
             if array2[i] == 1:
                 if diretor1 == 1:
-                    diretor1 = -1
+                    diretor1 = 0
                 else:
                     diretor1 = 1
             arraydiretor2.append(diretor1)
         matrizdiretor2 = self.matriz(120, arraydiretor2)
         x18 = matrizdiretor2[:,:-1]
         
+        arraydiretor3 = []
+        diretor2 = 1
+        for i in range(len(array2)):
+            if array2[i] == 3:
+                if diretor2 == 1:
+                    diretor2 = 0
+                else:
+                    diretor2 = 1
+            arraydiretor3.append(diretor2)
+        matrizdiretor3 = self.matriz(120, arraydiretor3)
+        x19 = matrizdiretor3[:,:-1]
         
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18), axis=1)
+    
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19), axis=1)
 
         array1binario1 = [0 if odd >= 3 else 1 for odd in array1]
         matrizbinario1 = self.matriz(120, array1binario1)
@@ -497,9 +509,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 1.5 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -511,9 +523,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 2 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -525,9 +537,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 3 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -539,9 +551,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 4 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -553,9 +565,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 5 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -567,9 +579,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 1.75 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -581,9 +593,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 2.25 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -595,9 +607,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 2.75 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -609,9 +621,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 2.5 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -623,9 +635,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 1.25 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -637,9 +649,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 1.4 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -651,9 +663,9 @@ class AjustesOdds:
         array1binario = [0 if odd >= 1.6 else 1 for odd in array1]
         media = np.mean(array1binario)
         desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        probas = np.bincount(array1binario, minlength=10)
-        probas = probas / probas.sum()
-        entropia = entropy(probas, base=2)
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
         skewness = skew(array1binario)
         curtose = kurtosis(array1binario)
 
@@ -661,30 +673,45 @@ class AjustesOdds:
         x16 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
         #print(f'Matriz binario: {x4.shape}')
         
-        arraydiretor = []
+        arraydiretor, arraydflipped = [], [0]
         diretor1 = 1
         for i in range(len(array2)):
             if array2[i] >= 10:
                 if diretor1 == 1:
-                    diretor1 = -1
+                    diretor1 = 0
                 else:
                     diretor1 = 1
             arraydiretor.append(diretor1)
+        # Concatenar as matrizes de características normais
         x17 = arraydiretor
+        
         
         arraydiretor2 = []
         diretor2 = 1
         for i in range(len(array2)):
             if array2[i] == 1:
                 if diretor2 == 1:
-                    diretor2 = -1
+                    diretor2 = 0
                 else:
                     diretor2 = 1
             arraydiretor2.append(diretor2)
+        # Concatenar as matrizes de características normais
         x18 = arraydiretor2
         
+        arraydiretor3 = []
+        diretor3 = 1
+        for i in range(len(array2)):
+            if array2[i] == 1:
+                if diretor3 == 1:
+                    diretor3 = 0
+                else:
+                    diretor3 = 1
+            arraydiretor3.append(diretor3)
+        # Concatenar as matrizes de características normais
+        x19 = arraydiretor3
         
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18), axis=0)
+        
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19), axis=0)
         
         # Retorna somente a última linha (única janela possível)
         return matrizX_final.reshape(1, -1)
