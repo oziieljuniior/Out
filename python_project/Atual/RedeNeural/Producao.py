@@ -4,6 +4,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from Modulos.Placares import Placar # Importando a classe Placar do módulo Placares
 from Modulos.Vetores import AjustesOdds
+from Modulos.RedeNeural import Modelos
 
 import pandas as pd
 import numpy as np
@@ -66,6 +67,8 @@ df_acuracia = pd.DataFrame(columns=["Iteração", "Precisão Geral", "Precisão 
 datasave = pd.DataFrame({'Modelo N': [], 'Reportes Modelos': []})
 placar = Placar()  # Inicializando o placar
 vetores = AjustesOdds(array1)  # Inicializando a classe de ajustes de odds
+Modelos = Modelos()
+
 
 ### Produção
 while i <= 210000:
@@ -81,7 +84,7 @@ while i <= 210000:
 ######################################################
 
 ######## -> Placar ###################################      
-    if i >= 24001:
+    if i >= 241:
         print(24*"-'-")
         array_placar = placar.atualizar_geral(i, resultado, odd)
         print(f'Precisão Geral: {array_placar["Precisao_Geral"]:.2f}% \nPrecisão Modelo: {array_placar["Precisao_Sintetica"]:.2f}%')
@@ -104,7 +107,7 @@ while i <= 210000:
 ######################################################
 
 ######## -> Treinamento da Modelo ###############
-    if i >= 24000 and (i % 120) == 0:
+    if i >= 240 and (i % 120) == 0:
         print('***'*20)
         ##### -> Vetores de Entradas #################
         print(f'Carregando dados ...')
@@ -120,43 +123,17 @@ while i <= 210000:
 
         # 2. Divisão treino/teste
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        logreg.fit(X_train, y_train)     # treinamento inicial
-
-        # 3. Modelo linear base (regressão logística)
-        #logreg = LogisticRegression(max_iter=3000, C=1.0,class_weight='balanced', random_state=42)
+        logreg, dicionario = Modelos.treinar_ou_retreinar(X_train, y_train)
         
-        #logreg.fit(X_train, y_train)
-        y_pred_lr = logreg.predict(X_test)
-        
-        report = classification_report(y_test, y_pred_lr, output_dict=True)
-
-        print("Modelo Linear - Regressão Logística")
-        print(classification_report(y_test, y_pred_lr))
-        df_metricas_treino.loc[len(df_metricas_treino)] = {
-            "rodada": (i // 600) - 3,  # Armazenando a rodada
-            "i": i,
-            "modelo": "Regressão Logística",
-            "accuracy": report["accuracy"],
-            "precision": report["weighted avg"]["precision"],
-            "recall": report["weighted avg"]["recall"],
-            "f1_score": report["weighted avg"]["f1-score"],
-            "precision 0": report["0"]["precision"],
-            "precision 1": report["1"]["precision"],
-            "recall 0": report["0"]["recall"],
-            "recall 1": report["1"]["recall"],
-            "f1_score 0": report["0"]["f1-score"],
-            "f1_score 1": report["1"]["f1-score"]
-        }
-    
         ##############################################
 ######################################################
             
-    if i >= 24000:
+    if i >= 240:
         #### -> Predição da Modelo ##############
         print(24*'*-')
-        Apredicao = vetores.transformar_entrada_predicao(arrayodd)
+        #Apredicao = vetores.transformar_entrada_predicao(arrayodd)
         #print(f'Predição: {type(Apredicao)} | {len(Apredicao)}')
-        res = logreg.predict(Apredicao)
+        res = Modelos.prever(arrayodd)
         if res[0] == 1:
             resultado = 0
         else:
@@ -169,7 +146,6 @@ while i <= 210000:
     i += 1
 
 
-df_metricas_treino.to_csv('metricas_treino.csv', index=False)
 df_acuracia.to_csv('acuracia.csv', index=False)
 
 plt.ioff()

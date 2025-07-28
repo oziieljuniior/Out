@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import skfuzzy as fuzz
 from scipy.stats import entropy,skew, kurtosis
+import bisect
            
 
 class AjustesOdds:
@@ -393,44 +394,47 @@ class AjustesOdds:
         x16 = self.corteArrayBinario(matrizbinario11)
         #print(f'Matriz binario3: {x9.shape}')
         
-        arraydiretor1 = []
-        diretor = 1
+        arraydiretor1, arraydcount = [], []
+        diretor, count = 1, 0
         for i in range(len(array2)):
             if array2[i] > 10:
+                count = -1
                 if diretor == 1:
                     diretor = 0
                 else:
                     diretor = 1
-            arraydiretor1.append(diretor)
-        matrizdiretor1 = self.matriz(120, arraydiretor1)
+            count += 1
+            arraydiretor1.append(diretor), arraydcount.append(count)
+        matrizdiretor1, matrizdcount = self.matriz(120, arraydiretor1), self.matriz(120, arraydcount)
         x17 = matrizdiretor1[:,:-1]
-        
-        arraydiretor2 = []
-        diretor1 = 1
+        x18 = matrizdcount[:,:-1]
+                
+        arraydiretor2, arraydcount2 = [], []
+        diretor1, count2 = 1, 0
         for i in range(len(array2)):
-            if array2[i] == 1:
+            if array2[i] <= 1.01:
+                count2 = -1
                 if diretor1 == 1:
                     diretor1 = 0
                 else:
                     diretor1 = 1
-            arraydiretor2.append(diretor1)
-        matrizdiretor2 = self.matriz(120, arraydiretor2)
-        x18 = matrizdiretor2[:,:-1]
+            count2 += 1
+            arraydiretor2.append(diretor1), arraydcount2.append(count2)
+        matrizdiretor2, matrizdcount2 = self.matriz(120, arraydiretor2), self.matriz(120, arraydcount2)
+        x19 = matrizdiretor2[:,:-1]
+        x20 = matrizdcount2[:,:-1]
         
-        arraydiretor3 = []
-        diretor2 = 1
-        for i in range(len(array2)):
-            if array2[i] == 3:
-                if diretor2 == 1:
-                    diretor2 = 0
-                else:
-                    diretor2 = 1
-            arraydiretor3.append(diretor2)
-        matrizdiretor3 = self.matriz(120, arraydiretor3)
-        x19 = matrizdiretor3[:,:-1]
-        
-    
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19), axis=1)
+
+        # Limiares definidos em ordem crescente
+        limiares = [1.05, 1.15, 1.30, 1.50, 1.75, 2.12, 2.70, 3.70, 5.88, 20, 50]
+
+        array111 = [bisect.bisect(limiares, odd) for odd in array2]
+        print(len(array111))
+        matriz111 = self.matriz(120, array111)
+        x21 = matriz111[:,:-1]                
+               
+
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21), axis=1)
 
         array1binario1 = [0 if odd >= 3 else 1 for odd in array1]
         matrizbinario1 = self.matriz(120, array1binario1)
@@ -673,45 +677,44 @@ class AjustesOdds:
         x16 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
         #print(f'Matriz binario: {x4.shape}')
         
-        arraydiretor, arraydflipped = [], [0]
-        diretor1 = 1
+        arraydiretor, arraydcount = [], []
+        diretor1, count = 1, 0
         for i in range(len(array2)):
-            if array2[i] >= 10:
+            if array2[i] > 10:
+                count = -1
                 if diretor1 == 1:
                     diretor1 = 0
                 else:
                     diretor1 = 1
-            arraydiretor.append(diretor1)
-        # Concatenar as matrizes de características normais
+            count += 1
+            arraydiretor.append(diretor1), arraydcount.append(count)
         x17 = arraydiretor
+        x18 = arraydcount
         
-        
-        arraydiretor2 = []
-        diretor2 = 1
+        arraydiretor2, arraydcount2 = [], []
+        diretor2, count2 = 1, 0
         for i in range(len(array2)):
-            if array2[i] == 1:
+            if array2[i] <= 1.01:
+                count2 = -1
                 if diretor2 == 1:
                     diretor2 = 0
                 else:
                     diretor2 = 1
-            arraydiretor2.append(diretor2)
-        # Concatenar as matrizes de características normais
-        x18 = arraydiretor2
+            count2 += 1
+            arraydiretor2.append(diretor2), arraydcount2.append(diretor2)
+        x19 = arraydiretor2
+        x20 = arraydcount2
         
-        arraydiretor3 = []
-        diretor3 = 1
-        for i in range(len(array2)):
-            if array2[i] == 1:
-                if diretor3 == 1:
-                    diretor3 = 0
-                else:
-                    diretor3 = 1
-            arraydiretor3.append(diretor3)
-        # Concatenar as matrizes de características normais
-        x19 = arraydiretor3
+        # Limiares definidos em ordem crescente
+        limiares = [1.05, 1.15, 1.30, 1.50, 1.75, 2.12, 2.70, 3.70, 5.88, 20, 50]
+
+        array111 = [bisect.bisect(limiares, odd) for odd in array2]
+        print(len(array111))
+        x21 = array111                
         
         
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19), axis=0)
+                
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21), axis=0)
         
         # Retorna somente a última linha (única janela possível)
         return matrizX_final.reshape(1, -1)

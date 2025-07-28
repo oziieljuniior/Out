@@ -1,3 +1,8 @@
+'''
+Esse código é antigo, versão sem atualizar os dados
+Organizando o código:
+* Refatorar o módulo vetores
+'''
 # Libs
 import sys
 import os
@@ -24,14 +29,25 @@ from sklearn.linear_model import LogisticRegression
 
 logreg = make_pipeline(
     LogisticRegression(
-        max_iter=3000,             # começa “raso” para convergir rápido
+        max_iter=15000,             # começa “raso” para convergir rápido
         warm_start=True,   
-        C=1.0,
-        class_weight="balanced",
+        #C=1.0,
+        #class_weight="balanced",
         random_state=42,
         n_jobs=-1
     )
 )
+
+import matplotlib.pyplot as plt
+plt.ion()                       # ativa interação
+fig, ax = plt.subplots()
+ax.set_xlabel("Iteração")
+ax.set_ylabel("Precisão (%)")
+ax.set_ylim(0, 100)
+line_geral, = ax.plot([], [], label="Precisão Geral")
+line_modelo, = ax.plot([], [], label="Precisão Modelo")
+ax.legend(loc="lower right")
+x_data, y_geral, y_modelo = [], [], []
 
 # ---------------------------------------------------------------
 
@@ -49,6 +65,7 @@ inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> 
 ## Variáveis para salvar em um dataframe
 data_matriz_float, data_matriz_int, array_geral_float, historico_janelas = [], [], [], [] 
 df_metricas_treino = pd.DataFrame(columns=["rodada", "modelo", "accuracy", "precision", "recall", "f1_score", "precision 0", "precision 1", "recall 0", "recall 1", "f1_score 0", "f1_score 1"])
+df_acuracia = pd.DataFrame(columns=["Iteração", "Precisão Geral", "Precisão Modelo"])
 datasave = pd.DataFrame({'Modelo N': [], 'Reportes Modelos': []})
 placar = Placar()  # Inicializando o placar
 vetores = AjustesOdds(array1)  # Inicializando a classe de ajustes de odds
@@ -67,15 +84,30 @@ while i <= 210000:
 ######################################################
 
 ######## -> Placar ###################################      
-    if i >= 241:
+    if i >= 4081:
         print(24*"-'-")
         array_placar = placar.atualizar_geral(i, resultado, odd)
-        print(f'Precisão Geral: {array_placar["Precisao_Geral"]:.2f}% \nPrecisão Rede Neural: {array_placar["Precisao_Sintetica"]:.2f}%')
+        print(f'Precisão Geral: {array_placar["Precisao_Geral"]:.2f}% \nPrecisão Modelo: {array_placar["Precisao_Sintetica"]:.2f}%')
+        x_data.append(i)                                   # ou rodada, se preferir
+        y_geral.append(array_placar["Precisao_Geral"])
+        y_modelo.append(array_placar["Precisao_Sintetica"])
+
+        line_geral.set_data(x_data, y_geral)
+        line_modelo.set_data(x_data, y_modelo)
+        ax.relim()                 # recalcula limites
+        ax.autoscale_view()        # aplica limites
+        plt.pause(0.01)            # deixa o evento de GUI atualizar
+
+        df_acuracia.loc[len(df_acuracia)] = {
+            "Iteração": i,
+            "Precisão Geral": array_placar["Precisao_Geral"],
+            "Precisão Modelo": array_placar["Precisao_Sintetica"]
+        }
         print(24*"-'-")
 ######################################################
 
-######## -> Treinamento da Rede Neural ###############
-    if i >= 240 and (i % 60) == 0:
+######## -> Treinamento da Modelo ###############
+    if i >= 4080 and (i % 120) == 0:
         print('***'*20)
         ##### -> Vetores de Entradas #################
         print(f'Carregando dados ...')
@@ -104,7 +136,8 @@ while i <= 210000:
         print("Modelo Linear - Regressão Logística")
         print(classification_report(y_test, y_pred_lr))
         df_metricas_treino.loc[len(df_metricas_treino)] = {
-            "rodada": (i // 60) - 3,  # Armazenando a rodada
+            "rodada": (i // 120) - 3,  # Armazenando a rodada
+            "i": i,
             "modelo": "Regressão Logística",
             "accuracy": report["accuracy"],
             "precision": report["weighted avg"]["precision"],
@@ -121,8 +154,8 @@ while i <= 210000:
         ##############################################
 ######################################################
             
-    if i >= 240:
-        #### -> Predição da Rede Neural ##############
+    if i >= 4080:
+        #### -> Predição da Modelo ##############
         print(24*'*-')
         Apredicao = vetores.transformar_entrada_predicao(arrayodd)
         #print(f'Predição: {type(Apredicao)} | {len(Apredicao)}')
@@ -140,3 +173,8 @@ while i <= 210000:
 
 
 df_metricas_treino.to_csv('metricas_treino.csv', index=False)
+df_acuracia.to_csv('acuracia.csv', index=False)
+
+plt.ioff()
+plt.savefig("evolucao_precisao.png", dpi=150)
+plt.show()

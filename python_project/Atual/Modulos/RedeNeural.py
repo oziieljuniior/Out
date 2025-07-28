@@ -1,5 +1,8 @@
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 import sys
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -20,6 +23,7 @@ from tensorflow.keras.saving import register_keras_serializable
 
 class Modelos:
     @staticmethod
+    @register_keras_serializable()
     def focal_loss(gamma=2., alpha=0.1):
         def focal_loss_fixed(y_true, y_pred):
             epsilon = tf.keras.backend.epsilon()
@@ -50,7 +54,7 @@ class Modelos:
 
         if not reset and os.path.exists(modelo_path):
             print("🔄 Carregando modelo existente...")
-            model = keras.models.load_model(modelo_path, custom_objects={'F1Score': Modelos.F1Score()})
+            model = keras.models.load_model(modelo_path, custom_objects={"focal_loss_fixed": Modelos.focal_loss(alpha=0.1, gamma=2.0)})
         else:
             print("🚀 Criando novo modelo...")
             model = keras.Sequential([
@@ -100,7 +104,7 @@ class Modelos:
         print(f"\n🔍 Avaliação:")
         print(f"Loss: {score[0]:.4f}, Accuracy: {score[1]:.4f}, Precision: {score[2]:.4f}, Recall: {score[3]:.4f}, F1: {f1:.4f}")
 
-        model.save(modelo_path)
+        model.save(modelo_path, include_optimizer=False)
         print(f"✅ Modelo salvo em {modelo_path}")
 
         return model, {
@@ -118,7 +122,7 @@ class Modelos:
         if not os.path.exists(modelo_path):
             raise FileNotFoundError(f"Modelo não encontrado em: {modelo_path}")
 
-        model = keras.models.load_model(modelo_path)
+        model = keras.models.load_model(modelo_path, custom_objects={"focal_loss_fixed": Modelos.focal_loss(alpha=0.1, gamma=2.0)})
         ajustador = AjustesOdds(array1)
         X_pred = ajustador.transformar_entrada_predicao(array1)
         y_proba = model.predict(X_pred)[0][1]
