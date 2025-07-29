@@ -94,7 +94,7 @@ while i <= 210000:
         ax.relim()                 # recalcula limites
         ax.autoscale_view()        # aplica limites
         plt.pause(0.01)            # deixa o evento de GUI atualizar
-
+        
         df_acuracia.loc[len(df_acuracia)] = {
             "Iteração": i,
             "Precisão Geral": array_placar["Precisao_Geral"],

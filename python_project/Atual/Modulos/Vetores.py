@@ -321,7 +321,7 @@ class AjustesOdds:
         x5 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
         return x5
         
-    def binarizar_array(array, threshold):
+    def binarizar_array(self, array, threshold):
         return [0 if val >= threshold else 1 for val in array]
 
     def processa_direcao(self, array, limite, inverter=False):
