@@ -191,8 +191,48 @@ class AjustesOdds:
         x6 = np.concatenate((matrizbinario1[:,:-1], matrizmbinario1, matrizdpbinario1, matrizebinario1, matrizabinario1, matrizcbinario1), axis=1)
 
         return x6
-        
+    
+    def corteArrayFloat(self, array):
+        matriznormal = array
+        arraymnormal, arraydpnormal, arrayanormal, arraycnormal = [], [], [], []
+        for i in range(matriznormal.shape[0]):
+            media = np.mean(matriznormal[i,:-1])
+            desvio = np.std(matriznormal[i,:-1], ddof=1)  # ddof=1 para amostra
+            skewness = skew(matriznormal[i,:-1])
+            curtose = kurtosis(matriznormal[i,:-1])
 
+            arraycnormal.append(curtose)
+            arrayanormal.append(skewness)   
+            arraydpnormal.append(desvio)
+            arraymnormal.append(media)
+        matrizmnormal = np.array(arraymnormal).reshape(-1,1) #Matriz Media valores 
+        matrizdpnormal = np.array(arraydpnormal).reshape(-1,1) #Matriz Desvio Padrão valores
+        matrizanormal = np.array(arrayanormal).reshape(-1,1) #Matriz Assimetria valores
+        matrizcnormal = np.array(arraycnormal).reshape(-1,1) #Matriz Curtose valores
+        # Concatenar as matrizes de características normais
+        x1 = np.concatenate((matriznormal[:,:-1], matrizmnormal, matrizdpnormal, matrizanormal, matrizcnormal), axis=1)
+        return x1
+
+    def gerar_matriz_float(self, array):
+        return self.corteArrayFloat(self.matriz(120, array))
+
+    def gerar_matriz_binaria(self, array, threshold):
+        binarizado = [0 if val >= threshold else 1 for val in array]
+        return self.corteArrayBinario(self.matriz(120, binarizado))
+
+    def gerar_direcionalidade(self, array, limite, inverter=False):
+        direcao, contagem = [], []
+        flag, count = 1, 0
+        for val in array:
+            if (val > limite and not inverter) or (val <= limite and inverter):
+                count = -1
+                flag ^= 1  # alterna entre 0 e 1
+            count += 1
+            direcao.append(flag)
+            contagem.append(count if not inverter else count)
+        matriz_direcao = self.matriz(120, direcao)[:, :-1]
+        matriz_contagem = self.matriz(120, contagem)[:, :-1]
+        return matriz_direcao, matriz_contagem
 
     def tranforsmar_final_matriz(self, array1):
         """
@@ -211,219 +251,29 @@ class AjustesOdds:
         array2 = np.array(array1, dtype=np.float32)  # Converte para lista se necessário
         array1 = np.clip(np.array(array1, dtype=np.float32), 1.0, 6.0).tolist()
         print(len(array1), len(array2))
-        matriznormal = self.matriz(120, array1)
-        ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
-        arraymnormal, arraydpnormal, arrayanormal, arraycnormal = [], [], [], []
-        for i in range(matriznormal.shape[0]):
-            media = np.mean(matriznormal[i,:-1])
-            desvio = np.std(matriznormal[i,:-1], ddof=1)  # ddof=1 para amostra
-            skewness = skew(matriznormal[i,:-1])
-            curtose = kurtosis(matriznormal[i,:-1])
-
-            arraycnormal.append(curtose)
-            arrayanormal.append(skewness)   
-            arraydpnormal.append(desvio)
-            arraymnormal.append(media)
-        matrizmnormal = np.array(arraymnormal).reshape(-1,1) #Matriz Media valores 
-        matrizdpnormal = np.array(arraydpnormal).reshape(-1,1) #Matriz Desvio Padrão valores
-        matrizanormal = np.array(arrayanormal).reshape(-1,1) #Matriz Assimetria valores
-        matrizcnormal = np.array(arraycnormal).reshape(-1,1) #Matriz Curtose valores
-        # Concatenar as matrizes de características normais
-        x1 = np.concatenate((matriznormal[:,:-1], matrizmnormal, matrizdpnormal, matrizanormal, matrizcnormal), axis=1)
-        #print(f'Matriz normal: {x1.shape}')
-
-        #array1marjorado
-        array1marjorado = []
-        for i in range(len(array1)):
-            if array1[i] <= 2:
-                array1marjorado.append(2.0)
-            elif array1[i] >= 4:
-                array1marjorado.append(4.0)
-            else:
-                array1marjorado.append(array1[i])
-        matrizmarjorado = self.matriz(120, array1marjorado)
-        ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
-        arraymmarjorado, arraydpmarjorado, arrayamarjorado, arraycmarjorado = [], [], [], []
-        for i in range(matrizmarjorado.shape[0]):
-            media = np.mean(matrizmarjorado[i,:-1])
-            desvio = np.std(matrizmarjorado[i,:-1], ddof=1)  # ddof=1 para amostra
-            skewness = skew(matrizmarjorado[i,:-1])
-            curtose = kurtosis(matrizmarjorado[i,:-1])
-
-            arraycmarjorado.append(curtose)
-            arrayamarjorado.append(skewness)   
-            arraydpmarjorado.append(desvio)
-            arraymmarjorado.append(media)
-        matrizmmarjorado = np.array(arraymmarjorado).reshape(-1,1) #Matriz Media valores 
-        matrizdpmarjorado = np.array(arraydpmarjorado).reshape(-1,1) #Matriz Desvio Padrão valores
-        matrizamarjorado = np.array(arrayamarjorado).reshape(-1,1) #Matriz Assimetria valores
-        matrizcmarjorado = np.array(arraycmarjorado).reshape(-1,1) #Matriz Curtose valores
-        # Concatenar as matrizes de características normais
-        x2 = np.concatenate((matrizmarjorado[:,:-1], matrizmmarjorado, matrizdpmarjorado, matrizamarjorado, matrizcmarjorado), axis=1)
-        #print(f'Matriz Marjorada: {x2.shape}')
-
-        #array1fuzzy e array1valorcontínuo fuzzyficado
-        array1fuzzy, array1fcontinuo = [], []
-        for odd in array1:
-            value1, value2 = self.dual_fuzzy_classification_invertida(odd)
-            array1fuzzy.append(value1), array1fcontinuo.append(value2)
-        matrizfuzzy = self.matriz(120, array1fuzzy)
-        ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
-        arraymfuzzy, arraydpfuzzy, arrayafuzzy, arraycfuzzy = [], [], [], []
-        for i in range(matrizfuzzy.shape[0]):
-            media = np.mean(matrizfuzzy[i,:-1])
-            desvio = np.std(matrizfuzzy[i,:-1], ddof=1)  # ddof=1 para amostra
-            skewness = skew(matrizfuzzy[i,:-1])
-            curtose = kurtosis(matrizfuzzy[i,:-1])
-
-            arraycfuzzy.append(curtose)
-            arrayafuzzy.append(skewness)   
-            arraymfuzzy.append(media)
-            arraydpfuzzy.append(desvio)
-        matrizmfuzzy = np.array(arraymfuzzy).reshape(-1,1) #Matriz Media valores fuzzy
-        matrizdpfuzzy = np.array(arraydpfuzzy).reshape(-1,1) #Matriz Desvio Padrão valores fuzzy
-        matrizafuzzy = np.array(arrayafuzzy).reshape(-1,1) #Matriz Assimetria valores
-        matrizcfuzzy = np.array(arraycfuzzy).reshape(-1,1) #Matriz Curtose valores
-        # Concatenar as matrizes de características normais
-        x3 = np.concatenate((matrizfuzzy[:,:-1], matrizmfuzzy, matrizdpfuzzy, matrizafuzzy, matrizcfuzzy), axis=1)
-        #print(f'Matriz fuzzy: {x3.shape}')
-
-        # Continuação array fuzzy contínuo
-        matrizfcontinuo = self.matriz(120, array1fcontinuo)
-        ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
-        arraymfcontinuo, arraydpfcontinuo, arrayafcontinuo, arraycfcontinuo = [], [], [], []
-        for i in range(matrizfcontinuo.shape[0]):
-            media = np.mean(matrizfcontinuo[i,:-1])
-            desvio = np.std(matrizfcontinuo[i,:-1], ddof=1)  # ddof=1 para amostra
-            skewness = skew(matrizfcontinuo[i,:-1])
-            curtose = kurtosis(matrizfcontinuo[i,:-1])
-
-            arraycfcontinuo.append(curtose)
-            arrayafcontinuo.append(skewness)   
-            arraymfcontinuo.append(media)
-            arraydpfcontinuo.append(desvio)
-        matrizmfcontinuo = np.array(arraymfcontinuo).reshape(-1,1) #Matriz Media valores fuzzy
-        matrizdpfcontinuo = np.array(arraydpfcontinuo).reshape(-1,1) #Matriz Desvio Padrão valores fuzzy
-        matrizafcontinuo = np.array(arrayafcontinuo).reshape(-1,1) #Matriz Assimetria valores
-        matrizcfcontinuo = np.array(arraycfcontinuo).reshape(-1,1) #Matriz Curtose valores
-        # Concatenar as matrizes de características normais
-        x4 = np.concatenate((matrizfcontinuo[:,:-1], matrizmfcontinuo, matrizdpfcontinuo, matrizafcontinuo, matrizcfcontinuo), axis=1)
-        #print(f'Matriz fuzzy: {x3.shape}')
-
-        #array1binario1
-        array1binario0 = [0 if odd >= 3 else 1 for odd in array1]
-        matrizbinario0 = self.matriz(120, array1binario0)
-
-        x5 = self.corteArrayBinario(matrizbinario0)
-        #print(f'Matriz binario1: {x5.shape}')
         
-        #array1binario1
-        array1binario1 = [0 if odd >= 2 else 1 for odd in array1]
-        matrizbinario1 = self.matriz(120, array1binario1)
+        # 1. Matriz normal
+        x1 = self.gerar_matriz_float(array1)
 
-        x6 = self.corteArrayBinario(matrizbinario1)
-        #print(f'Matriz binario1: {x6.shape}')
-        
-        #array1binario2
-        array1binario2 = [0 if odd >= 4 else 1 for odd in array1]
-        matrizbinario2 = self.matriz(120, array1binario2)
+        # 2. Matriz majorada
+        array_majorado = [2.0 if v <= 2 else 4.0 if v >= 4 else v for v in array1]
+        x2 = self.gerar_matriz_float(array_majorado)
 
-        x7 = self.corteArrayBinario(matrizbinario2)
-        #print(f'Matriz binario2: {x7.shape}')
-        
-        #array1binario3
-        array1binario3 = [0 if odd >= 5 else 1 for odd in array1]
-        matrizbinario3 = self.matriz(120, array1binario3)
+        # 3. Fuzzy
+        array_fuzzy, array_fcontinuo = zip(*[self.dual_fuzzy_classification_invertida(v) for v in array1])
+        x3 = self.gerar_matriz_float(array_fuzzy)
+        x4 = self.gerar_matriz_float(array_fcontinuo)
 
-        x8 = self.corteArrayBinario(matrizbinario3)
-        #print(f'Matriz binario2: {x8.shape}')
-        
-        #array1binario4
-        array1binario4 = [0 if odd >= 1.5 else 1 for odd in array1]
-        matrizbinario4 = self.matriz(120, array1binario4)
+        # 4. Binarizações múltiplas
+        thresholds = [3, 2, 4, 5, 1.5, 1.75, 2.25, 2.5, 2.75, 1.25, 1.4, 1.6]
+        binarizados = [self.gerar_matriz_binaria(array1, th) for th in thresholds]
+        x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16 = binarizados
 
-        x9 = self.corteArrayBinario(matrizbinario4)
-        #print(f'Matriz binario3: {x9.shape}')
+        # 5. Direcionalidade 1 (> 10)
+        x17, x18 = self.gerar_direcionalidade(array2, limite=10, inverter=False)
 
-        #array1binario5
-        array1binario5 = [0 if odd >= 1.75 else 1 for odd in array1]
-        matrizbinario5 = self.matriz(120, array1binario5)
-
-        x10 = self.corteArrayBinario(matrizbinario5)
-        #print(f'Matriz binario3: {x9.shape}')
-
-        #array1binario6
-        array1binario6 = [0 if odd >= 2.25 else 1 for odd in array1]
-        matrizbinario6 = self.matriz(120, array1binario6)
-
-        x11 = self.corteArrayBinario(matrizbinario6)
-        #print(f'Matriz binario3: {x9.shape}')
-
-        #array1binario7
-        array1binario7 = [0 if odd >= 2.5 else 1 for odd in array1]
-        matrizbinario7 = self.matriz(120, array1binario7)
-
-        x12 = self.corteArrayBinario(matrizbinario7)
-        #print(f'Matriz binario3: {x9.shape}')
-
-        #array1binario8
-        array1binario8= [0 if odd >= 2.75 else 1 for odd in array1]
-        matrizbinario8 = self.matriz(120, array1binario8)
-
-        x13 = self.corteArrayBinario(matrizbinario8)
-        #print(f'Matriz binario3: {x9.shape}')
-
-        #array1binario9
-        array1binario9= [0 if odd >= 1.25 else 1 for odd in array1]
-        matrizbinario9 = self.matriz(120, array1binario9)
-
-        x14 = self.corteArrayBinario(matrizbinario9)
-        #print(f'Matriz binario3: {x9.shape}')
-
-        #array1binario10
-        array1binario10= [0 if odd >= 1.4 else 1 for odd in array1]
-        matrizbinario10 = self.matriz(120, array1binario10)
-
-        x15 = self.corteArrayBinario(matrizbinario10)
-        #print(f'Matriz binario3: {x9.shape}')
-
-        #array1binario11
-        array1binario11 = [0 if odd >= 1.6 else 1 for odd in array1]
-        matrizbinario11 = self.matriz(120, array1binario11)
-
-        x16 = self.corteArrayBinario(matrizbinario11)
-        #print(f'Matriz binario3: {x9.shape}')
-        
-        arraydiretor1, arraydcount = [], []
-        diretor, count = 1, 0
-        for i in range(len(array2)):
-            if array2[i] > 10:
-                count = -1
-                if diretor == 1:
-                    diretor = 0
-                else:
-                    diretor = 1
-            count += 1
-            arraydiretor1.append(diretor), arraydcount.append(count)
-        matrizdiretor1, matrizdcount = self.matriz(120, arraydiretor1), self.matriz(120, arraydcount)
-        x17 = matrizdiretor1[:,:-1]
-        x18 = matrizdcount[:,:-1]
-                
-        arraydiretor2, arraydcount2 = [], []
-        diretor1, count2 = 1, 0
-        for i in range(len(array2)):
-            if array2[i] <= 1.01:
-                count2 = -1
-                if diretor1 == 1:
-                    diretor1 = 0
-                else:
-                    diretor1 = 1
-            count2 += 1
-            arraydiretor2.append(diretor1), arraydcount2.append(count2)
-        matrizdiretor2, matrizdcount2 = self.matriz(120, arraydiretor2), self.matriz(120, arraydcount2)
-        x19 = matrizdiretor2[:,:-1]
-        x20 = matrizdcount2[:,:-1]
-        
+        # 6. Direcionalidade 2 (<= 1.02)
+        x19, x20 = self.gerar_direcionalidade(array2, limite=1.02, inverter=True)
 
         # Limiares definidos em ordem crescente
         limiares = [1.05, 1.15, 1.30, 1.50, 1.75, 2.12, 2.70, 3.70, 5.88, 20, 50]
@@ -442,6 +292,49 @@ class AjustesOdds:
         matrizy_final = np.array(matrizbinario1[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario1 como y
 
         return matrizX_final, matrizy_final
+    
+    def estatisticaArrayFloat(self, array):
+        array1 = array
+        media = np.mean(array1)
+        desvio = np.std(array1, ddof=1)  # ddof=1 para amostra
+        skewness = skew(array1)
+        curtose = kurtosis(array1)
+
+        # Concatenar as matrizes de características normais
+        x1 = np.append(array1, [media, desvio, skewness, curtose])
+        #print(f'Matriz normal: {x1.shape}')
+
+        
+        return x1
+    
+    def estatisticaArrayBinario(self, array):
+        array1binario = array
+        media = np.mean(array1binario)
+        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
+        counts = np.bincount(array1binario, minlength=2)
+        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
+        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
+        skewness = skew(array1binario)
+        curtose = kurtosis(array1binario)
+
+        # Concatenar as matrizes de características normais
+        x5 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
+        return x5
+        
+    def binarizar_array(array, threshold):
+        return [0 if val >= threshold else 1 for val in array]
+
+    def processa_direcao(self, array, limite, inverter=False):
+        direcao, contagem = [], []
+        flag, count = 1, 0
+        for val in array:
+            if (val > limite and not inverter) or (val <= limite and inverter):
+                count = -1
+                flag ^= 1  # Alterna entre 0 e 1
+            count += 1
+            direcao.append(flag)
+            contagem.append(count if not inverter else flag)
+        return direcao, contagem        
 
     def transformar_entrada_predicao(self, array1):
         """
@@ -458,260 +351,42 @@ class AjustesOdds:
         array1 = array1[-119:]
         array2 = array1
 
-        #array1normal
+        # 1. Array normalizado
         array1 = np.clip(np.array(array1, dtype=np.float32), 1.0, 6.0).tolist()
-        media = np.mean(array1)
-        desvio = np.std(array1, ddof=1)  # ddof=1 para amostra
-        skewness = skew(array1)
-        curtose = kurtosis(array1)
+        x1 = self.estatisticaArrayFloat(array1)
 
-        # Concatenar as matrizes de características normais
-        x1 = np.append(array1, [media, desvio, skewness, curtose])
-        #print(f'Matriz normal: {x1.shape}')
+        # 2. Array majorado
+        array1marjorado = [
+            1.0 if val <= 2 else 4.0 if val >= 4 else val
+            for val in array1
+        ]
+        x2 = self.estatisticaArrayFloat(array1marjorado)
 
-        #array1marjorado
-        array1marjorado = []
-        for i in range(len(array1)):
-            if array1[i] <= 2:
-                array1marjorado.append(1.0)
-            elif array1[i] >= 4:
-                array1marjorado.append(4.0)
-            else:
-                array1marjorado.append(array1[i])
-        media = np.mean(array1marjorado)
-        desvio = np.std(array1marjorado, ddof=1)  # ddof=1 para amostra
-        skewness = skew(array1marjorado)
-        curtose = kurtosis(array1marjorado)
-        # Concatenar as matrizes de características normais
-        x2 = np.append(array1marjorado, [media, desvio, skewness, curtose])
-        #print(f'Matriz Marjorada: {x2.shape}')
+        # 3. Fuzzy
+        array1fuzzy, array1fcontinuo = zip(*[self.dual_fuzzy_classification_invertida(odd) for odd in array1])
+        x3 = self.estatisticaArrayFloat(array1fuzzy)
+        x4 = self.estatisticaArrayFloat(array1fcontinuo)
 
-        #array1fuzzy e array1valorcontínuo fuzzyficado
-        array1fuzzy, array1fcontinuo = [], []
-        for odd in array1:
-            value1, value2 = self.dual_fuzzy_classification_invertida(odd)
-            array1fuzzy.append(value1), array1fcontinuo.append(value2)
-        media = np.mean(array1fuzzy)
-        desvio = np.std(array1fuzzy, ddof=1)  # ddof=1 para amostra
-        skewness = skew(array1fuzzy)
-        curtose = kurtosis(array1fuzzy)
+        # 4. Binarizações com múltiplos thresholds
+        thresholds = [1.5, 2, 3, 4, 5, 1.75, 2.25, 2.75, 2.5, 1.25, 1.4, 1.6]
+        estatisticas_binarias = []
+        for t in thresholds:
+            array_bin = self.binarizar_array(array1, t)
+            estatisticas_binarias.append(self.estatisticaArrayBinario(array_bin))
 
-        # Concatenar as matrizes de características normais
-        x3 = np.append(array1fuzzy, [media, desvio, skewness, curtose])
-        #print(f'Matriz fuzzy: {x3.shape}')
+        # desempacotar resultados em x5 a x16
+        x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16 = estatisticas_binarias
 
-        # Continuação array fuzzy contínuo
-        media = np.mean(array1fcontinuo)
-        desvio = np.std(array1fcontinuo, ddof=1)  # ddof=1 para amostra
-        skewness = skew(array1fcontinuo)
-        curtose = kurtosis(array1fcontinuo)
+        # 5. Direcionalidades baseadas em condições
+        x17, x18 = self.processa_direcao(array2, limite=10, inverter=False)
+        x19, x20 = self.processa_direcao(array2, limite=1.02, inverter=True)
 
-        x4 = np.append(array1fcontinuo, [media, desvio, skewness, curtose])
-        #print(f'Matriz fuzzy: {x3.shape}')
-        
-        #array1binario0
-        array1binario = [0 if odd >= 1.5 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x5 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-
-        #array1binario1
-        array1binario = [0 if odd >= 2 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x6 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-
-        #array1binario2
-        array1binario = [0 if odd >= 3 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x7 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-
-        #array1binario3
-        array1binario = [0 if odd >= 4 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x8 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-
-        #array1binario4
-        array1binario = [0 if odd >= 5 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x9 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-
-        #array1binario5
-        array1binario = [0 if odd >= 1.75 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x10 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-
-        #array1binario6
-        array1binario = [0 if odd >= 2.25 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x11 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-
-        #array1binario7
-        array1binario = [0 if odd >= 2.75 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x12 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-
-        #array1binario8
-        array1binario = [0 if odd >= 2.5 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x13 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-
-        #array1binario9
-        array1binario = [0 if odd >= 1.25 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x14 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-
-        #array1binario10
-        array1binario = [0 if odd >= 1.4 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x15 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-
-        #array1binario16
-        array1binario = [0 if odd >= 1.6 else 1 for odd in array1]
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
-
-        # Concatenar as matrizes de características normais
-        x16 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        #print(f'Matriz binario: {x4.shape}')
-        
-        arraydiretor, arraydcount = [], []
-        diretor1, count = 1, 0
-        for i in range(len(array2)):
-            if array2[i] > 10:
-                count = -1
-                if diretor1 == 1:
-                    diretor1 = 0
-                else:
-                    diretor1 = 1
-            count += 1
-            arraydiretor.append(diretor1), arraydcount.append(count)
-        x17 = arraydiretor
-        x18 = arraydcount
-        
-        arraydiretor2, arraydcount2 = [], []
-        diretor2, count2 = 1, 0
-        for i in range(len(array2)):
-            if array2[i] <= 1.01:
-                count2 = -1
-                if diretor2 == 1:
-                    diretor2 = 0
-                else:
-                    diretor2 = 1
-            count2 += 1
-            arraydiretor2.append(diretor2), arraydcount2.append(diretor2)
-        x19 = arraydiretor2
-        x20 = arraydcount2
-        
         # Limiares definidos em ordem crescente
         limiares = [1.05, 1.15, 1.30, 1.50, 1.75, 2.12, 2.70, 3.70, 5.88, 20, 50]
 
         array111 = [bisect.bisect(limiares, odd) for odd in array2]
         print(len(array111))
         x21 = array111                
-        
         
                 
         matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21), axis=0)

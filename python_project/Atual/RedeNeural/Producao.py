@@ -8,33 +8,14 @@ from Modulos.RedeNeural import Modelos
 
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.feature_selection import mutual_info_classif
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 import time
 
-# --- 1) definir antes do while ---------------------------------
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-
-logreg = make_pipeline(
-    LogisticRegression(
-        max_iter=1000000,             # começa “raso” para convergir rápido
-        warm_start=True,   
-        C=1.0,
-        class_weight="balanced",
-        random_state=42,
-        n_jobs=-1
-    )
-)
-
 import matplotlib.pyplot as plt
+
+
+### Carregar Gráfico --------------------------------------------
 plt.ion()                       # ativa interação
 fig, ax = plt.subplots()
 ax.set_xlabel("Iteração")
@@ -84,7 +65,7 @@ while i <= 210000:
 ######################################################
 
 ######## -> Placar ###################################      
-    if i >= 241:
+    if i >= 24001:
         print(24*"-'-")
         array_placar = placar.atualizar_geral(i, resultado, odd)
         print(f'Precisão Geral: {array_placar["Precisao_Geral"]:.2f}% \nPrecisão Modelo: {array_placar["Precisao_Sintetica"]:.2f}%')
@@ -107,7 +88,7 @@ while i <= 210000:
 ######################################################
 
 ######## -> Treinamento da Modelo ###############
-    if i >= 240 and (i % 120) == 0:
+    if i >= 24000 and (i % 120) == 0:
         print('***'*20)
         ##### -> Vetores de Entradas #################
         print(f'Carregando dados ...')
@@ -128,7 +109,7 @@ while i <= 210000:
         ##############################################
 ######################################################
             
-    if i >= 240:
+    if i >= 24000:
         #### -> Predição da Modelo ##############
         print(24*'*-')
         #Apredicao = vetores.transformar_entrada_predicao(arrayodd)
