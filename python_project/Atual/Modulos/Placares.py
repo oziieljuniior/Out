@@ -11,7 +11,7 @@ class Placar:
         }
     
     def atualizar_geral(self, i: int, resultado: int, odd: float) -> dict:
-        i = i - 24000  # Ajuste para deslocamento temporal
+        i = i - 24960  # Ajuste para deslocamento temporal
         if resultado == 1:
             self.array_geral['i_sintetico'] += 1
             if odd >= 3:

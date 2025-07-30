@@ -65,7 +65,7 @@ while i <= 210000:
 ######################################################
 
 ######## -> Placar ###################################      
-    if i >= 24001:
+    if i >= 24961:
         print(24*"-'-")
         array_placar = placar.atualizar_geral(i, resultado, odd)
         print(f'Precisão Geral: {array_placar["Precisao_Geral"]:.2f}% \nPrecisão Modelo: {array_placar["Precisao_Sintetica"]:.2f}%')
@@ -88,7 +88,7 @@ while i <= 210000:
 ######################################################
 
 ######## -> Treinamento da Modelo ###############
-    if i >= 24000 and (i % 120) == 0:
+    if i >= 24960 and (i % 120) == 0:
         print('***'*20)
         ##### -> Vetores de Entradas #################
         print(f'Carregando dados ...')
@@ -109,7 +109,7 @@ while i <= 210000:
         ##############################################
 ######################################################
             
-    if i >= 24000:
+    if i >= 24960:
         #### -> Predição da Modelo ##############
         print(24*'*-')
         #Apredicao = vetores.transformar_entrada_predicao(arrayodd)
