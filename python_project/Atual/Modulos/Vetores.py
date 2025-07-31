@@ -3,7 +3,7 @@ import pandas as pd
 import skfuzzy as fuzz
 from scipy.stats import entropy,skew, kurtosis
 import bisect
-           
+
 
 class AjustesOdds:
     def __init__(self, array1):
@@ -153,72 +153,95 @@ class AjustesOdds:
         matriz = np.array([array1[i:i + num_colunas] for i in range(num_linhas)])
         return matriz
     
-    def corteArrayBinario(self, array1):
+    def corteArrayBinario(self, matriz):
         """
-        Garante que o array seja transformado em matriz.
-        
-        Args:
-            array1 (list ou np.ndarray): Array de entrada.
-            tamanho (int): Tamanho desejado do array.
+        Calcula, para cada linha (ignorando a última coluna), as
+        estatísticas {média, desvio-padrão, entropia, skew, curtose}
+        nas janelas finais de 599, 479, 359, 239 e 119 elementos.
 
-        Returns:
-            np.ndarray: Matriz ajustado para o tamanho especificado.
+        Retorna
+        -------
+        X_out : np.ndarray
+            Concatenação da parte original (sem a última coluna)
+            com 25 novas colunas de features na ordem:
+                [mean, std, ent, skew, kurt] × [599, 479, 359, 239, 119]
         """
-        matrizbinario1 = array1
-        #print(f'Matriz binario1: {matrizbinario1.shape}')
-        ##array1mediamovel, array1desviopadrao, array1entropia, array1assimetria, array1curtose
-        arraymbinario1, arraydpbinario1, arrayebinario1, arrayabinario1, arraycbinario1 = [], [], [], [], []
-        for i in range(matrizbinario1.shape[0]):
-            media = np.mean(matrizbinario1[i,:-1])
-            desvio = np.std(matrizbinario1[i,:-1], ddof=1)  # ddof=1 para amostra
-            counts = np.bincount(matrizbinario1[i,:-1].astype(int), minlength=2)
-            probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-            entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-            skewness = skew(matrizbinario1[i,:-1])
-            curtose = kurtosis(matrizbinario1[i,:-1])
+        # ------------------ pré-processamento ---------------------------
+        base = np.asarray(matriz, dtype=np.float32)[:, :-1]   # remove última coluna
+        n_rows, n_cols = base.shape
+        win_sizes = [599, 479, 359, 239, 119]
 
-            arraycbinario1.append(curtose)
-            arrayabinario1.append(skewness)   
-            arrayebinario1.append(entropia)
-            arraydpbinario1.append(desvio)
-            arraymbinario1.append(media)
-        matrizmbinario1 = np.array(arraymbinario1).reshape(-1,1) #Matriz Media valores binário
-        matrizdpbinario1 = np.array(arraydpbinario1).reshape(-1,1) #Matriz Desvio Padrão valores binário
-        matrizebinario1 = np.array(arrayebinario1).reshape(-1,1) #Matriz Entropia valores
-        matrizabinario1 = np.array(arrayabinario1).reshape(-1,1) #Matriz Assimetria valores
-        matrizcbinario1 = np.array(arraycbinario1).reshape(-1,1) #Matriz Curtose valores
-        # Concatenar as matrizes de características normais
-        x6 = np.concatenate((matrizbinario1[:,:-1], matrizmbinario1, matrizdpbinario1, matrizebinario1, matrizabinario1, matrizcbinario1), axis=1)
+        # ------------------ cálculo das features ------------------------
+        feats = []   # cada linha conterá 25 valores
 
-        return x6
+        for row in base:
+            line_feats = []
+            for w in win_sizes:
+                seg = row[-w:] if w <= n_cols else row        # trata linhas curtas
+
+                # média e desvio-padrão
+                line_feats.append(np.mean(seg, dtype=np.float32))
+                line_feats.append(np.std(seg, ddof=1, dtype=np.float32))
+
+                # entropia binária
+                counts = np.bincount(seg.astype(int), minlength=2)
+                probas  = (counts + 1e-9) / (counts.sum() + 2e-9)
+                line_feats.append(float(entropy(probas, base=2)))  # ∈ [0,1]
+
+                # skewness e curtose
+                line_feats.append(float(skew(seg)))
+                line_feats.append(float(kurtosis(seg)))
+            feats.append(line_feats)
+
+        feats = np.asarray(feats, dtype=np.float32)           # shape = (n_rows, 25)
+
+        # ------------------ saída final ---------------------------------
+        X_out = np.concatenate([base, feats], axis=1)         # (n_rows, n_cols-1 + 25)
+        return X_out
     
-    def corteArrayFloat(self, array):
-        matriznormal = array
-        arraymnormal, arraydpnormal, arrayanormal, arraycnormal = [], [], [], []
-        for i in range(matriznormal.shape[0]):
-            media = np.mean(matriznormal[i,:-1])
-            desvio = np.std(matriznormal[i,:-1], ddof=1)  # ddof=1 para amostra
-            skewness = skew(matriznormal[i,:-1])
-            curtose = kurtosis(matriznormal[i,:-1])
-
-            arraycnormal.append(curtose)
-            arrayanormal.append(skewness)   
-            arraydpnormal.append(desvio)
-            arraymnormal.append(media)
-        matrizmnormal = np.array(arraymnormal).reshape(-1,1) #Matriz Media valores 
-        matrizdpnormal = np.array(arraydpnormal).reshape(-1,1) #Matriz Desvio Padrão valores
-        matrizanormal = np.array(arrayanormal).reshape(-1,1) #Matriz Assimetria valores
-        matrizcnormal = np.array(arraycnormal).reshape(-1,1) #Matriz Curtose valores
-        # Concatenar as matrizes de características normais
-        x1 = np.concatenate((matriznormal[:,:-1], matrizmnormal, matrizdpnormal, matrizanormal, matrizcnormal), axis=1)
-        return x1
+    def corteArrayFloat(self, matriz):
+        """
+        Enriquecer cada linha da matriz com estatísticas das janelas finais.
+        
+        Retorna:
+            X_out (np.ndarray):
+                [dados_originais_sem_última_col | 20 novas features]
+                Cada grupo de 4 features corresponde a um tamanho de janela
+                na ordem: média, desvio-padrão, skew, curtose
+                para janelas 599, 479, 359, 239 e 119 (nessa ordem).
+        """
+        # ---- preparação --------------------------------------------------------
+        base = np.asarray(matriz, dtype=np.float32)[:, :-1]   # descarta última coluna
+        n_rows, n_cols = base.shape
+        win_sizes = [599, 479, 359, 239, 119]                # janelas desejadas
+        
+        # ---- cálculo das features ---------------------------------------------
+        feats = []  # lista de linhas de features
+        
+        for row in base:
+            row_feats = []
+            for w in win_sizes:
+                seg = row[-w:] if w <= n_cols else row       # trata janelas > n_cols
+                row_feats.extend([
+                    np.mean(seg, dtype=np.float32),
+                    np.std(seg, ddof=1, dtype=np.float32),
+                    skew(seg),                               # scipy retorna float64
+                    kurtosis(seg)
+                ])
+            feats.append(row_feats)
+        
+        feats = np.asarray(feats, dtype=np.float32)          # shape = (n_rows, 20)
+        
+        # ---- saída final -------------------------------------------------------
+        X_out = np.concatenate([base, feats], axis=1)        # shape = (n_rows, n_cols-1+20)
+        return X_out
 
     def gerar_matriz_float(self, array):
-        return self.corteArrayFloat(self.matriz(120, array))
+        return self.corteArrayFloat(self.matriz(600, array))
 
     def gerar_matriz_binaria(self, array, threshold):
         binarizado = [0 if val >= threshold else 1 for val in array]
-        return self.corteArrayBinario(self.matriz(120, binarizado))
+        return self.corteArrayBinario(self.matriz(600, binarizado))
 
     def gerar_direcionalidade(self, array, limite, inverter=False):
         direcao, contagem = [], []
@@ -230,8 +253,8 @@ class AjustesOdds:
             count += 1
             direcao.append(flag)
             contagem.append(count if not inverter else count)
-        matriz_direcao = self.matriz(120, direcao)[:, :-1]
-        matriz_contagem = self.matriz(120, contagem)[:, :-1]
+        matriz_direcao = self.matriz(600, direcao)[:, :-1]
+        matriz_contagem = self.matriz(600, contagem)[:, :-1]
         return matriz_direcao, matriz_contagem
 
     def tranforsmar_final_matriz(self, array1):
@@ -265,9 +288,9 @@ class AjustesOdds:
         x4 = self.gerar_matriz_float(array_fcontinuo)
 
         # 4. Binarizações múltiplas
-        thresholds = [3, 2, 4, 5, 1.5, 1.75, 2.25, 2.5, 2.75, 1.25, 1.4, 1.6]
+        thresholds = [1.05, 1.5, 2, 2.5, 3, 4.5, 6]
         binarizados = [self.gerar_matriz_binaria(array1, th) for th in thresholds]
-        x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16 = binarizados
+        x5, x6, x7, x8, x9, x10, x11 = binarizados
 
         # 5. Direcionalidade 1 (> 10)
         x17, x18 = self.gerar_direcionalidade(array2, limite=10, inverter=False)
@@ -280,47 +303,82 @@ class AjustesOdds:
 
         array111 = [bisect.bisect(limiares, odd) for odd in array2]
         print(len(array111))
-        matriz111 = self.matriz(120, array111)
+        matriz111 = self.matriz(600, array111)
         x21 = matriz111[:,:-1]                
                
 
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21), axis=1)
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x17, x18, x19, x20, x21), axis=1)
 
         array1binario1 = [0 if odd >= 3 else 1 for odd in array1]
-        matrizbinario1 = self.matriz(120, array1binario1)
+        matrizbinario1 = self.matriz(600, array1binario1)
         
         matrizy_final = np.array(matrizbinario1[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario1 como y
 
         return matrizX_final, matrizy_final
     
     def estatisticaArrayFloat(self, array):
-        array1 = array
-        media = np.mean(array1)
-        desvio = np.std(array1, ddof=1)  # ddof=1 para amostra
-        skewness = skew(array1)
-        curtose = kurtosis(array1)
+        """
+        Calcula estatísticas em janelas finais menores de um vetor (len = 599)
+        e retorna um único array concatenando o vetor original + features.
 
-        # Concatenar as matrizes de características normais
-        x1 = np.append(array1, [media, desvio, skewness, curtose])
-        #print(f'Matriz normal: {x1.shape}')
+        Retorna
+        -------
+        x_out : np.ndarray   (shape = (619,))
+            [array_original | média, std, skew, kurt] × 5 janelas
+        """
+        arr = np.asarray(array, dtype=np.float32)
+        if arr.size != 599:
+            raise ValueError("A função espera um array de tamanho 599.")
 
-        
-        return x1
-    
+        win_sizes = [599, 479, 359, 239, 119]   # “escala menor”
+
+        feats = []
+        for w in win_sizes:
+            seg = arr[-w:]
+            feats.extend([
+                np.mean(seg, dtype=np.float32),
+                np.std (seg, ddof=1, dtype=np.float32),
+                float(skew(seg)),
+                float(kurtosis(seg))
+            ])
+
+        x_out = np.concatenate([arr, np.array(feats, dtype=np.float32)])
+        return x_out
+
     def estatisticaArrayBinario(self, array):
-        array1binario = array
-        media = np.mean(array1binario)
-        desvio = np.std(array1binario, ddof=1)  # ddof=1 para amostra
-        counts = np.bincount(array1binario, minlength=2)
-        probas = (counts + 1e-9) / (counts.sum() + 2e-9)
-        entropia = entropy(probas, base=2)          # sempre definido  ∈ [0,1]
-        skewness = skew(array1binario)
-        curtose = kurtosis(array1binario)
+        """
+        Recebe um vetor binário de tamanho 599 e devolve:
+            [array_original | média, std, entropia, skew, kurt] × 5 janelas
 
-        # Concatenar as matrizes de características normais
-        x5 = np.append(array1binario, [media, desvio, entropia, skewness, curtose])
-        return x5
-        
+        Saída:
+            np.ndarray de shape (624,)
+        """
+        arr = np.asarray(array, dtype=np.float32)
+        if arr.size != 599:
+            raise ValueError("A função espera um array de tamanho 599.")
+
+        win_sizes = [599, 479, 359, 239, 119]   # janelas “escala menor”
+        feats = []
+
+        for w in win_sizes:
+            seg = arr[-w:]
+
+            # média e desvio-padrão
+            feats.append(np.mean(seg, dtype=np.float32))
+            feats.append(np.std(seg, ddof=1, dtype=np.float32))
+
+            # entropia binária
+            counts = np.bincount(seg.astype(int), minlength=2)
+            probas  = (counts + 1e-9) / (counts.sum() + 2e-9)
+            feats.append(float(entropy(probas, base=2)))  # ∈ [0,1]
+
+            # skewness e curtose
+            feats.append(float(skew(seg)))
+            feats.append(float(kurtosis(seg)))
+
+        x_out = np.concatenate([arr, np.array(feats, dtype=np.float32)])
+        return x_out
+
     def binarizar_array(self, array, threshold):
         return [0 if val >= threshold else 1 for val in array]
 
@@ -339,16 +397,16 @@ class AjustesOdds:
     def transformar_entrada_predicao(self, array1):
         """
         Prepara a estrutura de entrada para predição com .predict().
-        Assume que array1 contém as últimas 120 entradas (119 anteriores + 1 atual).
+        Assume que array1 contém as últimas 600 entradas (599 anteriores + 1 atual).
         
         Returns:
             np.ndarray: Array com shape (1, n_features) pronto para model.predict().
         """
-        if len(array1) < 120:
-            raise ValueError("É necessário fornecer ao menos 120 entradas para predição.")
+        if len(array1) < 600:
+            raise ValueError("É necessário fornecer ao menos 600 entradas para predição.")
 
-        # Usa apenas os últimos 120 valores
-        array1 = array1[-119:]
+        # Usa apenas os últimos 600 valores
+        array1 = array1[-599:]
         array2 = array1
 
         # 1. Array normalizado
@@ -368,14 +426,14 @@ class AjustesOdds:
         x4 = self.estatisticaArrayFloat(array1fcontinuo)
 
         # 4. Binarizações com múltiplos thresholds
-        thresholds = [1.5, 2, 3, 4, 5, 1.75, 2.25, 2.75, 2.5, 1.25, 1.4, 1.6]
+        thresholds = [1.05, 1.5, 2, 2.5, 3, 4.5, 6]
         estatisticas_binarias = []
         for t in thresholds:
             array_bin = self.binarizar_array(array1, t)
             estatisticas_binarias.append(self.estatisticaArrayBinario(array_bin))
 
         # desempacotar resultados em x5 a x16
-        x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16 = estatisticas_binarias
+        x5, x6, x7, x8, x9, x10, x11 = estatisticas_binarias
 
         # 5. Direcionalidades baseadas em condições
         x17, x18 = self.processa_direcao(array2, limite=10, inverter=False)
@@ -389,7 +447,7 @@ class AjustesOdds:
         x21 = array111                
         
                 
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21), axis=0)
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x17, x18, x19, x20, x21), axis=0)
         
         # Retorna somente a última linha (única janela possível)
         return matrizX_final.reshape(1, -1)

@@ -2,8 +2,8 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from Modulos.Placares import Placar # Importando a classe Placar do módulo Placares
-from Modulos.Vetores import AjustesOdds
+from Modulos.PlacaresAlto import Placar # Importando a classe Placar do módulo Placares
+from Modulos.VetoresAlto import AjustesOdds
 
 import pandas as pd
 import numpy as np
