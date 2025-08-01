@@ -288,9 +288,9 @@ class AjustesOdds:
         x4 = self.gerar_matriz_float(array_fcontinuo)
 
         # 4. Binarizações múltiplas
-        thresholds = [1.05, 1.5, 2, 2.5, 3, 4.5, 6]
+        thresholds = [1.05, 1.5, 2, 3, 6]
         binarizados = [self.gerar_matriz_binaria(array1, th) for th in thresholds]
-        x5, x6, x7, x8, x9, x10, x11 = binarizados
+        x5, x6, x7, x8, x9 = binarizados
 
         # 5. Direcionalidade 1 (> 10)
         x17, x18 = self.gerar_direcionalidade(array2, limite=10, inverter=False)
@@ -307,7 +307,7 @@ class AjustesOdds:
         x21 = matriz111[:,:-1]                
                
 
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x17, x18, x19, x20, x21), axis=1)
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x17, x18, x19, x20, x21), axis=1)
 
         array1binario1 = [0 if odd >= 3 else 1 for odd in array1]
         matrizbinario1 = self.matriz(600, array1binario1)
@@ -426,14 +426,14 @@ class AjustesOdds:
         x4 = self.estatisticaArrayFloat(array1fcontinuo)
 
         # 4. Binarizações com múltiplos thresholds
-        thresholds = [1.05, 1.5, 2, 2.5, 3, 4.5, 6]
+        thresholds = [1.05, 1.5, 2, 3 , 6]
         estatisticas_binarias = []
         for t in thresholds:
             array_bin = self.binarizar_array(array1, t)
             estatisticas_binarias.append(self.estatisticaArrayBinario(array_bin))
 
         # desempacotar resultados em x5 a x16
-        x5, x6, x7, x8, x9, x10, x11 = estatisticas_binarias
+        x5, x6, x7, x8, x9 = estatisticas_binarias
 
         # 5. Direcionalidades baseadas em condições
         x17, x18 = self.processa_direcao(array2, limite=10, inverter=False)
@@ -447,7 +447,7 @@ class AjustesOdds:
         x21 = array111                
         
                 
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x17, x18, x19, x20, x21), axis=0)
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x17, x18, x19, x20, x21), axis=0)
         
         # Retorna somente a última linha (única janela possível)
         return matrizX_final.reshape(1, -1)

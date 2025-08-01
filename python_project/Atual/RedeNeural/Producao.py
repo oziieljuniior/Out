@@ -109,7 +109,7 @@ while i <= 210000:
         ##############################################
 ######################################################
             
-    if i >= 24960:
+    if i >= 6000:
         #### -> Predição da Modelo ##############
         print(24*'*-')
         #Apredicao = vetores.transformar_entrada_predicao(arrayodd)
