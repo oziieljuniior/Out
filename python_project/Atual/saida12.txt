@@ -36022,3 +36022,6 @@ Proxima Entrada: 1
 Rodada - 12001
 Entrada -> Traceback (most recent call last):
   File "/home/darkcover01/Documentos/Out/python_project/Atual/Producao50x.py", line 76, in <module>
+    arrayodd, odd = vetores.coletarodd(i, inteiro, data, alavanca=False)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/darkcover01/Documentos/Out/python_project/Atual/Modulos/VetoresAlto.py", line 43, in coletarodd

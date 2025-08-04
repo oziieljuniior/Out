@@ -26,8 +26,8 @@ logreg = make_pipeline(
     LogisticRegression(
         max_iter=1000000,             # começa “raso” para convergir rápido
         warm_start=True,   
-        C=1.0,
-        class_weight="balanced",
+        #C=1.0,
+        #class_weight="balanced",
         random_state=42,
         n_jobs=-1
     )

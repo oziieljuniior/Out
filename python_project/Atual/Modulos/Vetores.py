@@ -309,7 +309,7 @@ class AjustesOdds:
 
         matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x17, x18, x19, x20, x21), axis=1)
 
-        array1binario1 = [0 if odd >= 3 else 1 for odd in array1]
+        array1binario1 = [0 if odd >= 2 else 1 for odd in array1]
         matrizbinario1 = self.matriz(600, array1binario1)
         
         matrizy_final = np.array(matrizbinario1[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario1 como y

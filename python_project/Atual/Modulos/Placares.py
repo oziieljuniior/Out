@@ -14,11 +14,11 @@ class Placar:
         i = i - 6000  # Ajuste para deslocamento temporal
         if resultado == 1:
             self.array_geral['i_sintetico'] += 1
-            if odd >= 3:
+            if odd >= 2:
                 self.array_geral['Contador_Geral'] += 1
                 self.array_geral['Contador_Sintetico'] += 1
         else:
-            if odd >= 3:
+            if odd >= 2:
                 self.array_geral['Contador_Geral'] += 1
 
         # Atualiza métricas
