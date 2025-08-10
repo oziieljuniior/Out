@@ -2,46 +2,52 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from Modulos.Placares import Placar # Importando a classe Placar do módulo Placares
-from Modulos.Vetores import AjustesOdds
+from Modulos.PlacaresAlto import Placar # Importando a classe Placar do módulo Placares
+from Modulos.VetoresAlto import AjustesOdds
 
 import pandas as pd
-import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 import matplotlib.pyplot as plt
 
 import time
+# --- 1) definir antes do while ---------------------------------
+from sklearn.pipeline import make_pipeline
+from sklearn.linear_model import LogisticRegression
 
-from sklearn.metrics import f1_score
-
-def achar_threshold(y_true, proba, beta=1.0):
-    melhor, thr_best = -1, 0.5
-    for thr in np.linspace(0.05, 0.95, 91):
-        pred = (proba >= thr).astype(int)
-        f = f1_score(y_true, pred, zero_division=0, average="binary")
-        if f > melhor:
-            melhor, thr_best = f, thr
-    return thr_best
-
-### Carregar Modelo
 logreg = make_pipeline(
-    StandardScaler(with_mean=False),
     LogisticRegression(
-        penalty="l2",
-        C=0.1,                 # ajuste via grid depois
-        solver="lbfgs",        # estável p/ l2
-        class_weight="balanced",  # funciona bem p/ 30/70; para 50/50 pode remover
-        max_iter=50_000,       # 1e6 é desnecessário; se não convergir, é escala/colinearidade
-        random_state=42,
-        warm_start=False       # raramente ajuda na LR
+        penalty='l2',
+        C=0.1,
+        solver='saga',
+        class_weight={0:1, 1:49},
+        max_iter=50_000,
+        n_jobs=-1,
+        random_state=42
     )
 )
 
+import matplotlib.pyplot as plt
+plt.ion()                       # ativa interação
+fig, ax = plt.subplots()
+ax.set_xlabel("Iteração")
+ax.set_ylabel("Precisão (%)")
+ax.set_ylim(0, 100)
+line_geral, = ax.plot([], [], label="Precisão Geral")
+line_modelo, = ax.plot([], [], label="Precisão Modelo")
+ax.legend(loc="lower right")
+x_data, y_geral, y_modelo = [], [], []
+
+# ---------------------------------------------------------------
+
 
 ### Carregar data
+#/content/drive/MyDrive/Out/dados/odds_200k.csv
+#/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv
+#/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x1.csv
+#/home/darkcover01/Documentos/Out/Documentos/dados/odds_200k.csv
+#/home/darkcover01/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv', usecols=["Entrada"], dtype=str
 data = pd.read_csv('/home/darkcover01/Documentos/Out/Documentos/dados/odds_200k.csv')
 
 array1, i = [], 0
@@ -63,17 +69,27 @@ while i <= 210000:
 
 ######## -> Vetor de Entradas Unidimensional ##########        
     arrayodd, odd = vetores.coletarodd(i, inteiro, data, alavanca=False)
-    array_geral_float.append(odd)
+    array_geral_float.append(odd)   
 
     if odd == 0:
         break
 ######################################################
 
 ######## -> Placar ###################################      
-    if i >= 6001:
+    if i >= 12001:
         print(24*"-'-")
         array_placar = placar.atualizar_geral(i, resultado, odd)
         print(f'Precisão Geral: {array_placar["Precisao_Geral"]:.2f}% \nPrecisão Modelo: {array_placar["Precisao_Sintetica"]:.2f}%')
+        x_data.append(i)                                   # ou rodada, se preferir
+        y_geral.append(array_placar["Precisao_Geral"])
+        y_modelo.append(array_placar["Precisao_Sintetica"])
+
+        line_geral.set_data(x_data, y_geral)
+        line_modelo.set_data(x_data, y_modelo)
+        ax.relim()                 # recalcula limites
+        ax.autoscale_view()        # aplica limites
+        plt.pause(0.01)            # deixa o evento de GUI atualizar
+        
         df_acuracia.loc[len(df_acuracia)] = {
             "Iteração": i,
             "Precisão Geral": array_placar["Precisao_Geral"],
@@ -83,7 +99,7 @@ while i <= 210000:
 ######################################################
 
 ######## -> Treinamento da Modelo ###############
-    if i >= 6000 and (i % 600) == 0:
+    if i >= 12000 and (i % 600) == 0:
         print('***'*20)
         ##### -> Vetores de Entradas #################
         print(f'Carregando dados ...')
@@ -98,17 +114,13 @@ while i <= 210000:
         y = array2.flatten()      # saída binária
 
         # 2. Divisão treino/teste
-        cut = int(0.8 * len(X))
-        X_train, X_test = X.iloc[:cut], X.iloc[cut:]
-        y_train, y_test = y[:cut], y[cut:]
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        logreg.fit(X_train, y_train)     # treinamento inicial
 
         # 3. Modelo linear base (regressão logística)
-        logreg = LogisticRegression(max_iter=10_000, C=1.0,class_weight='balanced', warm_start=True, random_state=42)
-        logreg.fit(X_train, y_train)
-
-        proba_val = logreg.predict_proba(X_test)[:,1]
-        thr = achar_threshold(y_test, proba_val, beta=1.0)
-
+        #logreg = LogisticRegression(max_iter=3000, C=1.0,class_weight='balanced', random_state=42)
+        
+        #logreg.fit(X_train, y_train)
         y_pred_lr = logreg.predict(X_test)
         
         report = classification_report(y_test, y_pred_lr, output_dict=True)
@@ -130,27 +142,16 @@ while i <= 210000:
             "f1_score 0": report["0"]["f1-score"],
             "f1_score 1": report["1"]["f1-score"]
         }
-
-        from sklearn.metrics import roc_auc_score, average_precision_score
-
-        roc = roc_auc_score(y_test, proba_val)
-        pr  = average_precision_score(y_test, proba_val)
-
-        # Salve no df_metricas_treino:
-        # "roc_auc": roc, "pr_auc": pr
-
+    
         ##############################################
 ######################################################
             
-    if i >= 6000:
+    if i >= 12000:
         #### -> Predição da Modelo ##############
         print(24*'*-')
         Apredicao = vetores.transformar_entrada_predicao(arrayodd)
         #print(f'Predição: {type(Apredicao)} | {len(Apredicao)}')
-
-        proba_pred = logreg.predict_proba(Apredicao)[:,1]
-        res = (proba_pred >= thr).astype(int)
-
+        res = logreg.predict(Apredicao)
         if res[0] == 1:
             resultado = 0
         else:
@@ -165,3 +166,7 @@ while i <= 210000:
 
 df_metricas_treino.to_csv('metricas_treino.csv', index=False)
 df_acuracia.to_csv('acuracia.csv', index=False)
+
+plt.ioff()
+plt.savefig("evolucao_precisao.png", dpi=150)
+plt.show()

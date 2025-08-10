@@ -48,6 +48,7 @@ class AjustesOdds:
         self.array1.append(odd)
         return self.array1, odd
 
+
     def dual_fuzzy_classification_invertida(self, odd, *, odd_min=1.0, odd_max=100.0):
         """
         Classificação fuzzy invertida  (1 → maior confiança ; 100 → menor confiança).
@@ -114,6 +115,7 @@ class AjustesOdds:
 
         return fuzzy_val, tsk_val
 
+
     def fuzzy_classification(self, odd,
                              *, odd_min=1.0, odd_max=100.0):
         """
@@ -155,6 +157,7 @@ class AjustesOdds:
         fuzzy_val = simbolos[pert.index(max_pert)]
         return fuzzy_val
 
+    
     def matriz(self, num_colunas, array1):
         """
         Gera uma matriz sequencial a partir de um array, com o número de colunas especificado.
@@ -279,7 +282,7 @@ class AjustesOdds:
         x1 = self.gerar_matriz_float(array1)
 
         # 2. Matriz majorada
-        array_majorado = [25 if v <= 25 else 60 if v >= 60 else v for v in array1]
+        array_majorado = [20 if v <= 20 else 50 if v >= 50 else v for v in array1]
         x2 = self.gerar_matriz_float(array_majorado)
 
         # 3. Fuzzy
@@ -288,16 +291,23 @@ class AjustesOdds:
         x4 = self.gerar_matriz_float(array_fcontinuo)
 
         # 4. Binarizações múltiplas
-        thresholds = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        thresholds = [10, 20, 30, 40, 50]
         binarizados = [self.gerar_matriz_binaria(array1, th) for th in thresholds]
-        x5, x6, x7, x8, x9, x10, x11, x12, x13, x14 = binarizados
+        x5, x6, x7, x8, x9= binarizados
 
         # 5. Direcionalidade 1 (> 10)
         x17, x18 = self.gerar_direcionalidade(array2, limite=50, inverter=False)
 
         # 6. Direcionalidade 2 (<= 1.02)
-        x19, x20 = self.gerar_direcionalidade(array2, limite=1, inverter=True)  
-        
+        x19, x20 = self.gerar_direcionalidade(array2, limite=20, inverter=True)
+
+        # Limiares definidos em ordem crescente
+        #limiares = [1.05, 1.15, 1.30, 1.50, 1.75, 2.12, 2.70, 3.70, 5.88, 20, 50]
+
+        #array111 = [bisect.bisect(limiares, odd) for odd in array2]
+        #print(len(array111))
+        #matriz111 = self.matriz(600, array111)
+        #x21 = matriz111[:,:-1]
         arrayint = []
         for i in range(len(array2)):
             if array2[i] <= 50:
@@ -310,7 +320,7 @@ class AjustesOdds:
                     arrayint.append(5)
             else:
                 arrayint.append(10)
-        x15 = self.gerar_matriz_float(arrayint)     
+        x10 = self.gerar_matriz_float(arrayint)     
         
         arrayint1 = []
         for i in range(len(array2)):
@@ -321,7 +331,7 @@ class AjustesOdds:
                     arrayint1.append(1)
             else:
                 arrayint1.append(10)
-        x16 = self.gerar_matriz_float(arrayint1)   
+        x11 = self.gerar_matriz_float(arrayint1)   
 
         arrayint3 = []
         for i in range(len(array2)):
@@ -338,7 +348,7 @@ class AjustesOdds:
                     arrayint3.append(5)
             else:
                 arrayint3.append(10)
-        x21 = self.gerar_matriz_float(arrayint3)     
+        x12 = self.gerar_matriz_float(arrayint3)     
         
         arrayint4 = []
         for i in range(len(array2)):
@@ -352,9 +362,10 @@ class AjustesOdds:
                     arrayint4.append(1)
             else:
                 arrayint4.append(10)
-        x22 = self.gerar_matriz_float(arrayint4)
-        
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22), axis=1)
+        x13 = self.gerar_matriz_float(arrayint4)
+               
+
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x17, x18, x19, x20), axis=1)
 
         array1binario1 = [0 if odd >= 30 else 1 for odd in array1]
         matrizbinario1 = self.matriz(600, array1binario1)
@@ -427,7 +438,7 @@ class AjustesOdds:
 
         # 2. Array majorado
         array1marjorado = [
-            25 if val <= 25 else 60 if val >= 60 else val
+            20 if val <= 20 else 50 if val >= 50 else val
             for val in array1
         ]
         x2 = self.estatisticaArrayFloat(array1marjorado)
@@ -438,19 +449,25 @@ class AjustesOdds:
         x4 = self.estatisticaArrayFloat(array1fcontinuo)
 
         # 4. Binarizações com múltiplos thresholds
-        thresholds = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        thresholds = [10, 20, 30, 40, 50]
         estatisticas_binarias = []
         for t in thresholds:
             array_bin = self.binarizar_array(array1, t)
             estatisticas_binarias.append(self.estatisticaArrayBinario(array_bin))
 
         # desempacotar resultados em x5 a x16
-        x5, x6, x7, x8, x9, x10, x11, x12, x13, x14 = estatisticas_binarias
+        x5, x6, x7, x8, x9 = estatisticas_binarias
 
         # 5. Direcionalidades baseadas em condições
         x17, x18 = self.processa_direcao(array2, limite=50, inverter=False)
-        x19, x20 = self.processa_direcao(array2, limite=1, inverter=True)
+        x19, x20 = self.processa_direcao(array2, limite=10, inverter=True)
 
+        # Limiares definidos em ordem crescente
+        #limiares = [1.05, 1.15, 1.30, 1.50, 1.75, 2.12, 2.70, 3.70, 5.88, 20, 50]
+
+        #array111 = [bisect.bisect(limiares, odd) for odd in array2]
+        #print(len(array111))
+        #x21 = array111                
         arrayint = []
         for i in range(len(array2)):
             if array2[i] <= 50:
@@ -463,7 +480,7 @@ class AjustesOdds:
                     arrayint.append(5)
             else:
                 arrayint.append(10)
-        x15 = self.estatisticaArrayFloat(arrayint)     
+        x10 = self.estatisticaArrayFloat(arrayint)     
         
         arrayint1 = []
         for i in range(len(array2)):
@@ -474,7 +491,7 @@ class AjustesOdds:
                     arrayint1.append(1)
             else:
                 arrayint1.append(10)
-        x16 = self.estatisticaArrayFloat(arrayint1)     
+        x11 = self.estatisticaArrayFloat(arrayint1)     
         
         arrayint3 = []
         for i in range(len(array2)):
@@ -491,7 +508,7 @@ class AjustesOdds:
                     arrayint3.append(5)
             else:
                 arrayint3.append(10)
-        x21 = self.estatisticaArrayFloat(arrayint3)     
+        x12 = self.estatisticaArrayFloat(arrayint3)     
         
         arrayint4 = []
         for i in range(len(array2)):
@@ -505,9 +522,9 @@ class AjustesOdds:
                     arrayint4.append(1)
             else:
                 arrayint4.append(10)
-        x22 = self.estatisticaArrayFloat(arrayint4)
-                       
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22), axis=0)
+        x13 = self.estatisticaArrayFloat(arrayint4)
+                
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x17, x18, x19, x20), axis=0)
         
         # Retorna somente a última linha (única janela possível)
         return matrizX_final.reshape(1, -1)

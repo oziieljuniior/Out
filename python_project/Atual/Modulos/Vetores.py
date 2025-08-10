@@ -292,11 +292,67 @@ class AjustesOdds:
         binarizados = [self.gerar_matriz_binaria(array1, th) for th in thresholds]
         x5, x6, x7, x8, x9 = binarizados
 
-        # 5. Direcionalidade 1 (> 10)
-        x17, x18 = self.gerar_direcionalidade(array2, limite=10, inverter=False)
+        arrayint1 = []
+        for i in range(len(array2)):
+            if array2[i] < 50:
+                if array2[i] <= 3:
+                    arrayint1.append(0)
+                else:
+                    arrayint1.append(1)
+            else:
+                arrayint1.append(10)
+        x10 = self.gerar_matriz_float(arrayint1)   
 
-        # 6. Direcionalidade 2 (<= 1.02)
-        x19, x20 = self.gerar_direcionalidade(array2, limite=1.02, inverter=True)
+        arrayint2 = []
+        for i in range(len(array2)):
+            if array2[i] <= 50:
+                if array2[i] <= 30:
+                    if array2[i] < 3:
+                        arrayint2.append(0)
+                    else:
+                        arrayint2.append(1)
+                else:
+                    arrayint2.append(5)
+            else:
+                arrayint2.append(10)
+        x11 = self.gerar_matriz_float(arrayint2)
+        
+        arrayint3 = []
+        for i in range(len(array2)):
+            if array2[i] < 50:
+                if array2[i] <= 3:
+                    if array2[i] == 1:
+                        arrayint3.append(-10)
+                    else:
+                        arrayint3.append(0)
+                else:
+                    arrayint3.append(1)
+            else:
+                arrayint3.append(10)
+        x12 = self.gerar_matriz_float(arrayint3)   
+
+        arrayint4 = []
+        for i in range(len(array2)):
+            if array2[i] <= 50:
+                if array2[i] <= 30:
+                    if array2[i] < 3:
+                        if array2[i] == 1:
+                            arrayint4.append(-10)
+                        else:
+                            arrayint4.append(0)
+                    else:
+                        arrayint4.append(1)
+                else:
+                    arrayint4.append(5)
+            else:
+                arrayint4.append(10)
+        x13 = self.gerar_matriz_float(arrayint2)
+        
+        # 5. Direcionalidade 1 (> 3)
+        x17, x18 = self.gerar_direcionalidade(array2, limite=3, inverter=False)
+
+        # 6. Direcionalidade 2 (<= 1)
+        x19, x20 = self.gerar_direcionalidade(array2, limite=1, inverter=True)
 
         # Limiares definidos em ordem crescente
         limiares = [1.05, 1.15, 1.30, 1.50, 1.75, 2.12, 2.70, 3.70, 5.88, 20, 50]
@@ -307,9 +363,9 @@ class AjustesOdds:
         x21 = matriz111[:,:-1]                
                
 
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x17, x18, x19, x20, x21), axis=1)
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x17, x18, x19, x20, x21), axis=1)
 
-        array1binario1 = [0 if odd >= 2 else 1 for odd in array1]
+        array1binario1 = [0 if odd >= 3 else 1 for odd in array1]
         matrizbinario1 = self.matriz(600, array1binario1)
         
         matrizy_final = np.array(matrizbinario1[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario1 como y
@@ -436,8 +492,8 @@ class AjustesOdds:
         x5, x6, x7, x8, x9 = estatisticas_binarias
 
         # 5. Direcionalidades baseadas em condições
-        x17, x18 = self.processa_direcao(array2, limite=10, inverter=False)
-        x19, x20 = self.processa_direcao(array2, limite=1.02, inverter=True)
+        x17, x18 = self.processa_direcao(array2, limite=3, inverter=False)
+        x19, x20 = self.processa_direcao(array2, limite=1, inverter=True)
 
         # Limiares definidos em ordem crescente
         limiares = [1.05, 1.15, 1.30, 1.50, 1.75, 2.12, 2.70, 3.70, 5.88, 20, 50]
@@ -446,8 +502,64 @@ class AjustesOdds:
         print(len(array111))
         x21 = array111                
         
+        arrayint1 = []
+        for i in range(len(array2)):
+            if array2[i] < 50:
+                if array2[i] <= 3:
+                    arrayint1.append(0)
+                else:
+                    arrayint1.append(1)
+            else:
+                arrayint1.append(10)
+        x10 = self.estatisticaArrayFloat(arrayint1)
+        
+        arrayint2 = []
+        for i in range(len(array2)):
+            if array2[i] <= 50:
+                if array2[i] <= 30:
+                    if array2[i] < 3:
+                        arrayint2.append(0)
+                    else:
+                        arrayint2.append(1)
+                else:
+                    arrayint2.append(5)
+            else:
+                arrayint2.append(10)
+        x11 = self.estatisticaArrayFloat(arrayint2) 
+        
+        arrayint3 = []
+        for i in range(len(array2)):
+            if array2[i] < 50:
+                if array2[i] <= 3:
+                    if array2[i] == 1:
+                        arrayint3.append(-10)
+                    else:
+                        arrayint3.append(0)
+                else:
+                    arrayint3.append(1)
+            else:
+                arrayint3.append(10)
+        x12 = self.estatisticaArrayFloat(arrayint3)
+        
+        arrayint4 = []
+        for i in range(len(array2)):
+            if array2[i] <= 50:
+                if array2[i] <= 30:
+                    if array2[i] < 3:
+                        if array2[i] == 1:
+                            arrayint4.append(-10)
+                        else:
+                            arrayint4.append(0)
+                    else:
+                        arrayint4.append(1)
+                else:
+                    arrayint4.append(5)
+            else:
+                arrayint4.append(10)
+        x13 = self.estatisticaArrayFloat(arrayint4)       
+        
                 
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x17, x18, x19, x20, x21), axis=0)
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x17, x18, x19, x20, x21), axis=0)
         
         # Retorna somente a última linha (única janela possível)
         return matrizX_final.reshape(1, -1)

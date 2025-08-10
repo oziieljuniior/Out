@@ -33,17 +33,6 @@ logreg = make_pipeline(
     )
 )
 
-import matplotlib.pyplot as plt
-plt.ion()                       # ativa interação
-fig, ax = plt.subplots()
-ax.set_xlabel("Iteração")
-ax.set_ylabel("Precisão (%)")
-ax.set_ylim(0, 100)
-line_geral, = ax.plot([], [], label="Precisão Geral")
-line_modelo, = ax.plot([], [], label="Precisão Modelo")
-ax.legend(loc="lower right")
-x_data, y_geral, y_modelo = [], [], []
-
 # ---------------------------------------------------------------
 
 
@@ -85,15 +74,6 @@ while i <= 210000:
         print(24*"-'-")
         array_placar = placar.atualizar_geral(i, resultado, odd)
         print(f'Precisão Geral: {array_placar["Precisao_Geral"]:.2f}% \nPrecisão Modelo: {array_placar["Precisao_Sintetica"]:.2f}%')
-        x_data.append(i)                                   # ou rodada, se preferir
-        y_geral.append(array_placar["Precisao_Geral"])
-        y_modelo.append(array_placar["Precisao_Sintetica"])
-
-        line_geral.set_data(x_data, y_geral)
-        line_modelo.set_data(x_data, y_modelo)
-        ax.relim()                 # recalcula limites
-        ax.autoscale_view()        # aplica limites
-        plt.pause(0.01)            # deixa o evento de GUI atualizar
         
         df_acuracia.loc[len(df_acuracia)] = {
             "Iteração": i,
@@ -171,7 +151,3 @@ while i <= 210000:
 
 df_metricas_treino.to_csv('metricas_treino.csv', index=False)
 df_acuracia.to_csv('acuracia.csv', index=False)
-
-plt.ioff()
-plt.savefig("evolucao_precisao.png", dpi=150)
-plt.show()
