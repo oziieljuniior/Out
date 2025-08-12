@@ -24,8 +24,8 @@ from sklearn.linear_model import LogisticRegression
 
 logreg = make_pipeline(
     LogisticRegression(
-        max_iter=1000000,             # começa “raso” para convergir rápido
-        warm_start=True,   
+        max_iter=50000,             # começa “raso” para convergir rápido
+        warm_start=False,   
         C=1.0,
         class_weight="balanced",
         random_state=42,
@@ -33,26 +33,10 @@ logreg = make_pipeline(
     )
 )
 
-import matplotlib.pyplot as plt
-plt.ion()                       # ativa interação
-fig, ax = plt.subplots()
-ax.set_xlabel("Iteração")
-ax.set_ylabel("Precisão (%)")
-ax.set_ylim(0, 100)
-line_geral, = ax.plot([], [], label="Precisão Geral")
-line_modelo, = ax.plot([], [], label="Precisão Modelo")
-ax.legend(loc="lower right")
-x_data, y_geral, y_modelo = [], [], []
-
 # ---------------------------------------------------------------
 
 
 ### Carregar data
-#/content/drive/MyDrive/Out/dados/odds_200k.csv
-#/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv
-#/home/darkcover/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10/Vitoria1_10 - game_teste3x1.csv
-#/home/darkcover01/Documentos/Out/Documentos/dados/odds_200k.csv
-#/home/darkcover01/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv', usecols=["Entrada"], dtype=str
 data = pd.read_csv('/home/darkcover01/Documentos/Out/Documentos/dados/odds_200k.csv')
 
 array1, i = [], 0
@@ -60,7 +44,7 @@ array1, i = [], 0
 inteiro = int(input("Insera a entrada até onde o modelo deve ser carregado --> "))
 
 ## Variáveis para salvar em um dataframe
-data_matriz_float, data_matriz_int, array_geral_float, historico_janelas = [], [], [], [] 
+data_matriz_float, data_matriz_int, array_geral_float = [], [], [] 
 df_metricas_treino = pd.DataFrame(columns=["rodada", "modelo", "accuracy", "precision", "recall", "f1_score", "precision 0", "precision 1", "recall 0", "recall 1", "f1_score 0", "f1_score 1"])
 df_acuracia = pd.DataFrame(columns=["Iteração", "Precisão Geral", "Precisão Modelo"])
 datasave = pd.DataFrame({'Modelo N': [], 'Reportes Modelos': []})
@@ -85,15 +69,6 @@ while i <= 210000:
         print(24*"-'-")
         array_placar = placar.atualizar_geral(i, resultado, odd)
         print(f'Precisão Geral: {array_placar["Precisao_Geral"]:.2f}% \nPrecisão Modelo: {array_placar["Precisao_Sintetica"]:.2f}%')
-        x_data.append(i)                                   # ou rodada, se preferir
-        y_geral.append(array_placar["Precisao_Geral"])
-        y_modelo.append(array_placar["Precisao_Sintetica"])
-
-        line_geral.set_data(x_data, y_geral)
-        line_modelo.set_data(x_data, y_modelo)
-        ax.relim()                 # recalcula limites
-        ax.autoscale_view()        # aplica limites
-        plt.pause(0.01)            # deixa o evento de GUI atualizar
         
         df_acuracia.loc[len(df_acuracia)] = {
             "Iteração": i,
@@ -168,10 +143,5 @@ while i <= 210000:
 
     i += 1
 
-
-df_metricas_treino.to_csv('metricas_treino.csv', index=False)
-df_acuracia.to_csv('acuracia.csv', index=False)
-
-plt.ioff()
-plt.savefig("evolucao_precisao.png", dpi=150)
-plt.show()
+df_metricas_treino.to_csv('/home/darkcover01/Documentos/Out/python_project/Atual/metricas_treino50x.csv', index=False)
+pd.DataFrame(array_geral_float, columns=['Odds']).to_csv('/home/darkcover01/Documentos/Out/python_project/Atual/odds_geral50x.csv', index=False)

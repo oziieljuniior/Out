@@ -103,7 +103,7 @@ while i <= 210000:
         y_train, y_test = y[:cut], y[cut:]
 
         # 3. Modelo linear base (regressão logística)
-        logreg = LogisticRegression(max_iter=10_000, C=1.0,class_weight='balanced', warm_start=True, random_state=42)
+        #logreg = LogisticRegression(max_iter=10_000, C=1.0,class_weight='balanced', warm_start=True, random_state=42)
         logreg.fit(X_train, y_train)
 
         proba_val = logreg.predict_proba(X_test)[:,1]
@@ -136,6 +136,7 @@ while i <= 210000:
         roc = roc_auc_score(y_test, proba_val)
         pr  = average_precision_score(y_test, proba_val)
 
+        print(f'ROC AUC: {roc:.4f} | PR AUC: {pr:.4f}')
         # Salve no df_metricas_treino:
         # "roc_auc": roc, "pr_auc": pr
 
