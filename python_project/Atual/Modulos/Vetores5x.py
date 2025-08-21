@@ -149,7 +149,6 @@ class AjustesOdds:
 
         fuzzy_val = simbolos[pert.index(max_pert)]
         return fuzzy_val
-
     
     def matriz(self, num_colunas, array1):
         """
@@ -298,7 +297,7 @@ class AjustesOdds:
         x1 = self.gerar_matriz_float(array1)
 
         # 2. Matriz majorada
-        array_majorado = [2.0 if v <= 2 else 4.0 if v >= 4 else v for v in array1]
+        array_majorado = [3 if v <= 3 else 6 if v >= 6 else v for v in array1]
         x2 = self.gerar_matriz_float(array_majorado)
 
         # 3. Fuzzy
@@ -375,7 +374,7 @@ class AjustesOdds:
 
         matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x17, x18, x19, x20), axis=1)
 
-        array1binario1 = [0 if odd >= 3 else 1 for odd in array1]
+        array1binario1 = [0 if odd >= 5 else 1 for odd in array1]
         matrizbinario1 = self.matriz(1200, array1binario1)
         
         matrizy_final = np.array(matrizbinario1[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario1 como y
@@ -477,7 +476,7 @@ class AjustesOdds:
 
         # 2. Array majorado
         array1marjorado = [
-            2 if val <= 2 else 4.0 if val >= 4 else val
+            3.0 if val <= 3 else 6 if val >= 6 else val
             for val in array1
         ]
         x2 = self.estatisticaArrayFloat(array1marjorado)
@@ -500,7 +499,7 @@ class AjustesOdds:
         # 5. Direcionalidades baseadas em condições
         x17, x18 = self.processa_direcao(array2, limite=10, inverter=False)
         x19, x20 = self.processa_direcao(array2, limite=1, inverter=True)
-                
+
         
         arrayint1 = []
         for i in range(len(array2)):

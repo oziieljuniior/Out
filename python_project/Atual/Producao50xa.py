@@ -2,7 +2,7 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from Modulos.PlacaresAlto import Placar # Importando a classe Placar do módulo Placares
+from Modulos.PlacaresAltoa import Placar # Importando a classe Placar do módulo Placares
 from Modulos.VetoresAltoa import AjustesOdds
 
 import pandas as pd
@@ -37,7 +37,7 @@ logreg = make_pipeline(
 
 
 ### Carregar data
-data = pd.read_csv('/home/darkcover01/Documentos/Out/Documentos/dados/odds_200k.csv')
+data = pd.read_csv('/home/darkcover01/Documentos/Out/python_project/Atual/data_treino/Vitoria1_10 - 11-07-25_teste1.csv')
 
 array1, i = [], 0
 
@@ -57,7 +57,7 @@ while i <= 210000:
     print(f'Rodada - {i}')
 
 ######## -> Vetor de Entradas Unidimensional ##########        
-    arrayodd, odd = vetores.coletarodd(i, inteiro, data, alavanca=False)
+    arrayodd, odd = vetores.coletarodd(i, inteiro, data)
     array_geral_float.append(odd)
 
     if odd == 0:
@@ -79,7 +79,7 @@ while i <= 210000:
 ######################################################
 
 ######## -> Treinamento da Modelo ###############
-    if i >= 12000 and (i % 600) == 0:
+    if i >= 12000 and (i % 1200) == 0:
         print('***'*20)
         ##### -> Vetores de Entradas #################
         print(f'Carregando dados ...')
@@ -108,7 +108,7 @@ while i <= 210000:
         print("Modelo Linear - Regressão Logística")
         print(classification_report(y_test, y_pred_lr))
         df_metricas_treino.loc[len(df_metricas_treino)] = {
-            "rodada": (i // 600) - 3,  # Armazenando a rodada
+            "rodada": (i // 1200) - 3,  # Armazenando a rodada
             "i": i,
             "modelo": "Regressão Logística",
             "accuracy": report["accuracy"],

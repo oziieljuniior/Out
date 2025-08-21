@@ -48,7 +48,6 @@ class AjustesOdds:
         self.array1.append(odd)
         return self.array1, odd
 
-
     def dual_fuzzy_classification_invertida(self, odd, *, odd_min=1.0, odd_max=100.0):
         """
         Classificação fuzzy invertida  (1 → maior confiança ; 100 → menor confiança).
@@ -115,7 +114,6 @@ class AjustesOdds:
 
         return fuzzy_val, tsk_val
 
-
     def fuzzy_classification(self, odd,
                              *, odd_min=1.0, odd_max=100.0):
         """
@@ -156,7 +154,6 @@ class AjustesOdds:
         # Escolhe o nível associado ao maior grau de pertinência
         fuzzy_val = simbolos[pert.index(max_pert)]
         return fuzzy_val
-
     
     def matriz(self, num_colunas, array1):
         """
@@ -240,11 +237,11 @@ class AjustesOdds:
         return x1
 
     def gerar_matriz_float(self, array):
-        return self.corteArrayFloat(self.matriz(600, array))
+        return self.corteArrayFloat(self.matriz(1200, array))
 
     def gerar_matriz_binaria(self, array, threshold):
         binarizado = [0 if val >= threshold else 1 for val in array]
-        return self.corteArrayBinario(self.matriz(600, binarizado))
+        return self.corteArrayBinario(self.matriz(1200, binarizado))
 
     def gerar_direcionalidade(self, array, limite, inverter=False):
         direcao, contagem = [], []
@@ -256,8 +253,8 @@ class AjustesOdds:
             count += 1
             direcao.append(flag)
             contagem.append(count if not inverter else count)
-        matriz_direcao = self.matriz(600, direcao)[:, :-1]
-        matriz_contagem = self.matriz(600, contagem)[:, :-1]
+        matriz_direcao = self.matriz(1200, direcao)[:, :-1]
+        matriz_contagem = self.matriz(1200, contagem)[:, :-1]
         return matriz_direcao, matriz_contagem
 
     def tranforsmar_final_matriz(self, array1):
@@ -282,7 +279,7 @@ class AjustesOdds:
         x1 = self.gerar_matriz_float(array1)
 
         # 2. Matriz majorada
-        array_majorado = [20 if v <= 20 else 50 if v >= 50 else v for v in array1]
+        array_majorado = [10 if v <= 10 else 50 if v >= 50 else v for v in array1]
         x2 = self.gerar_matriz_float(array_majorado)
 
         # 3. Fuzzy
@@ -306,7 +303,7 @@ class AjustesOdds:
 
         #array111 = [bisect.bisect(limiares, odd) for odd in array2]
         #print(len(array111))
-        #matriz111 = self.matriz(600, array111)
+        #matriz111 = self.matriz(1200, array111)
         #x21 = matriz111[:,:-1]
         arrayint = []
         for i in range(len(array2)):
@@ -367,8 +364,8 @@ class AjustesOdds:
 
         matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x17, x18, x19, x20), axis=1)
 
-        array1binario1 = [0 if odd >= 30 else 1 for odd in array1]
-        matrizbinario1 = self.matriz(600, array1binario1)
+        array1binario1 = [0 if odd >= 10 else 1 for odd in array1]
+        matrizbinario1 = self.matriz(1200, array1binario1)
         
         matrizy_final = np.array(matrizbinario1[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario1 como y
 
@@ -420,16 +417,16 @@ class AjustesOdds:
     def transformar_entrada_predicao(self, array1):
         """
         Prepara a estrutura de entrada para predição com .predict().
-        Assume que array1 contém as últimas 600 entradas (599 anteriores + 1 atual).
+        Assume que array1 contém as últimas 1200 entradas (1199 anteriores + 1 atual).
         
         Returns:
             np.ndarray: Array com shape (1, n_features) pronto para model.predict().
         """
-        if len(array1) < 600:
-            raise ValueError("É necessário fornecer ao menos 600 entradas para predição.")
+        if len(array1) < 1200:
+            raise ValueError("É necessário fornecer ao menos 1200 entradas para predição.")
 
-        # Usa apenas os últimos 600 valores
-        array1 = array1[-599:]
+        # Usa apenas os últimos 1200 valores
+        array1 = array1[-1199:]
         array2 = array1
 
         # 1. Array normalizado
@@ -438,7 +435,7 @@ class AjustesOdds:
 
         # 2. Array majorado
         array1marjorado = [
-            20 if val <= 20 else 50 if val >= 50 else val
+            10 if val <= 10 else 50 if val >= 50 else val
             for val in array1
         ]
         x2 = self.estatisticaArrayFloat(array1marjorado)

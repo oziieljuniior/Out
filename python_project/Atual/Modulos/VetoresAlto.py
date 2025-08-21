@@ -237,11 +237,11 @@ class AjustesOdds:
         return x1
 
     def gerar_matriz_float(self, array):
-        return self.corteArrayFloat(self.matriz(600, array))
+        return self.corteArrayFloat(self.matriz(1200, array))
 
     def gerar_matriz_binaria(self, array, threshold):
         binarizado = [0 if val >= threshold else 1 for val in array]
-        return self.corteArrayBinario(self.matriz(600, binarizado))
+        return self.corteArrayBinario(self.matriz(1200, binarizado))
 
     def gerar_direcionalidade(self, array, limite, inverter=False):
         direcao, contagem = [], []
@@ -253,8 +253,8 @@ class AjustesOdds:
             count += 1
             direcao.append(flag)
             contagem.append(count if not inverter else count)
-        matriz_direcao = self.matriz(600, direcao)[:, :-1]
-        matriz_contagem = self.matriz(600, contagem)[:, :-1]
+        matriz_direcao = self.matriz(1200, direcao)[:, :-1]
+        matriz_contagem = self.matriz(1200, contagem)[:, :-1]
         return matriz_direcao, matriz_contagem
 
     def tranforsmar_final_matriz(self, array1):
@@ -279,7 +279,7 @@ class AjustesOdds:
         x1 = self.gerar_matriz_float(array1)
 
         # 2. Matriz majorada
-        array_majorado = [25 if v <= 25 else 60 if v >= 60 else v for v in array1]
+        array_majorado = [10 if v <= 10 else 50 if v >= 50 else v for v in array1]
         x2 = self.gerar_matriz_float(array_majorado)
 
         # 3. Fuzzy
@@ -288,15 +288,15 @@ class AjustesOdds:
         x4 = self.gerar_matriz_float(array_fcontinuo)
 
         # 4. Binarizações múltiplas
-        thresholds = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        thresholds = [10, 20, 30, 40, 50]
         binarizados = [self.gerar_matriz_binaria(array1, th) for th in thresholds]
-        x5, x6, x7, x8, x9, x10, x11, x12, x13, x14 = binarizados
+        x5, x6, x7, x8, x9 = binarizados
 
         # 5. Direcionalidade 1 (> 10)
         x17, x18 = self.gerar_direcionalidade(array2, limite=50, inverter=False)
 
         # 6. Direcionalidade 2 (<= 1.02)
-        x19, x20 = self.gerar_direcionalidade(array2, limite=1, inverter=True)  
+        x19, x20 = self.gerar_direcionalidade(array2, limite=20, inverter=True)  
         
         arrayint = []
         for i in range(len(array2)):
@@ -354,10 +354,10 @@ class AjustesOdds:
                 arrayint4.append(10)
         x22 = self.gerar_matriz_float(arrayint4)
         
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22), axis=1)
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x15, x16, x17, x18, x19, x20, x21, x22), axis=1)
 
-        array1binario1 = [0 if odd >= 30 else 1 for odd in array1]
-        matrizbinario1 = self.matriz(600, array1binario1)
+        array1binario1 = [0 if odd >= 15 else 1 for odd in array1]
+        matrizbinario1 = self.matriz(1200, array1binario1)
         
         matrizy_final = np.array(matrizbinario1[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario1 como y
 
@@ -409,16 +409,16 @@ class AjustesOdds:
     def transformar_entrada_predicao(self, array1):
         """
         Prepara a estrutura de entrada para predição com .predict().
-        Assume que array1 contém as últimas 600 entradas (599 anteriores + 1 atual).
+        Assume que array1 contém as últimas 1200 entradas (1199 anteriores + 1 atual).
         
         Returns:
             np.ndarray: Array com shape (1, n_features) pronto para model.predict().
         """
-        if len(array1) < 600:
-            raise ValueError("É necessário fornecer ao menos 600 entradas para predição.")
+        if len(array1) < 1200:
+            raise ValueError("É necessário fornecer ao menos 1200 entradas para predição.")
 
-        # Usa apenas os últimos 600 valores
-        array1 = array1[-599:]
+        # Usa apenas os últimos 1200 valores
+        array1 = array1[-1199:]
         array2 = array1
 
         # 1. Array normalizado
@@ -427,7 +427,7 @@ class AjustesOdds:
 
         # 2. Array majorado
         array1marjorado = [
-            25 if val <= 25 else 60 if val >= 60 else val
+            10 if val <= 10 else 50 if val >= 50 else val
             for val in array1
         ]
         x2 = self.estatisticaArrayFloat(array1marjorado)
@@ -438,18 +438,18 @@ class AjustesOdds:
         x4 = self.estatisticaArrayFloat(array1fcontinuo)
 
         # 4. Binarizações com múltiplos thresholds
-        thresholds = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        thresholds = [10, 20, 30, 40, 50]
         estatisticas_binarias = []
         for t in thresholds:
             array_bin = self.binarizar_array(array1, t)
             estatisticas_binarias.append(self.estatisticaArrayBinario(array_bin))
 
         # desempacotar resultados em x5 a x16
-        x5, x6, x7, x8, x9, x10, x11, x12, x13, x14 = estatisticas_binarias
+        x5, x6, x7, x8, x9 = estatisticas_binarias
 
         # 5. Direcionalidades baseadas em condições
         x17, x18 = self.processa_direcao(array2, limite=50, inverter=False)
-        x19, x20 = self.processa_direcao(array2, limite=1, inverter=True)
+        x19, x20 = self.processa_direcao(array2, limite=10, inverter=True)
 
         arrayint = []
         for i in range(len(array2)):
@@ -507,7 +507,7 @@ class AjustesOdds:
                 arrayint4.append(10)
         x22 = self.estatisticaArrayFloat(arrayint4)
                        
-        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22), axis=0)
+        matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x15, x16, x17, x18, x19, x20, x21, x22), axis=0)
         
         # Retorna somente a última linha (única janela possível)
         return matrizX_final.reshape(1, -1)
