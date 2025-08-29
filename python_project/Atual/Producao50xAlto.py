@@ -172,13 +172,13 @@ while i <= 210000:
         print(f'Predições Futuras')
         array_futuro10x, array_futuro15x = arrayodd.copy(), arrayodd.copy()
         resultado15x1, resultado10x1 = resultado, resultado10x
-        for i in range(5):
+        for j in range(5):
             if resultado10x1 == 1:
                 valorsintetico10x1 = 11
             else:
                 valorsintetico10x1 = 2
             
-            if resultado == 1:
+            if resultado15x1 == 1:
                 valorsintetico15x1 = 16
             else:
                 valorsintetico15x1 = 2
@@ -197,7 +197,7 @@ while i <= 210000:
                 resultado10x1 = 0
             else:
                 resultado10x1 = 1
-            print(i*'.')
+            #1,print(j*'.')
         
         print(f'Array Futuro10x: {array_futuro10x[-10:]} \nArray Futuro15x: {array_futuro15x[-10:]}')
         

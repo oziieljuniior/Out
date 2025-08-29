@@ -247,18 +247,18 @@ while i <= 210000:
         print(f'Predições Futuras')
         array_futuro2x, array_futuro3x, array_futuro5x = arrayodd.copy(), arrayodd.copy(), arrayodd.copy()
         resultado2x1, resultado3x1, resultado5x1 = resultado2x, resultado, resultado5x
-        for i in range(4):
+        for j in range(3):
             if resultado2x1 == 1:
                 valorsintetico2x1 = 2.5
             else:
                 valorsintetico2x1 = 1.45
             
-            if resultado == 1:
+            if resultado3x1 == 1:
                 valorsintetico3x1 = 4
             else:
                 valorsintetico3x1 = 1.75
             
-            if resultado == 1:
+            if resultado5x1 == 1:
                 valorsintetico5x1 = 6
             else:
                 valorsintetico5x1 = 2
