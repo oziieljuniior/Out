@@ -1,5 +1,7 @@
 {
     "python.analysis.extraPaths": [
         "./python_project/cake/Oz/Modulos"
-    ]
+    ],
+    "python-envs.defaultEnvManager": "ms-python.python:poetry",
+    "python-envs.defaultPackageManager": "ms-python.python:poetry"
 }

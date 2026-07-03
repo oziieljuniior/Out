@@ -6,8 +6,9 @@ import bisect
 
 
 class AjustesOdds:
-    def __init__(self, array1):
+    def __init__(self, array1, window_size=1200):
         self.array1 = array1
+        self.window_size = window_size
 
     def coletarodd(self, i, inteiro, data, alavanca=True):
         """
@@ -256,11 +257,11 @@ class AjustesOdds:
         return X_out
 
     def gerar_matriz_float(self, array):
-        return self.corteArrayFloat(self.matriz(1200, array))
+        return self.corteArrayFloat(self.matriz(self.window_size, array))
 
     def gerar_matriz_binaria(self, array, threshold):
         binarizado = [0 if val >= threshold else 1 for val in array]
-        return self.corteArrayBinario(self.matriz(1200, binarizado))
+        return self.corteArrayBinario(self.matriz(self.window_size, binarizado))
 
     def gerar_direcionalidade(self, array, limite, inverter=False):
         direcao, contagem = [], []
@@ -272,8 +273,8 @@ class AjustesOdds:
             count += 1
             direcao.append(flag)
             contagem.append(count if not inverter else count)
-        matriz_direcao = self.matriz(1200, direcao)[:, :-1]
-        matriz_contagem = self.matriz(1200, contagem)[:, :-1]
+        matriz_direcao = self.matriz(self.window_size, direcao)[:, :-1]
+        matriz_contagem = self.matriz(self.window_size, contagem)[:, :-1]
         return matriz_direcao, matriz_contagem
 
     def tranforsmar_final_matriz(self, array1):
@@ -376,7 +377,7 @@ class AjustesOdds:
         matrizX_final = np.concatenate((x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x17, x18, x19, x20), axis=1)
 
         array1binario1 = [0 if odd >= 3 else 1 for odd in array1]
-        matrizbinario1 = self.matriz(1200, array1binario1)
+        matrizbinario1 = self.matriz(self.window_size, array1binario1)
         
         matrizy_final = np.array(matrizbinario1[:, -1]).reshape(-1, 1)  # Última coluna de matrizbinario1 como y
 
@@ -464,11 +465,11 @@ class AjustesOdds:
         Returns:
             np.ndarray: Array com shape (1, n_features) pronto para model.predict().
         """
-        if len(array1) < 1200:
-            raise ValueError("É necessário fornecer ao menos 1200 entradas para predição.")
+        if len(array1) < self.window_size:
+            raise ValueError(f"É necessário fornecer ao menos {self.window_size} entradas para predição.")
 
-        # Usa apenas os últimos 1200 valores
-        array1 = array1[-1199:]
+        # Usa apenas os últimos valores necessários
+        array1 = array1[-(self.window_size - 1):]
         array2 = array1
 
         # 1. Array normalizado
@@ -563,3 +564,74 @@ class AjustesOdds:
         
         # Retorna somente a última linha (única janela possível)
         return matrizX_final.reshape(1, -1)
+
+    def calculate_means(self, array4):
+        array6 = []
+        array7 = []
+        for i in range(len(array4) - 1):
+            array6.append(array4[i])
+            if i >= 59:
+                order = float(np.mean(array6))
+                array7.append(order)
+        return array7
+
+    def calculate_orders(self, array4):
+        array5 = []
+        for i in range(len(array4) - 1):
+            if i >= 59:
+                order = sum(array4[i - 59: i])
+                array5.append(order)
+        return array5
+
+    def fuzzy_classification_rede_neural(self, odd):
+        odd_range = np.arange(1, 6.1, 0.1)
+        baixo = fuzz.trimf(odd_range, [1, 1, 2])
+        medio = fuzz.trimf(odd_range, [1.5, 3, 4.5])
+        alto = fuzz.trimf(odd_range, [3.5, 5, 6])
+        muito_alto = fuzz.trimf(odd_range, [4.5, 6, 6])
+        
+        pert_baixo = fuzz.interp_membership(odd_range, baixo, odd)
+        pert_medio = fuzz.interp_membership(odd_range, medio, odd)
+        pert_alto = fuzz.interp_membership(odd_range, alto, odd)
+        pert_muito_alto = fuzz.interp_membership(odd_range, muito_alto, odd)
+        
+        max_pert = max(pert_baixo, pert_medio, pert_alto, pert_muito_alto)
+        if max_pert == 0:
+            return 0
+        
+        if max_pert == pert_muito_alto:
+            return 1
+        elif max_pert == pert_alto:
+            return 0.75
+        elif max_pert == pert_medio:
+            return 0.5
+        else:
+            return 0.25
+
+    def coletarodd_rede_neural(self, i, inteiro, data, array2s, array2n, alavanca=True):
+        if i <= inteiro:
+            if alavanca == True:
+                odd = float(data['Entrada'][i].replace(",",'.'))
+            else:
+                odd = data['Entrada'][i] 
+
+            if odd == 0:
+                odd = 1
+            print(f'Entrada: {odd}')
+        else:
+            odd = float(input("Entrada -> ").replace(",",'.'))
+
+        if odd == 0:
+            return array2s, array2n, odd
+        if odd >= 6:
+            odd = 6
+        
+        corte1 = self.fuzzy_classification_rede_neural(odd)
+        array2s.append(corte1)
+        if odd >= 3:
+            corte2 = 1
+        else:
+            corte2 = 0    
+        array2n.append(corte2)
+
+        return array2s, array2n, odd

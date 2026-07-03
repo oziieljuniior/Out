@@ -66,7 +66,7 @@ logreg2 = make_pipeline(
 
 
 ### Carregar data
-data = pd.read_csv('/home/darkcover01/Documentos/Out/Documentos/dados/odds_200k.csv')
+data = pd.read_csv('/home/darkcover/Documentos/Out/Documentos/dados/odds_200k.csv')
 
 array1, i = [], 0
 
